@@ -1,0 +1,466 @@
+{% extends "base.html" %}
+{% block title %}
+  {{ title }}
+{% endblock title %}
+{% block pagetitle %}
+  Invoice List - AWB {{ awb.awbno }} 
+{% endblock pagetitle %}
+{% block style %}
+<style>
+  
+  .compact-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .compact-label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.75rem;
+    margin-bottom: 0.125rem;
+  }
+  .compact-value {
+    color: #111827;
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+  .status-badge {
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.625rem;
+    font-weight: 500;
+    display: inline-block;
+  }
+  .status-paid {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+  .status-unpaid {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+  .status-active {
+    background-color: #dbeafe;
+    color: #1e40af;
+  }
+  .status-inactive {
+    background-color: #f3f4f6;
+    color: #6b7280;
+  }
+  .data-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+  }
+  .section-header {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+</style>
+{% endblock style %}
+
+{% block button %}
+  <div class="flex gap-1">
+    {% if user.role == 'admin' %}
+    {% if invoices and invoices.first.is_active %}
+      <!-- Show Print button if there's an active invoice -->
+      <a href="{% url 'awb:pages:invoice:print' awb.awbno invoices.first.id %}" 
+         target="_blank"
+         title="Print Invoice">
+        <button class="bg-green-600 text-white border-2 border-green-600 hover:bg-green-700 hover:border-green-700 transition-colors duration-300 font-medium px-3 py-1.5 rounded text-sm flex items-center gap-1">
+          <i class="fi fi-rr-print text-sm"></i>
+          Print Invoice
+        </button>
+      </a>
+    {% else %}
+      <!-- Show Create button if no active invoice -->
+      <a href="{% url 'awb:pages:invoice:create' awb.awbno %}"
+         title="Create Invoice">
+        <button class="bg-white text-primary border-2 border-primary hover:bg-secondary hover:text-white hover:border-secondary transition-colors duration-300 font-medium px-3 py-1.5 rounded text-sm flex items-center gap-1">
+          <i class="fi fi-rr-plus text-sm"></i>
+          Create Invoice
+        </button>
+      </a>
+    {% endif %}
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block content %}
+<div class="">
+  {% csrf_token %}
+  {% include "awb/awb/tab.html" %}
+  
+  <!-- Success/Error Messages -->
+  {% if messages %}
+    <div class="mb-4">
+      {% for message in messages %}
+        <div class="{% if message.tags == 'success' %}bg-green-100 border border-green-400 text-green-700{% elif message.tags == 'error' %}bg-red-100 border border-red-400 text-red-700{% else %}bg-blue-100 border border-blue-400 text-blue-700{% endif %} px-4 py-3 rounded relative mb-3 alert-message" role="alert">
+          <strong class="font-bold">
+            {% if message.tags == 'success' %}
+              <i class="fi fi-rr-check-circle"></i> Success!
+            {% elif message.tags == 'error' %}
+              <i class="fi fi-rr-exclamation-triangle"></i> Error!
+            {% else %}
+              <i class="fi fi-rr-info"></i> Info!
+            {% endif %}
+          </strong>
+          <span class="block sm:inline ml-2">{{ message }}</span>
+          <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none';">
+            <svg class="fill-current h-6 w-6 text-gray-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+              <title>Close</title>
+              <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+            </svg>
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  
+  <!-- ROW 1: AWB OVERVIEW (Compact) -->
+  <div class="compact-card">
+    <div class="section-header flex items-center gap-2">
+      <i class="fi fi-rr-document text-primary text-sm"></i>
+      AWB Information - {{ awb.awbno }}
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+      <div>
+        <div class="compact-label">Agency</div>
+        <div class="compact-value">{{ awb.agency.company_name|default:"-"|truncatechars:20 }}</div>
+      </div>
+      <div>
+        <div class="compact-label">Company</div>
+        <div class="compact-value">{{ awb.company.name|default:"-"|truncatechars:20 }}</div>
+      </div>
+      <div>
+        <div class="compact-label">Hub</div>
+        <div class="compact-value">{{ awb.hub.name|default:"-"|truncatechars:15 }}</div>
+      </div>
+      <div>
+        <div class="compact-label">Origin → Destination</div>
+        <div class="compact-value">{{ awb.origin.name|default:"-"|truncatechars:8 }} → {{ awb.destination.name|default:"-"|truncatechars:8 }}</div>
+      </div>
+      <div>
+        <div class="compact-label">Vendor/Service</div>
+        <div class="compact-value">{{ awb.vendor.name|default:"-"|truncatechars:12 }}/{{ awb.service.name|default:"-"|truncatechars:8 }}</div>
+      </div>
+      <div>
+        <div class="compact-label">Value/Weight</div>
+        <div class="compact-value">{{ awb.currency.symbol|default:""}}{{ awb.shipment_value|floatformat:1 }} / {{ awb.total_charged_weight|floatformat:1 }}kg</div>
+      </div>
+      <div>
+        <div class="compact-label">Booking Date</div>
+        <div class="compact-value">{{ awb.booking_datetime|date:"d/m/Y" }}</div>
+      </div>
+      <div>
+        <div class="compact-label">Product Type</div>
+        <div class="compact-value">{{ awb.product_type.name|default:"-"|truncatechars:15 }}</div>
+      </div>
+      <div>
+        <div class="compact-label">Fwd Number</div>
+        <div class="compact-value">{{ awb.forwarding_number|default:"-"|truncatechars:15 }}</div>
+      </div>
+      <div>
+        <div class="compact-label">Ref Number</div>
+        <div class="compact-value">{{ awb.reference_number|default:"-"|truncatechars:15 }}</div>
+      </div>
+      <div>
+        <div class="compact-label">Total Boxes</div>
+        <div class="compact-value">{{ awb.total_box }}</div>
+      </div>
+      <div>
+        <div class="compact-label">Charged Weight</div>
+        <div class="compact-value">{{ awb.total_charged_weight }}kg</div>
+      </div>
+      <div>
+        <div class="compact-label">Total Weight</div>
+        <div class="compact-value">{{ awb.total_actual_weight }}kg</div>
+      </div>
+      <div>
+        <div class="compact-label">Status</div>
+        <div class="compact-value">
+          {% if awb.is_verified %}
+            <span class="status-badge status-paid">Verified</span>
+          {% else %}
+            <span class="status-badge status-unpaid">Unverified</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: CONSIGNOR & CONSIGNEE (Side by Side, Compact) -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+    
+    <!-- Consignor Details -->
+    <div class="compact-card">
+      <div class="section-header flex items-center gap-2">
+        <i class="fi fi-rr-user text-blue-600 text-sm"></i>
+        Consignor (From)
+      </div>
+      {% if consignor %}
+        <div class="space-y-2">
+          <div class="data-row">
+            <span class="compact-label">Company:</span>
+            <span class="compact-value">{{ consignor.company|default:"-"|truncatechars:25 }}</span>
+          </div>
+          <div class="data-row">
+            <span class="compact-label">Contact:</span>
+            <span class="compact-value">{{ consignor.person_name|default:"-"|truncatechars:25 }}</span>
+          </div>
+          <div class="data-row">
+            <span class="compact-label">Address:</span>
+            <span class="compact-value">{{ consignor.address1|default:"-"|truncatechars:30 }}</span>
+          </div>
+          {% if consignor.address2 %}
+          <div class="data-row">
+            <span class="compact-label">Address 2:</span>
+            <span class="compact-value">{{ consignor.address2|truncatechars:30 }}</span>
+          </div>
+          {% endif %}
+          <div class="data-row">
+            <span class="compact-label">City/Zip:</span>
+            <span class="compact-value">{{ consignor.city|default:"-"|truncatechars:15 }} / {{ consignor.post_zip_code|default:"-" }}</span>
+          </div>
+          <div class="data-row">
+            <span class="compact-label">State:</span>
+            <span class="compact-value">{{ consignor.state_county|default:"-"|truncatechars:20 }}</span>
+          </div>
+          <div class="data-row">
+            <span class="compact-label">Phone:</span>
+            <span class="compact-value">{{ consignor.phone_number|default:"-" }}</span>
+          </div>
+          <div class="data-row">
+            <span class="compact-label">Email:</span>
+            <span class="compact-value">{{ consignor.email_address|default:"-"|truncatechars:25 }}</span>
+          </div>
+          {% if consignor.document_type %}
+          <div class="data-row">
+            <span class="compact-label">Document:</span>
+            <span class="compact-value">{{ consignor.document_type|truncatechars:15 }} - {{ consignor.document_number|default:"-"|truncatechars:15 }}</span>
+          </div>
+          {% endif %}
+        </div>
+      {% else %}
+        <p class="compact-value text-gray-500">No consignor details available</p>
+      {% endif %}
+    </div>
+
+    <!-- Consignee Details -->
+    <div class="compact-card">
+      <div class="section-header flex items-center gap-2">
+        <i class="fi fi-rr-users text-green-600 text-sm"></i>
+        Consignee (To)
+      </div>
+      {% if consignee %}
+        <div class="space-y-2">
+          <div class="data-row">
+            <span class="compact-label">Company:</span>
+            <span class="compact-value">{{ consignee.company|default:"-"|truncatechars:25 }}</span>
+          </div>
+          <div class="data-row">
+            <span class="compact-label">Contact:</span>
+            <span class="compact-value">{{ consignee.person_name|default:"-"|truncatechars:25 }}</span>
+          </div>
+          <div class="data-row">
+            <span class="compact-label">Address:</span>
+            <span class="compact-value">{{ consignee.address1|default:"-"|truncatechars:30 }}</span>
+          </div>
+          {% if consignee.address2 %}
+          <div class="data-row">
+            <span class="compact-label">Address 2:</span>
+            <span class="compact-value">{{ consignee.address2|truncatechars:30 }}</span>
+          </div>
+          {% endif %}
+          <div class="data-row">
+            <span class="compact-label">City/Zip:</span>
+            <span class="compact-value">{{ consignee.city|default:"-"|truncatechars:15 }} / {{ consignee.post_zip_code|default:"-" }}</span>
+          </div>
+          <div class="data-row">
+            <span class="compact-label">State:</span>
+            <span class="compact-value">{{ consignee.state_county|default:"-"|truncatechars:20 }}</span>
+          </div>
+          <div class="data-row">
+            <span class="compact-label">Phone 1:</span>
+            <span class="compact-value">{{ consignee.phone_number|default:"-" }}</span>
+          </div>
+          {% if consignee.phone_number_2 %}
+          <div class="data-row">
+            <span class="compact-label">Phone 2:</span>
+            <span class="compact-value">{{ consignee.phone_number_2 }}</span>
+          </div>
+          {% endif %}
+          <div class="data-row">
+            <span class="compact-label">Email:</span>
+            <span class="compact-value">{{ consignee.email_address|default:"-"|truncatechars:25 }}</span>
+          </div>
+          {% if consignee.document_type %}
+          <div class="data-row">
+            <span class="compact-label">Document:</span>
+            <span class="compact-value">{{ consignee.document_type|truncatechars:15 }} - {{ consignee.document_number|default:"-"|truncatechars:15 }}</span>
+          </div>
+          {% endif %}
+        </div>
+      {% else %}
+        <p class="compact-value text-gray-500">No consignee details available</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ROW 3: INVOICES (Compact Table) -->
+  <div class="compact-card">
+    <div class="section-header flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <i class="fi fi-rr-receipt text-green-600 text-sm"></i>
+        Invoices ({{ invoices.count }})
+      </div>
+      
+    </div>
+    
+    {% if invoices %}
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-xs">
+          <thead class="bg-gray-100">
+            <tr class="text-left">
+              <th class="px-2 py-1 font-medium text-gray-700">ID</th>
+              <th class="px-2 py-1 font-medium text-gray-700">Grand Total</th>
+              <th class="px-2 py-1 font-medium text-gray-700">Status</th>
+              <th class="px-2 py-1 font-medium text-gray-700">Payment</th>
+              <th class="px-2 py-1 font-medium text-gray-700">Created</th>
+              <th class="px-2 py-1 font-medium text-gray-700">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            {% for invoice in invoices %}
+              <tr class="hover:bg-gray-50">
+                <td class="px-2 py-1 font-medium text-gray-900">#{{ invoice.id }}</td>
+                <td class="px-2 py-1 text-gray-900">NPR. {{ invoice.grand_total|floatformat:2 }}</td>
+                <td class="px-2 py-1">
+                  {% if invoice.is_active %}
+                    <span class="status-badge status-active">Active</span>
+                  {% else %}
+                    <span class="status-badge status-inactive">Cancelled</span>
+                  {% endif %}
+                </td>
+                <td class="px-2 py-1">
+                  NPR. {{invoice.total_paid_amount|floatformat:2}}
+                </td>
+                <td class="px-2 py-1 text-gray-900">{{ invoice.created_at|date:"d/m/y H:i" }}</td>
+                <td class="px-2 py-1">
+                    
+                  {% if  invoice.is_active %}
+                    {% if user.role == 'admin' %}
+                    <a 
+                    href="{% url 'awb:pages:invoice:cancel' awb.awbno invoice.id %}" class="text-red-600 hover:text-red-900 text-xs">Cancel</a>
+                    {% endif %}
+                  {% else %}
+                    <span class="text-gray-400 text-xs">Cancelled</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+    
+      <div class="text-center py-6">
+        <i class="fi fi-rr-document text-2xl text-gray-400 mb-2"></i>
+        <p class="text-gray-500 text-sm">No invoices found for this AWB</p>
+        {% if user.role == 'admin' %}
+        <a href="{% url 'awb:pages:invoice:create' awb.awbno %}" class="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+          <i class="fi fi-rr-plus mr-1 text-xs"></i>
+          Create Invoice
+        </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  $(document).ready(function() {
+    // Close tab functionality
+    $('#close_current_tab').on('click', function() {
+      window.close();
+    });
+
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function() {
+      $('.alert-message').fadeOut('slow');
+    }, 5000);
+  });
+
+  function cancelInvoice(invoiceId, awbNo) {
+    Swal.fire({
+      title: 'Cancel Invoice?',
+      text: `Are you sure you want to cancel Invoice #${invoiceId}? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, Cancel Invoice',
+      cancelButtonText: 'No, Keep Invoice'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show loading
+        Swal.fire({
+          title: 'Cancelling Invoice...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading()
+          }
+        });
+
+        // Make AJAX call to cancel invoice
+        $.ajax({
+          url: `/awb/invoice/cancel/${awbNo}/${invoiceId}/`,
+          type: 'POST',
+          headers: {
+            'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val(),
+            'Content-Type': 'application/json',
+          },
+          success: function(response) {
+            if (response.success) {
+              Swal.fire({
+                title: 'Success!',
+                text: response.message,
+                icon: 'success',
+                confirmButtonColor: '#28a745'
+              }).then(() => {
+                // Reload the page to show updated status
+                window.location.reload();
+              });
+            } else {
+              Swal.fire({
+                title: 'Error!',
+                text: response.message,
+                icon: 'error',
+                confirmButtonColor: '#dc3545'
+              });
+            }
+          },
+          error: function(xhr, status, error) {
+            Swal.fire({
+              title: 'Error!',
+              text: 'An error occurred while cancelling the invoice. Please try again.',
+              icon: 'error',
+              confirmButtonColor: '#dc3545'
+            });
+          }
+        });
+      }
+    });
+  }
+</script>
+{% endblock js %}

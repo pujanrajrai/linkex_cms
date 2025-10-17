@@ -1,0 +1,22 @@
+from django.http import JsonResponse
+from awb.apis.sgus.utils import sgus_api
+from decorators import has_roles
+from django.contrib.auth.decorators import login_required
+
+
+@login_required
+@has_roles(['admin', 'agencyuser'])
+def awb_sgus_api(request):
+    awb_no = request.GET.get('awbno')
+    role = request.user.role
+    if role == 'agencyuser':
+        agency = request.user.agency
+        if not agency.can_call_api:
+            return JsonResponse({
+                "success": False,
+                "awbno": awb_no,
+                "message": "You don't have permission to call this API.",
+                "data": None
+            })
+    result = sgus_api(awb_no)
+    return JsonResponse(result)

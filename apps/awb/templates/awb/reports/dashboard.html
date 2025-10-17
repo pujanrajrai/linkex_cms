@@ -1,0 +1,442 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-8xl mx-auto px-4 py-4">
+        
+        <!-- Filters -->
+        <div class="bg-white rounded shadow-sm border border-gray-200 p-4 mb-4">
+            <form method="GET" id="main-filter-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                    {{ main_form.date_range }}
+                </div>
+                <div id="custom-dates" {% if main_form.date_range.value != 'custom' %}class="hidden"{% endif %}>
+                    {{ main_form.from_date }}
+                </div>
+                <div id="custom-dates-to" {% if main_form.date_range.value != 'custom' %}class="hidden"{% endif %}>
+                    {{ main_form.to_date }}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                    {{  main_form.company }}
+                </div>
+                <div class="flex items-end gap-2">
+                    <button type="submit" class="px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Apply Filters
+                    </button>
+                    <a href="{% url 'awb:pages:report:export_dashboard' %}?{{ request.GET.urlencode }}" 
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Export
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Shipments Section -->
+        <div class="bg-white rounded shadow-sm border border-gray-200 p-4 mb-4">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-lg font-medium text-gray-900">Shipments</h2>
+                <form method="GET" class="flex items-center gap-2">
+                    
+                    {{main_form.agency}}
+                    {{ shipment_form.country }}
+                    <button type="submit" class="px-3 py-2 border border-gray-300 rounded shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Filter
+                    </button>
+                </form>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded p-4 border border-blue-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-8 w-8 rounded bg-blue-500 text-white">
+                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-2xl font-semibold text-gray-900">{{ shipment_stats.total_shipments }}</div>
+                            <div class="text-sm text-gray-600">Total Shipments</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded p-4 border border-blue-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-8 w-8 rounded bg-blue-500 text-white">
+                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-2xl font-semibold text-gray-900">{{ shipment_stats.total_boxes }}</div>
+                            <div class="text-sm text-gray-600">Total Boxes</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded p-4 border border-slate-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-8 w-8 rounded bg-slate-500 text-white">
+                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm-3 3a1 1 0 100 2h.01a1 1 0 100-2H10zm-4 1a1 1 0 011-1h.01a1 1 0 110 2H7a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-2xl font-semibold text-gray-900">{{ shipment_stats.total_actual_weight|floatformat:1 }}</div>
+                            <div class="text-sm text-gray-600">Actual Weight (kg)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded p-4 border border-slate-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-8 w-8 rounded bg-slate-500 text-white">
+                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-2xl font-semibold text-gray-900">{{ shipment_stats.total_charged_weight|floatformat:1 }}</div>
+                            <div class="text-sm text-gray-600">Charged Weight (kg)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded p-4 border border-slate-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-8 w-8 rounded bg-slate-500 text-white">
+                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-2xl font-semibold text-gray-900">{{ shipment_stats.total_volumetric_weight|floatformat:1 }}</div>
+                            <div class="text-sm text-gray-600">Volumetric Weight (kg)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Runs Section -->
+        <div class="bg-white rounded shadow-sm border border-gray-200 p-4 mb-4">
+            <h2 class="text-lg font-medium text-gray-900 mb-3">Runs</h2>
+            
+            <!-- Created Runs -->
+            <div class="mb-4">
+                <h3 class="text-md font-medium text-gray-700 mb-3">Runs Created (In Date Range)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="bg-gradient-to-r from-emerald-50 to-emerald-100 rounded p-4 border border-emerald-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-emerald-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">{{ run_stats.total_runs_created }}</div>
+                                <div class="text-sm text-gray-600">Runs Created</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-emerald-50 to-emerald-100 rounded p-4 border border-emerald-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-emerald-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">{{ run_stats.created_pieces }}</div>
+                                <div class="text-sm text-gray-600">Pieces</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-50 to-green-100 rounded p-4 border border-green-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-green-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm-3 3a1 1 0 100 2h.01a1 1 0 100-2H10zm-4 1a1 1 0 011-1h.01a1 1 0 110 2H7a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">{{ run_stats.created_actual_weight|floatformat:1 }}</div>
+                                <div class="text-sm text-gray-600">Actual Weight (kg)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-50 to-green-100 rounded p-4 border border-green-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-green-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">{{ run_stats.created_charged_weight|floatformat:1 }}</div>
+                                <div class="text-sm text-gray-600">Charged Weight (kg)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-50 to-green-100 rounded p-4 border border-green-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-green-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">{{ run_stats.created_volumetric_weight|floatformat:1 }}</div>
+                                <div class="text-sm text-gray-600">Volumetric Weight (kg)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Departing In Date Range -->
+            <div>
+                <h3 class="text-md font-medium text-gray-700 mb-3">Runs Departing In Date Range</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="bg-gradient-to-r from-amber-50 to-amber-100 rounded p-4 border border-amber-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-amber-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">{{ run_stats.total_runs_departing }}</div>
+                                <div class="text-sm text-gray-600">Departing In Date Range</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-amber-50 to-amber-100 rounded p-4 border border-amber-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-amber-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">{{ run_stats.departing_pieces }}</div>
+                                <div class="text-sm text-gray-600">Pieces</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 rounded p-4 border border-yellow-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-yellow-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm-3 3a1 1 0 100 2h.01a1 1 0 100-2H10zm-4 1a1 1 0 011-1h.01a1 1 0 110 2H7a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">{{ run_stats.departing_actual_weight|floatformat:1 }}</div>
+                                <div class="text-sm text-gray-600">Actual Weight (kg)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 rounded p-4 border border-yellow-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-yellow-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">{{ run_stats.departing_charged_weight|floatformat:1 }}</div>
+                                <div class="text-sm text-gray-600">Charged Weight (kg)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 rounded p-4 border border-yellow-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-yellow-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">{{ run_stats.departing_volumetric_weight|floatformat:1 }}</div>
+                                <div class="text-sm text-gray-600">Volumetric Weight (kg)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Finance Section -->
+        <div class="bg-white rounded shadow-sm border border-gray-200 p-4">
+            <h2 class="text-lg font-medium text-gray-900 mb-3">Finance</h2>
+            
+            <!-- Cash Users -->
+            <div class="mb-4">
+                <h3 class="text-md font-medium text-gray-700 mb-3">Cash Users (From Invoices)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="bg-gradient-to-r from-teal-50 to-teal-100 rounded p-4 border border-teal-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-teal-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">NPR. {{ finance_stats.cash_debit_amount }}</div>
+                                <div class="text-sm text-gray-600">DEBIT AMOUNT</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-teal-50 to-teal-100 rounded p-4 border border-teal-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-teal-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">NPR {{ finance_stats.cash_credit_amount|floatformat:0 }}</div>
+                                <div class="text-sm text-gray-600">CREDIT AMOUNT</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-red-50 to-red-100 rounded p-4 border border-red-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-red-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">{{ finance_stats.cash_shipments_without_invoice }}</div>
+                                <div class="text-sm text-gray-600">Pending Invoices</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agency -->
+            <div>
+                <h3 class="text-md font-medium text-gray-700 mb-3">Agency (From Ledger)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded p-4 border border-purple-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-purple-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">NPR {{ finance_stats.agency_total_debit|floatformat:0 }}</div>
+                                <div class="text-sm text-gray-600">Total Debit</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded p-4 border border-purple-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-purple-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">NPR {{ finance_stats.agency_total_credit|floatformat:0 }}</div>
+                                <div class="text-sm text-gray-600">Total Credit</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-red-50 to-red-100 rounded p-4 border border-red-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded bg-red-500 text-white">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-2xl font-semibold text-gray-900">{{ finance_stats.agency_shipments_without_invoice }}</div>
+                                <div class="text-sm text-gray-600">Pending Invoices</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dateRange = document.getElementById('id_date_range');
+    const customDates = document.getElementById('custom-dates');
+    const customDatesTo = document.getElementById('custom-dates-to');
+    
+    function toggleCustomDates() {
+        if (!dateRange || !customDates || !customDatesTo) return;
+
+        if (dateRange.value === 'custom') {
+            customDates.classList.remove('hidden');
+            customDatesTo.classList.remove('hidden');
+        } else {
+            customDates.classList.add('hidden');
+            customDatesTo.classList.add('hidden');
+        }
+    }
+    
+    if (dateRange) {
+        dateRange.addEventListener('change', toggleCustomDates);
+    }
+    
+    // Run once on load
+    toggleCustomDates();
+});
+</script>
+{% endblock %}
+

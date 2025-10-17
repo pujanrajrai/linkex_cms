@@ -1,0 +1,1008 @@
+{% extends 'homebase.html' %}
+{% load static %}
+{% block content %}
+    <!-- Hero Section -->
+    <section
+    class="relative min-h-[60vh] sm:min-h-[65vh] lg:min-h-[72vh] text-white bg-cover bg-center sm:bg-top flex flex-col justify-end"
+    style="
+      background-image: linear-gradient(
+          rgba(19, 32, 45, 0.7),
+          rgba(0, 1, 1, 0.9)
+        ),
+        url('{% static 'newimage/home1.png' %}');
+    "
+    id="home"
+  >
+    <div class="container mx-auto text-center px-4 sm:px-6 lg:px-14 max-w-7xl pb-8 lg:pb-16">
+      <h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-6 lg:mb-10 leading-tight">
+        Your Shipment. Our Priority. Always on Time.
+      </h1>
+      <form
+        class="bg-white/30 rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-2 max-w-sm sm:max-w-lg lg:max-w-4xl mx-auto"
+        method="get"
+        action="{% url 'tracking' %}"
+      >
+        <input
+          type="text"
+          name="tracking_no"
+          placeholder="Enter your tracking number"
+          value="{{ tracking_no }}"
+          class="w-full sm:flex-1 px-4 py-3 lg:py-4 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-secondary text-sm sm:text-base"
+          required
+        />
+        <button
+          type="submit"
+          class="w-full sm:w-auto bg-primary hover:bg-primary text-white font-semibold px-6 lg:px-8 py-3 lg:py-4 rounded-md transition duration-300 text-sm sm:text-base whitespace-nowrap"
+        >
+          Track
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Current Date and Time Section -->
+  <section class="py-8 bg-tertiary-lighter/10">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-14 max-w-7xl">
+      <div class="text-center">
+          <div id="current-datetime" class="text-primary font-bold text-l sm:text-xl lg:text-2xl font-mono">
+            Loading...
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- About Section -->
+  <section
+    id="about"
+    class="py-12 sm:py-16 lg:py-20 min-h-screen bg-white relative overflow-hidden"
+  >
+    <div class="container mx-auto px-4 sm:px-6 lg:px-14 max-w-7xl">
+      <div class="text-center mb-8 lg:mb-12">
+        <span
+          class="text-secondary uppercase tracking-wide font-semibold text-sm"
+          >Who We Are</span
+        >
+        <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4 mt-2">
+          Linkex Export
+        </h2>
+        <div class="w-20 h-1 bg-secondary mb-6 rounded-full mx-auto"></div>
+      </div>
+      <div
+        class="flex flex-col lg:flex-row items-center gap-6 lg:gap-12 relative z-10"
+      >
+      <!-- Left: Image with overlays -->
+      <div
+        class="relative w-full lg:w-3/5 h-64 sm:h-80 lg:h-[420px] flex-shrink-0 flex items-center justify-center order-2 lg:order-1"
+      >
+        <img
+          src="{% static 'newimage/img1.jpeg' %}"
+          alt="Linkex Export Office"
+          class="w-full h-full object-cover rounded-2xl lg:rounded-3xl shadow-2xl z-10"
+        />
+        <!-- Orange geometric accent -->
+        <div
+          class="absolute -top-4 -left-4 lg:-top-8 lg:-left-8 w-32 h-24 lg:w-40 lg:h-32 bg-primary/70 rounded-2xl lg:rounded-3xl rotate-12 z-0"
+        ></div>
+
+        <img
+          src="{% static 'newimage/img2.jpeg' %}"
+          alt="Package"
+          class="hidden lg:block w-auto h-64 lg:h-72 z-20 absolute -bottom-24 lg:-bottom-32 -right-16 lg:-right-24"
+        />
+      </div>
+      <!-- Right: Content -->
+      <div
+        class="w-full lg:w-1/2 space-y-4 lg:space-y-6 text-gray-700 text-base lg:text-lg leading-relaxed relative z-20 order-1 lg:order-2"
+      >
+        <p class="mb-4 text-justify">
+          Ship Global Nepal is a courier company <span class="font-semibold text-gray-800">established in 2014</span>, headquartered in Kathmandu, Nepal. With a team of experts, our aim is to provide the best international and national courier services to our diverse clients at affordable prices. Each courier operates on a fixed timetable within an exclusive territory. Customers of Ship Global Nepal are encouraged to interact with their courier on a first-name basis, with full contact details and timetable scheduling provided.
+        </p>
+
+        <div class="mb-4">
+          <h4 class="font-bold text-primary text-lg mb-2">OUR MISSION</h4>
+          <p class="text-justify">
+            To offer practical, cost-effective, and innovative freight management solutions through our ambitious team that comprises of our staff, management, and network partners.
+          </p>
+        </div>
+
+        <div class="mb-4">
+          <h4 class="font-bold text-primary text-lg mb-2">OUR VISION</h4>
+          <p class="text-justify">
+            To be recognized as a quality operator in the domestic and global logistics arena by offering total logistics solutions to meet our customer demands, and work towards improving customer satisfaction, stable growth, and profitability.
+          </p>
+        </div>
+
+        <div class="mb-6">
+          <h4 class="font-bold text-primary text-lg mb-2">ASSOCIATED WITH</h4>
+          <p class="text-justify">
+            We are happy to be part of the <span class="font-semibold text-gray-800">Courier Service Association of Nepal (COSAN)</span>.
+          </p>
+        </div>
+      </div>
+      <!-- Diagonal overlay for style -->
+      <div
+        class="hidden lg:block absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-secondary/10 to-transparent z-0"
+      ></div>
+    </div>
+  </section>
+
+  <!-- Detailed Services Section -->
+  <section class="py-16 sm:py-20 lg:py-24 bg-gray-50" id="services">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-14 max-w-7xl">
+      <!-- Section Header -->
+      <div class="text-center mb-12 lg:mb-16">
+        <span
+          class="text-secondary uppercase tracking-wide font-semibold text-sm"
+          >What We Offer</span
+        >
+        <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mt-3">
+          Our Services
+        </h2>
+        <div class="w-20 h-1 bg-secondary mt-4 mx-auto rounded-full"></div>
+      </div>
+
+      <!-- Service Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-10">
+        <!-- Card 1 -->
+        <div
+          class="group bg-white rounded-xl lg:rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition duration-300"
+        >
+          <div class="relative h-48 sm:h-56">
+            <img
+              src="{% static 'newimage/airplane.jpeg' %}"
+              alt="Air Service"
+              class="w-full h-full object-cover"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+            ></div>
+            <div class="absolute bottom-4 lg:bottom-5 left-4 lg:left-5">
+              <h3 class="text-white text-xl lg:text-2xl font-bold">Air Service</h3>
+            </div>
+            <!-- Description Overlay -->
+            <div
+              class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-4 lg:p-6"
+            >
+              <p
+                class="text-white text-sm lg:text-base leading-relaxed text-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+              >
+                Our team of cargo experts is always available to help you with
+                any queries you might have, ensuring smooth and efficient air
+                freight services.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div
+          class="group bg-white rounded-xl lg:rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition duration-300"
+        >
+          <div class="relative h-48 sm:h-56">
+            <img
+              src="{% static 'newimage/sea.jpeg' %}"
+              alt="Sea Cargo"
+              class="w-full h-full object-cover"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+            ></div>
+            <div class="absolute bottom-4 lg:bottom-5 left-4 lg:left-5">
+              <h3 class="text-white text-xl lg:text-2xl font-bold">Sea Cargo</h3>
+            </div>
+            <!-- Description Overlay -->
+            <div
+              class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-4 lg:p-6"
+            >
+              <p
+                class="text-white text-sm lg:text-base leading-relaxed text-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+              >
+                We provide logistic services in the nation, whether it is Sea
+                freight, container Service, ensuring reliable and
+                cost-effective maritime transportation.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div
+          class="group bg-white rounded-xl lg:rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition duration-300"
+        >
+          <div class="relative h-48 sm:h-56">
+            <img
+              src="{% static 'newimage/ecom.jpeg' %}"
+              alt="E-Commerce"
+              class="w-full h-full object-cover"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+            ></div>
+            <div class="absolute bottom-4 lg:bottom-5 left-4 lg:left-5">
+              <h3 class="text-white text-xl lg:text-2xl font-bold">E-Commerce</h3>
+            </div>
+            <!-- Description Overlay -->
+            <div
+              class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-4 lg:p-6"
+            >
+              <p
+                class="text-white text-sm lg:text-base leading-relaxed text-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+              >
+                eCommerce stores can use any courier service to deliver their
+                shipments to the customers, with our comprehensive logistics
+                solutions.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div
+          class="group bg-white rounded-xl lg:rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition duration-300"
+        >
+          <div class="relative h-48 sm:h-56">
+            <img
+              src="{% static 'newimage/priority.jpeg' %}"
+              alt="Priority"
+              class="w-full h-full object-cover"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+            ></div>
+            <div class="absolute bottom-4 lg:bottom-5 left-4 lg:left-5">
+              <h3 class="text-white text-xl lg:text-2xl font-bold">Priority</h3>
+            </div>
+            <!-- Description Overlay -->
+            <div
+              class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-4 lg:p-6"
+            >
+              <p
+                class="text-white text-sm lg:text-base leading-relaxed text-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+              >
+                For urgent shipments that require the quality service and
+                on-time delivery our Express services ensure your shipment
+                reaches its destination promptly.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div
+          class="group bg-white rounded-xl lg:rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition duration-300"
+        >
+          <div class="relative h-48 sm:h-56">
+            <img
+              src="{% static 'newimage/warehouse.jpeg' %}"
+              alt="Warehousing"
+              class="w-full h-full object-cover"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+            ></div>
+            <div class="absolute bottom-4 lg:bottom-5 left-4 lg:left-5">
+              <h3 class="text-white text-xl lg:text-2xl font-bold">Warehousing</h3>
+            </div>
+            <!-- Description Overlay -->
+            <div
+              class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-4 lg:p-6"
+            >
+              <p
+                class="text-white text-sm lg:text-base leading-relaxed text-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+              >
+                Our warehousing and distribution services are regularly
+                audited and analyzed to ensure efficient storage and timely
+                delivery of your goods.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 6 -->
+        <div
+          class="group bg-white rounded-xl lg:rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition duration-300"
+        >
+          <div class="relative h-48 sm:h-56">
+            <img
+              src="{% static 'newimage/img1.jpeg' %}"
+              alt="Parcels"
+              class="w-full h-full object-cover"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+            ></div>
+            <div class="absolute bottom-4 lg:bottom-5 left-4 lg:left-5">
+              <h3 class="text-white text-xl lg:text-2xl font-bold">Parcels</h3>
+            </div>
+            <!-- Description Overlay -->
+            <div
+              class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-4 lg:p-6"
+            >
+              <p
+                class="text-white text-sm lg:text-base leading-relaxed text-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+              >
+                Any time of delivery and pick-ups services (customized by the
+                customer specific needs), providing flexible and convenient
+                parcel handling solutions.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        
+      </div>
+    </div>
+  </section>
+
+  <!-- Prohibited Items Section -->
+  <section class="py-16 sm:py-20 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-14 max-w-7xl">
+      <!-- Section Header -->
+      <div class="text-center mb-12 lg:mb-16">
+        <span
+          class="text-secondary uppercase tracking-wide font-semibold text-sm"
+          >Important Information</span
+        >
+        <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mt-3">
+          Prohibited Items in Cargo
+        </h2>
+        <div class="w-20 h-1 bg-secondary mt-4 mx-auto rounded-full"></div>
+      </div>
+
+      <div class="max-w-4xl mx-auto">
+        <!-- Introduction Text -->
+        <div class="bg-gradient-to-br from-tertiary-lighter/5 to-primary/5 rounded-2xl p-6 lg:p-8 mb-8 lg:mb-12 border border-tertiary-lighter/20">
+          <p class="text-gray-700 text-base lg:text-lg leading-relaxed text-justify">
+            The following restrictions apply to all services offered on our website. However, it is highly advisable to also check the policy of your chosen carrier as further restrictions may apply. We also recommend that you check with customs at the destination country that you wish to send to, as each country has different policies as to what will be accepted into the country. If you are in any doubt, please contact our customer services team.
+          </p>
+        </div>
+
+        <!-- Prohibited Items List -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 lg:p-8 border border-tertiary-lighter/20">
+          <h3 class="text-xl lg:text-2xl font-bold text-primary mb-6 text-center">
+            List of Prohibited Items
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
+              <div class="text-red-500 mr-3">
+                <i class="fas fa-ban text-lg"></i>
+              </div>
+              <span class="text-gray-800 font-medium">Corrosives</span>
+            </div>
+            
+            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
+              <div class="text-red-500 mr-3">
+                <i class="fas fa-ban text-lg"></i>
+              </div>
+              <span class="text-gray-800 font-medium">Gases</span>
+            </div>
+            
+            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
+              <div class="text-red-500 mr-3">
+                <i class="fas fa-ban text-lg"></i>
+              </div>
+              <span class="text-gray-800 font-medium">Flammable Liquids</span>
+            </div>
+            
+            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
+              <div class="text-red-500 mr-3">
+                <i class="fas fa-ban text-lg"></i>
+              </div>
+              <span class="text-gray-800 font-medium">Oxidising Material</span>
+            </div>
+            
+            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
+              <div class="text-red-500 mr-3">
+                <i class="fas fa-ban text-lg"></i>
+              </div>
+              <span class="text-gray-800 font-medium">Organic Peroxides</span>
+            </div>
+            
+            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
+              <div class="text-red-500 mr-3">
+                <i class="fas fa-ban text-lg"></i>
+              </div>
+              <span class="text-gray-800 font-medium">Toxic Substances</span>
+            </div>
+            
+            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
+              <div class="text-red-500 mr-3">
+                <i class="fas fa-ban text-lg"></i>
+              </div>
+              <span class="text-gray-800 font-medium">Radioactive Materials</span>
+            </div>
+            
+            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
+              <div class="text-red-500 mr-3">
+                <i class="fas fa-ban text-lg"></i>
+              </div>
+              <span class="text-gray-800 font-medium">Infectious Substances</span>
+            </div>
+            
+            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
+              <div class="text-red-500 mr-3">
+                <i class="fas fa-ban text-lg"></i>
+              </div>
+              <span class="text-gray-800 font-medium">Explosives</span>
+            </div>
+            
+            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
+              <div class="text-red-500 mr-3">
+                <i class="fas fa-ban text-lg"></i>
+              </div>
+              <span class="text-gray-800 font-medium">Flammable Solids</span>
+            </div>
+            
+            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
+              <div class="text-red-500 mr-3">
+                <i class="fas fa-ban text-lg"></i>
+              </div>
+              <span class="text-gray-800 font-medium">Magnetised Material</span>
+            </div>
+            
+            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
+              <div class="text-red-500 mr-3">
+                <i class="fas fa-ban text-lg"></i>
+              </div>
+              <span class="text-gray-800 font-medium text-sm">Miscellaneous (dry ice, petrol engines)</span>
+            </div>
+          </div>
+
+          <!-- Call to Action -->
+          <div class="mt-8 text-center">
+            <div class="bg-primary/10 border border-primary/20 rounded-lg p-4">
+              <p class="text-gray-700 font-medium">
+                <i class="fas fa-info-circle text-primary mr-2"></i>
+                Have questions about prohibited items? Contact our customer service team for clarification.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Network Hub Section -->
+  <section class="py-16 sm:py-20 bg-tertiary-lighter/5">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-14 max-w-7xl">
+      <!-- Section Header -->
+      <div class="text-center mb-12 lg:mb-16">
+        <span
+          class="text-secondary uppercase tracking-wide font-semibold text-sm"
+          >Our Network</span
+        >
+        <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mt-3">
+          Network Hub
+        </h2>
+        <div class="w-20 h-1 bg-secondary mt-4 mx-auto rounded-full"></div>
+        <p class="text-gray-700 text-base lg:text-lg mt-6 max-w-2xl mx-auto">
+          Our extensive network of domestic and international branches ensures reliable service across Nepal and worldwide
+        </p>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="flex justify-center mb-8 lg:mb-12">
+        <div class="bg-white rounded-xl shadow-lg p-2 border border-tertiary-lighter/20">
+          <button
+            id="domestic-tab"
+            class="tab-button active px-6 py-3 rounded-lg font-semibold transition-all duration-300 text-white bg-primary"
+            onclick="switchTab('domestic')"
+          >
+            Domestic Branches
+          </button>
+          <button
+            id="international-tab"
+            class="tab-button px-6 py-3 rounded-lg font-semibold transition-all duration-300 text-gray-600 hover:text-primary"
+            onclick="switchTab('international')"
+          >
+            International Branches
+          </button>
+        </div>
+      </div>
+
+      <!-- Domestic Branches Content -->
+      <div id="domestic-content" class="tab-content mb-8 lg:mb-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <!-- Head Office -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border border-tertiary-lighter/20 hover:shadow-xl transition-shadow duration-300">
+            <div class="flex items-center mb-4">
+              <div class="w-3 h-3 bg-primary rounded-full mr-3"></div>
+              <h4 class="text-lg font-bold text-gray-800">Head Office</h4>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-start">
+                <i class="fas fa-map-marker-alt text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700 font-medium">Gaushala Chowk, Battisputali Road</p>
+                  <p class="text-gray-600 text-sm">(Along with NIC Asia Bank & Nearby Hotel Dwarika)</p>
+                  <p class="text-gray-600 text-sm">Kathmandu, Nepal</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-phone text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700">+977-1-4578809</p>
+                  <p class="text-gray-700">+977-01-4578678</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fab fa-whatsapp text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <a href="https://wa.me/9779851168433" target="_blank" class="text-gray-700 hover:text-primary transition-colors duration-300">
+                    +977-9851168433
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Biratnagar -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border border-tertiary-lighter/20 hover:shadow-xl transition-shadow duration-300">
+            <div class="flex items-center mb-4">
+              <div class="w-3 h-3 bg-primary rounded-full mr-3"></div>
+              <h4 class="text-lg font-bold text-gray-800">Biratnagar</h4>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-start">
+                <i class="fas fa-map-marker-alt text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700 font-medium">Province No.1 (Biratnagar)</p>
+                  <p class="text-gray-600 text-sm">District: Morang</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-phone text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700">9842053175</p>
+                  <p class="text-gray-700">9842053175</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pokhara -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border border-tertiary-lighter/20 hover:shadow-xl transition-shadow duration-300">
+            <div class="flex items-center mb-4">
+              <div class="w-3 h-3 bg-primary rounded-full mr-3"></div>
+              <h4 class="text-lg font-bold text-gray-800">Pokhara</h4>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-start">
+                <i class="fas fa-map-marker-alt text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700 font-medium">Gandaki Pradesh (Pokhara)</p>
+                  <p class="text-gray-600 text-sm">District: Kaski</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-phone text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700">9802855526</p>
+                  <p class="text-gray-700">9802855526</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bhairawa -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border border-tertiary-lighter/20 hover:shadow-xl transition-shadow duration-300">
+            <div class="flex items-center mb-4">
+              <div class="w-3 h-3 bg-primary rounded-full mr-3"></div>
+              <h4 class="text-lg font-bold text-gray-800">Bhairawa</h4>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-start">
+                <i class="fas fa-map-marker-alt text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700 font-medium">Lumbini Pradesh (Bhairawa)</p>
+                  <p class="text-gray-600 text-sm">District: Kapilvastu</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-phone text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700">9847279155</p>
+                  <p class="text-gray-700">9847279155</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lalitpur -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border border-tertiary-lighter/20 hover:shadow-xl transition-shadow duration-300">
+            <div class="flex items-center mb-4">
+              <div class="w-3 h-3 bg-primary rounded-full mr-3"></div>
+              <h4 class="text-lg font-bold text-gray-800">Lalitpur Branch</h4>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-start">
+                <i class="fas fa-map-marker-alt text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700 font-medium">Bagmati Pradesh (Lalitpur)</p>
+                  <p class="text-gray-600 text-sm">District: Lalitpur</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-phone text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700">9801308692</p>
+                  <p class="text-gray-700">9801308690</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hetauda -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border border-tertiary-lighter/20 hover:shadow-xl transition-shadow duration-300">
+            <div class="flex items-center mb-4">
+              <div class="w-3 h-3 bg-primary rounded-full mr-3"></div>
+              <h4 class="text-lg font-bold text-gray-800">Hetauda</h4>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-start">
+                <i class="fas fa-map-marker-alt text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700 font-medium">Bagmati Pradesh (Hetauda)</p>
+                  <p class="text-gray-600 text-sm">District: Makwanpur</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-phone text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700">9855028427</p>
+                  <p class="text-gray-700">9855028427</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Damak -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border border-tertiary-lighter/20 hover:shadow-xl transition-shadow duration-300">
+            <div class="flex items-center mb-4">
+              <div class="w-3 h-3 bg-primary rounded-full mr-3"></div>
+              <h4 class="text-lg font-bold text-gray-800">Damak, Jhapa</h4>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-start">
+                <i class="fas fa-map-marker-alt text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700 font-medium">Province No.1 (Damak)</p>
+                  <p class="text-gray-600 text-sm">District: Jhapa</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-phone text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700">9817058675</p>
+                  <p class="text-gray-700">9842630913</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Itahari -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border border-tertiary-lighter/20 hover:shadow-xl transition-shadow duration-300">
+            <div class="flex items-center mb-4">
+              <div class="w-3 h-3 bg-primary rounded-full mr-3"></div>
+              <h4 class="text-lg font-bold text-gray-800">Itahari</h4>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-start">
+                <i class="fas fa-map-marker-alt text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700 font-medium">Province No.1 (Itahari)</p>
+                  <p class="text-gray-600 text-sm">District: Sunsari</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-phone text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700">9851168433</p>
+                  <p class="text-gray-700">9801308690</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chitwan -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border border-tertiary-lighter/20 hover:shadow-xl transition-shadow duration-300">
+            <div class="flex items-center mb-4">
+              <div class="w-3 h-3 bg-primary rounded-full mr-3"></div>
+              <h4 class="text-lg font-bold text-gray-800">Chitwan</h4>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-start">
+                <i class="fas fa-map-marker-alt text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700 font-medium">Bagmati Pradesh</p>
+                  <p class="text-gray-600 text-sm">District: Chitwan</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-phone text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-600 italic">Contact details to be updated</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- International Branches Content -->
+      <div id="international-content" class="tab-content mb-8 lg:mb-12 hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <!-- Australia -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border border-tertiary-lighter/20 hover:shadow-xl transition-shadow duration-300">
+            <div class="flex items-center mb-4">
+              <div class="w-3 h-3 bg-primary rounded-full mr-3"></div>
+              <h4 class="text-lg font-bold text-gray-800">ShipGlobal Australia</h4>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-start">
+                <i class="fas fa-globe text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700 font-medium">Australia</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-phone text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700">14578809</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-envelope text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700 text-sm">idealcouriernpl@gmail.com</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- USA -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border border-tertiary-lighter/20 hover:shadow-xl transition-shadow duration-300">
+            <div class="flex items-center mb-4">
+              <div class="w-3 h-3 bg-primary rounded-full mr-3"></div>
+              <h4 class="text-lg font-bold text-gray-800">Ship Global USA</h4>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-start">
+                <i class="fas fa-globe text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700 font-medium">USA/Canada</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-map-marker-alt text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700">NEW YORK</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-phone text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700">9801308690</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-envelope text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700 text-sm">idealcouriernpl@gmail.com</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Canada -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border border-tertiary-lighter/20 hover:shadow-xl transition-shadow duration-300">
+            <div class="flex items-center mb-4">
+              <div class="w-3 h-3 bg-primary rounded-full mr-3"></div>
+              <h4 class="text-lg font-bold text-gray-800">Ship Global Canada</h4>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-start">
+                <i class="fas fa-globe text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700 font-medium">USA/Canada</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-map-marker-alt text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700">ON</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-phone text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-600 italic">Contact details to be updated</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-envelope text-tertiary mt-1 mr-3"></i>
+                <div>
+                  <p class="text-gray-700 text-sm">firstflightcanada.com</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Switching JavaScript -->
+    <script>
+      function switchTab(tab) {
+        // Hide all tab contents
+        document.getElementById('domestic-content').classList.add('hidden');
+        document.getElementById('international-content').classList.add('hidden');
+        
+        // Remove active class from all tabs
+        document.getElementById('domestic-tab').classList.remove('active', 'bg-primary', 'text-white');
+        document.getElementById('domestic-tab').classList.add('text-gray-600', 'hover:text-primary');
+        document.getElementById('international-tab').classList.remove('active', 'bg-primary', 'text-white');
+        document.getElementById('international-tab').classList.add('text-gray-600', 'hover:text-primary');
+        
+        // Show selected tab content and activate tab
+        if (tab === 'domestic') {
+          document.getElementById('domestic-content').classList.remove('hidden');
+          document.getElementById('domestic-tab').classList.add('active', 'bg-primary', 'text-white');
+          document.getElementById('domestic-tab').classList.remove('text-gray-600', 'hover:text-primary');
+        } else {
+          document.getElementById('international-content').classList.remove('hidden');
+          document.getElementById('international-tab').classList.add('active', 'bg-primary', 'text-white');
+          document.getElementById('international-tab').classList.remove('text-gray-600', 'hover:text-primary');
+        }
+      }
+    </script>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" class="py-16 sm:py-20 bg-tertiary-lighter/5">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-14 max-w-7xl">
+      <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-8 lg:mb-12 text-center">
+        Frequently Asked Questions
+      </h2>
+      <div class="max-w-3xl mx-auto space-y-6 lg:space-y-8">
+        <div class="bg-white p-6 lg:p-8 rounded-lg shadow-sm border border-tertiary-lighter/20 hover:shadow-md transition-shadow duration-300">
+          <h3 class="text-lg lg:text-xl font-semibold mb-3 lg:mb-4 text-gray-800">
+            What type of goods do you accept for shipment?
+          </h3>
+          <p class="text-gray-600 text-sm lg:text-base">
+            We accept shipments such as general cargo, mail, perishable
+            products, pharmaceuticals, valuable cargo, automotive parts and
+            automobiles, odd size cargo among others which may require special
+            handling procedures.
+          </p>
+        </div>
+        <div class="bg-white p-6 lg:p-8 rounded-lg shadow-sm border border-tertiary-lighter/20 hover:shadow-md transition-shadow duration-300">
+          <h3 class="text-lg lg:text-xl font-semibold mb-3 lg:mb-4 text-gray-800">
+            What goods are considered dangerous while transporting?
+          </h3>
+          <p class="text-gray-600 text-sm lg:text-base">
+            Dangerous goods are articles or substances which are capable of
+            posing a hazard to health, safety, property or the environment and
+            which are shown in the list of dangerous goods in IATA dangerous
+            goods regulations or which are classified according to the IATA
+            dangerous goods regulations.
+          </p>
+        </div>
+        <div class="bg-white p-6 lg:p-8 rounded-lg shadow-sm border border-tertiary-lighter/20 hover:shadow-md transition-shadow duration-300">
+          <h3 class="text-lg lg:text-xl font-semibold mb-3 lg:mb-4 text-gray-800">
+            How can I track my shipment?
+          </h3>
+          <p class="text-gray-600 text-sm lg:text-base">
+            You can track your shipment, provided that you have a tracking
+            number issued by Linkex Export from here.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Us Section -->
+  <section id="contact" class="py-16 sm:py-20 lg:py-24 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-14 max-w-7xl">
+      <!-- Section Header -->
+      <div class="text-center mb-12 lg:mb-16">
+        <span
+          class="text-gray-800 uppercase tracking-wide font-semibold text-sm"
+          >Get In Touch</span
+        >
+        <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray mt-3 mb-4">
+          Contact Us
+        </h2>
+        <div class="w-20 h-1 bg-secondary mt-4 mx-auto rounded-full"></div>
+        <p class="text-gray-800 text-base lg:text-lg mt-6 max-w-2xl mx-auto">
+          Ready to ship your shipment? Have questions about our services? We're here to help you every step of the way.
+        </p>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="mb-12 lg:mb-16">
+        <div class="bg-gradient-to-br from-white to-tertiary-lighter/5 rounded-2xl shadow-2xl p-6 lg:p-8 border border-tertiary-lighter/10">
+          <h3 class="text-xl lg:text-2xl font-bold text-gray-800 mb-6 text-center">Send us a Message</h3>
+          <form class="space-y-4 lg:space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-gray-700 font-medium mb-2">First Name</label>
+                <input
+                  type="text"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Your first name"
+                  required
+                />
+              </div>
+              <div>
+                <label class="block text-gray-700 font-medium mb-2">Last Name</label>
+                <input
+                  type="text"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Your last name"
+                  required
+                />
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <div >
+              <label class="block text-gray-700 font-medium mb-2">Email Address</label>
+              <input
+                type="email"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                placeholder="your.email@example.com"
+                required
+              />
+            </div>
+            
+            <div>
+              <label class="block text-gray-700 font-medium mb-2">Phone Number</label>
+              <input
+                type="tel"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                placeholder="+977 9xxxxxxxxx"
+              />
+            </div>
+            </div>
+            
+            
+            
+            
+            <div>
+              <label class="block text-gray-700 font-medium mb-2">Message</label>
+              <textarea
+                rows="4"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                placeholder="Tell us about your shipping needs..."
+                required
+              ></textarea>
+            </div>
+            
+            <button
+              type="submit"
+              class="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 lg:py-4 rounded-lg transition duration-300 transform hover:scale-105"
+            >
+              Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Map Section -->
+      <div class="mt-12 lg:mt-16">
+        <div class="bg-white rounded-2xl shadow-2xl p-4 lg:p-6">
+          <h3 class="text-xl lg:text-2xl font-bold text-gray-800 mb-4 text-center">Find Us Here</h3>
+          <div class="rounded-lg overflow-hidden">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.3701078228555!2d85.34015117560911!3d27.705856825556914!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb195184ae81c9%3A0x2e2253e702031d57!2sShip%20Global%20Nepal!5e0!3m2!1sen!2snp!4v1750570305258!5m2!1sen!2snp" 
+            width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+{% endblock %}

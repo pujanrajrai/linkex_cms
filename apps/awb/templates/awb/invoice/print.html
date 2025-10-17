@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice #{{ invoice.id }} - AWB {{ invoice.awb.awbno }}</title>
+    <style>
+        @media print {
+            body { margin: 0; }
+            .no-print { display: none !important; }
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.4;
+            color: #333;
+            margin: 20px;
+        }
+        
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 20px;
+        }
+        
+        .company-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .company-details, .invoice-details {
+            width: 48%;
+        }
+        
+        .invoice-details {
+            text-align: right;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #007bff;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .invoice-table th,
+        .invoice-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 12px;
+        }
+        
+        .invoice-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .amount {
+            text-align: right;
+        }
+        
+        .totals-section {
+            float: right;
+            width: 300px;
+            margin-top: 20px;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .grand-total {
+            font-weight: bold;
+            font-size: 14px;
+            border-top: 2px solid #007bff;
+            border-bottom: 2px solid #007bff;
+            background-color: #f8f9fa;
+            padding: 10px 0;
+        }
+        
+        .payment-info {
+            margin-top: 30px;
+            clear: both;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .print-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        
+        .print-button:hover {
+            background-color: #0056b3;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-paid {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-unpaid {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <!-- Print Button -->
+    <div class="no-print">
+        <button class="print-button" onclick="window.print()">Print Invoice</button>
+        <button class="print-button" onclick="window.close()" style="background-color: #6c757d;">Close</button>
+    </div>
+
+    <!-- Invoice Header -->
+    <div class="invoice-header">
+        <h1 style="margin: 0; color: #007bff;">INVOICE</h1>
+        <h2 style="margin: 5px 0 0 0; color: #666;">Invoice #{{ invoice.id }}</h2>
+        <p style="margin: 5px 0 0 0; font-size: 12px;">AWB Number: {{ invoice.awb.awbno }}</p>
+    </div>
+
+    <!-- Company and Invoice Info -->
+    <div class="company-info">
+        <div class="company-details">
+            <div class="section-title">Company Information</div>
+            <div class="info-row">
+                <span class="info-label">Company:</span>
+                <span>{{ invoice.awb.company.name|default:"-" }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Agency:</span>
+                <span>{{ invoice.awb.agency.company_name|default:"Cash Customer" }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Hub:</span>
+                <span>{{ invoice.awb.hub.name|default:"-" }}</span>
+            </div>
+        </div>
+        
+        <div class="invoice-details">
+            <div class="section-title">Invoice Details</div>
+            <div class="info-row">
+                <span class="info-label">Invoice Date:</span>
+                <span>{{ invoice.created_at|date:"d/m/Y" }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Status:</span>
+                <span>
+                    {% if invoice.is_active %}
+                        <span class="status-badge status-active">Active</span>
+                    {% else %}
+                        <span class="status-badge">Cancelled</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Payment Status:</span>
+                <span>
+                    {% if invoice.is_paid %}
+                        <span class="status-badge status-paid">Paid</span>
+                    {% else %}
+                        <span class="status-badge status-unpaid">Unpaid</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shipment Details -->
+    <div style="margin-bottom: 20px;">
+        <div class="section-title">Shipment Information</div>
+        <div style="display: flex; justify-content: space-between;">
+            <div style="width: 48%;">
+                <div class="info-row">
+                    <span class="info-label">Origin:</span>
+                    <span>{{ invoice.awb.origin.name|default:"-" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Destination:</span>
+                    <span>{{ invoice.awb.destination.name|default:"-" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Service:</span>
+                    <span>{{ invoice.awb.service.name|default:"-" }}</span>
+                </div>
+            </div>
+            <div style="width: 48%;">
+                <div class="info-row">
+                    <span class="info-label">Vendor:</span>
+                    <span>{{ invoice.awb.vendor.name|default:"-" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Booking Date:</span>
+                    <span>{{ invoice.awb.booking_datetime|date:"d/m/Y H:i" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Product Type:</span>
+                    <span>{{ invoice.awb.product_type.name|default:"-" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoice Items Table -->
+    <table class="invoice-table">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th style="text-align: center;">Quantity</th>
+                <th style="text-align: center;">Rate</th>
+                <th style="text-align: right;">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Weight-based Customs Fee</td>
+                <td class="amount">{{ invoice.total_weight|floatformat:2 }} kg</td>
+                <td class="amount">{{ invoice.per_kg_customs_fee|floatformat:2 }}</td>
+                <td class="amount">{{ invoice.total_weight|floatformat:2 }} × {{ invoice.per_kg_customs_fee|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Box Handling Fee</td>
+                <td class="amount">{{ invoice.total_box }} boxes</td>
+                <td class="amount">{{ invoice.per_box_handling_fee|floatformat:2 }}</td>
+                <td class="amount">{{ invoice.total_box }} × {{ invoice.per_box_handling_fee|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Additional Amount</td>
+                <td class="amount">1</td>
+                <td class="amount">{{ invoice.total_amount|floatformat:2 }}</td>
+                <td class="amount">{{ invoice.total_amount|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Totals Section -->
+    <div class="totals-section">
+        <div class="total-row grand-total">
+            <span>Grand Total:</span>
+            <span>{{ invoice.grand_total|floatformat:2 }}</span>
+        </div>
+        <div class="total-row">
+            <span>Paid Amount:</span>
+            <span>{{ invoice.total_paid_amount|floatformat:2 }}</span>
+        </div>
+        <div class="total-row">
+            <span>Balance Due:</span>
+            <span>Calculate manually: Grand Total - Paid Amount</span>
+        </div>
+    </div>
+
+    <!-- Payment Information -->
+    <div class="payment-info">
+        <div class="section-title">Payment Information</div>
+        <div class="info-row">
+            <span class="info-label">Payment Method:</span>
+            <span>{{ invoice.get_payment_method_display|default:"-" }}</span>
+        </div>
+        {% if invoice.remark %}
+        <div class="info-row">
+            <span class="info-label">Remarks:</span>
+            <span>{{ invoice.remark }}</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>This is a computer-generated invoice.</p>
+        <p>Generated on {{ "now"|date:"d/m/Y H:i:s" }}</p>
+        <p><strong>AWB:</strong> {{ invoice.awb.awbno }} | <strong>Invoice ID:</strong> #{{ invoice.id }}</p>
+    </div>
+</body>
+</html>

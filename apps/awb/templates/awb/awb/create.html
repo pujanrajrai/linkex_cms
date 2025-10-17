@@ -1,0 +1,970 @@
+{% extends "base.html" %}
+{% block title %}
+  {{ title }}
+{% endblock title %}
+{% block pagetitle %}
+  Create AWB
+{% endblock pagetitle %}
+{% block button %}
+  <div class="flex gap-2">
+    
+    
+{% endblock %}
+{% block content %}
+<style>
+  #box_item_list tr:visible:not(:last-child) .add-box-item {
+    display: none;
+  }
+  #box_detail tr:not(:last-child) .add-box-detail {
+    display: none;
+  }
+  #box_item_list tr:only-of-type .remove-box-item {
+    display: none;
+  }
+  #box_detail tr:only-of-type .remove-box-detail {
+    display: none;
+  }
+</style>
+  {% if box_details_formset.non_form_errors %}
+    <div class="p-4 mb-4 bg-red-100 text-red-700 rounded-md">
+      <h3 class="font-bold">Form Errors:</h3>
+      <ul>
+        {% for error in box_details_formset.non_form_errors %}<li>{{ error }}</li>{% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  <div>
+    <form method="post"
+          enctype="multipart/form-data"
+          autocomplete="off"
+          id="awb_create_form">
+      {% csrf_token %}
+      {{ box_details_formset.management_form }}
+      {{ box_item_formset.management_form }}
+      <input type="hidden" name="awb-agency" value="{{ awb_form.initial.agency }}">
+      <!-- AWB Details - Full width -->
+      <div class="p-4 bg-gray-50 rounded-md shadow-md">
+        
+          <div class="grid grid-cols-12 gap-2">
+           <!-- AWB Number -->
+           <div class="col-span-2">
+             <div id="awb_no_container" class="flex flex-col">
+              
+              <div id="is_custom_field" class="flex flex-row items-center gap-2">
+                {{ awb_form.awbno.label_tag }}
+                <label for="{{ awb_form.is_custom.id_for_label }}"
+                       class="text-sm text-gray-600">Custom?</label>
+                {{ awb_form.is_custom }}
+              </div>
+               
+               <div class="awb-field">
+                {{ awb_form.awbno }} 
+                
+
+               </div>
+               {% if awb_form.awbno.errors %}<p class="text-red-500 text-xs italic">{{ awb_form.awbno.errors }}</p>{% endif %}
+               {% if awb_form.awbno.help_text %}<p class="text-gray-600 text-xs">{{ awb_form.awbno.help_text }}</p>{% endif %}
+             </div>
+           </div>
+
+           <!-- Agency -->
+          <div class="col-span-3">
+            <div class="flex flex-col" id="agency_field_container">
+              
+              <div class="flex flex-row items-center gap-2">
+                {{ awb_form.agency.label_tag }}
+                
+                {% if request.user.role == 'admin' %}
+                <label for="{{ awb_form.is_cash_user.id_for_label }}" class="text-sm text-gray-600">
+                  CASH? 
+                </label>
+                {{ awb_form.is_cash_user }}
+                {% endif %}
+                <span id="agency-balance-display"></span>
+              </div>
+
+              <div class="awb-field">
+                {{ awb_form.agency }}
+              </div>
+
+              {% if awb_form.agency.errors %}
+              <p class="text-red-500 text-xs italic">{{ awb_form.agency.errors }}</p>
+              {% endif %}
+
+              {% if awb_form.agency.help_text %}
+              <p class="text-gray-600 text-xs">{{ awb_form.agency.help_text }}</p>
+              {% endif %}
+            </div>
+          </div>
+
+           <!-- Company -->
+           <div class="col-span-2">
+             {{ awb_form.company.label_tag }}
+             <div class="awb-field">{{ awb_form.company }}</div>
+             {% if awb_form.company.errors %}<p class="text-red-500 text-xs italic">{{ awb_form.company.errors }}</p>{% endif %}
+             {% if awb_form.company.help_text %}<p class="text-gray-600 text-xs">{{ awb_form.company.help_text }}</p>{% endif %}
+           </div>
+
+           <!-- Hub -->
+           <div class="col-span-2">
+             {{ awb_form.hub.label_tag }}
+             <div class="awb-field">{{ awb_form.hub }}</div>
+             {% if awb_form.hub.errors %}<p class="text-red-500 text-xs italic">{{ awb_form.hub.errors }}</p>{% endif %}
+             {% if awb_form.hub.help_text %}<p class="text-gray-600 text-xs">{{ awb_form.hub.help_text }}</p>{% endif %}
+           </div>
+
+           <!-- Vendor -->
+           <div class="col-span-3">
+             {{ awb_form.vendor.label_tag }}
+             <div class="awb-field">{{ awb_form.vendor }}</div>
+             {% if awb_form.vendor.errors %}<p class="text-red-500 text-xs italic">{{ awb_form.vendor.errors }}</p>{% endif %}
+             {% if awb_form.vendor.help_text %}<p class="text-gray-600 text-xs">{{ awb_form.vendor.help_text }}</p>{% endif %}
+           </div>
+
+           <!-- Product Type -->
+           <div class="col-span-2">
+             {{ awb_form.product_type.label_tag }}
+             <div class="awb-field">{{ awb_form.product_type }}</div>
+             {% if awb_form.product_type.errors %}<p class="text-red-500 text-xs italic">{{ awb_form.product_type.errors }}</p>{% endif %}
+             {% if awb_form.product_type.help_text %}<p class="text-gray-600 text-xs">{{ awb_form.product_type.help_text }}</p>{% endif %}
+           </div>
+
+           <!-- Service -->
+           <div class="col-span-2">
+             {{ awb_form.service.label_tag }}
+             <div class="awb-field">{{ awb_form.service }}</div>
+             {% if awb_form.service.errors %}<p class="text-red-500 text-xs italic">{{ awb_form.service.errors }}</p>{% endif %}
+             {% if awb_form.service.help_text %}<p class="text-gray-600 text-xs">{{ awb_form.service.help_text }}</p>{% endif %}
+           </div>
+           <!-- Shipment Value -->  
+           <div class="col-span-2"> 
+             {{ awb_form.shipment_value.label_tag }}
+             <div class="awb-field">{{ awb_form.shipment_value }}</div>
+             {% if awb_form.shipment_value.errors %}<p class="text-red-500 text-xs italic">{{ awb_form.shipment_value.errors }}</p>{% endif %}
+             {% if awb_form.shipment_value.help_text %}<p class="text-gray-600 text-xs">{{ awb_form.shipment_value.help_text }}</p>{% endif %}
+           </div>
+           <!-- Currency -->
+           <div class="col-span-2">
+             {{ awb_form.currency.label_tag }}
+             <div class="awb-field">{{ awb_form.currency }}</div>
+             {% if awb_form.currency.errors %}<p class="text-red-500 text-xs italic">{{ awb_form.currency.errors }}</p>{% endif %}
+             {% if awb_form.currency.help_text %}<p class="text-gray-600 text-xs">{{ awb_form.currency.help_text }}</p>{% endif %}
+           </div>
+         
+           
+
+           <!-- Forwarding Number -->
+           <div class="col-span-2">
+             <div class="flex flex-col">
+               <div class="flex items-center justify-between">
+                 {{ awb_form.forwarding_number.label_tag }}
+                 {% comment %} <div class="flex items-center gap-2">
+                   <label for="import_box_awb" class="text-sm text-gray-600">Import Box AWB No:</label>
+                   <input type="checkbox"
+                          id="import_box_awb" checked
+                          class="form-checkbox h-5 w-5 text-gray-600 rounded border-gray-300 focus:ring-gray-500">
+                 </div> {% endcomment %}
+               </div>
+               <div class="awb-field">{{ awb_form.forwarding_number }}</div>
+               <div id="box_awb_results" class="mt-2 text-sm"></div>
+               {% if awb_form.forwarding_number.errors %}<p class="text-red-500 text-xs italic">{{ awb_form.forwarding_number.errors }}</p>{% endif %}
+               {% if awb_form.forwarding_number.help_text %}<p class="text-gray-600 text-xs">{{ awb_form.forwarding_number.help_text }}</p>{% endif %}
+             </div>
+           </div>
+
+           <!-- Reference Number -->
+           <div class="col-span-2">
+             <div class="flex flex-col">
+               <div class="flex items-center justify-between">
+                 {{ awb_form.reference_number.label_tag }}
+                 <div class="flex items-center gap-2">
+                   
+                 </div>
+               </div>
+               <div class="awb-field">{{ awb_form.reference_number }}</div>
+               {% if awb_form.reference_number.errors %}<p class="text-red-500 text-xs italic">{{ awb_form.reference_number.errors }}</p>{% endif %}
+               {% if awb_form.reference_number.help_text %}<p class="text-gray-600 text-xs">{{ awb_form.reference_number.help_text }}</p>{% endif %}
+             </div>
+           </div>
+           <!-- Reason for Export -->
+           <div class="col-span-2">
+             {{ awb_form.reason_for_export.label_tag }}
+             <div class="awb-field">{{ awb_form.reason_for_export }}</div>
+             {% if awb_form.reason_for_export.errors %}<p class="text-red-500 text-xs italic">{{ awb_form.reason_for_export.errors }}</p>{% endif %}
+             {% if awb_form.reason_for_export.help_text %}<p class="text-gray-600 text-xs">{{ awb_form.reason_for_export.help_text }}</p>{% endif %}
+           </div> 
+           <!-- Incoterms -->
+           <div class="col-span-2">
+             {{ awb_form.incoterms.label_tag }}
+             <div class="awb-field">{{ awb_form.incoterms }}</div>
+             {% if awb_form.incoterms.errors %}<p class="text-red-500 text-xs italic">{{ awb_form.incoterms.errors }}</p>{% endif %}
+             {% if awb_form.incoterms.help_text %}<p class="text-gray-600 text-xs">{{ awb_form.incoterms.help_text }}</p>{% endif %}
+           </div> 
+           <!-- Shipment Terms -->
+           <div class="col-span-2">
+             {{ awb_form.shipment_terms.label_tag }}
+             <div class="awb-field">{{ awb_form.shipment_terms }}</div>
+             {% if awb_form.shipment_terms.errors %}<p class="text-red-500 text-xs italic">{{ awb_form.shipment_terms.errors }}</p>{% endif %}
+             {% if awb_form.shipment_terms.help_text %}<p class="text-gray-600 text-xs">{{ awb_form.shipment_terms.help_text }}</p>{% endif %}
+           </div> 
+            <!-- Content -->
+          <div class="col-span-6">
+            <div class="flex flex-col">
+              <div class="flex items-center justify-between">
+                {{ awb_form.content.label_tag }}
+                <div class="flex items-center gap-2">
+                  <label for="import_box_items" class="text-sm text-gray-600">Import from Box Items:</label>
+                  <input type="checkbox"
+                         id="import_box_items"
+                         class="form-checkbox h-5 w-5 text-gray-600 rounded border-gray-300 focus:ring-gray-500">
+                </div>
+              </div>
+              <div class="awb-field">{{ awb_form.content }}</div>
+              {% if awb_form.content.errors %}<p class="text-red-500 text-xs italic">{{ awb_form.content.errors }}</p>{% endif %}
+              {% if awb_form.content.help_text %}<p class="text-gray-600 text-xs">{{ awb_form.content.help_text }}</p>{% endif %}
+            </div>
+          </div>
+
+           
+         </div>
+      </div>
+
+      <!-- Consignor and Consignee in a 2-column grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+        <div class="p-4 bg-gray-50 rounded-md shadow-md">
+          <div class="flex justify-between items-center">
+            <h2 class="text-lg font-semibold mb-1">Consignor Details</h2>
+            <div class="flex flex-row gap-2">
+              <label for="clear_consignor_details">Clear Data:</label>
+              <input type="checkbox"
+                     id="clear_consignor_details"
+                     name="clear_consignor_details">
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-2">
+            {% for field in consignor_form %}
+              {% if field.name == "post_zip_code" %}
+                <div class="col-span-6">
+                  {{ awb_form.origin.label_tag }}
+                  {{ awb_form.origin }}
+                  {% if awb_form.origin.errors %}<p class="text-red-500 text-xs italic">{{ awb_form.origin.errors }}</p>{% endif %}
+                  {% if awb_form.origin.help_text %}<p class="text-gray-600 text-xs">{{ awb_form.origin.help_text }}</p>{% endif %}
+                </div>
+                <div class="col-span-6">
+                  {{ field.label_tag }}
+                  <div class="">
+                    <div class="">
+                      <div class="consignor-field">{{ field }}</div>
+                    </div>
+                    <div class="results" id="consignor_results"></div>
+                  </div>
+                  {% if field.errors %}<p class="text-red-500 text-xs italic">{{ field.errors }}</p>{% endif %}
+                </div>
+              {% else %}
+                <div class="{% if field.name in 'city state_county country document_type document_number document_front document_back phone_number state_abbreviation   email_address ' %}col-span-6{% else %}col-span-6{% endif %}">
+                  {{ field.label_tag }}
+                  {{ field }}
+                  {% if field.errors %}<p class="text-red-500 text-xs italic">{{ field.errors }}</p>{% endif %}
+                  {% if field.help_text %}<p class="text-gray-600 text-xs">{{ field.help_text }}</p>{% endif %}
+                </div>
+              {% endif %}
+              {% if forloop.last %}
+                <!-- Consignor Address Search Field -->
+                <div class="col-span-12 mt-4">
+                  <div class="relative w-full">
+                    <input type="text"
+                           id="consignor_google_search"
+                           class="address-search-field w-full pr-10 px-3 py-3 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                           data-search-type="consignor"
+                           style="font-size: 10px"
+                           readonly>
+                    <button type="button"
+                            class="google-search-button absolute inset-y-0 right-0 px-3 py-3 flex items-center"
+                            data-search-id="consignor_google_search"
+                            title="Search on Google">
+                      <svg xmlns="http://www.w3.org/2000/svg"
+                           class="h-4 w-4 text-gray-500 hover:text-gray-700"
+                           fill="none"
+                           viewBox="0 0 24 24"
+                           stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        <div class="p-4 bg-gray-50 rounded-md shadow-md">
+          {% if request.user.role == "admin" %}
+          {% if awb.runawb_set.all %}
+            <div class="">
+              <div class="grid grid-cols-12 gap-2">
+                {% for run_awb in awb.runawb_set.all %}
+                  <div class="col-span-12">
+                    <p>Run No: {{ run_awb.run.run_no|default:"-" }} &nbsp; / &nbsp; MAWB No: {{ run_awb.run.mawb_no|default:"-" }}</p>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+          {% endif %}
+          <h2 class="text-lg font-semibold mb-1">Consignee Details</h2>
+          <div class="grid grid-cols-12 gap-2">
+            {% for field in consignee_form %}
+              {% if field.name == "post_zip_code" %}
+                <div class="col-span-6">
+                  {{ awb_form.destination.label_tag }}
+                  {{ awb_form.destination }}
+                  {% if awb_form.destination.errors %}
+                    <p class="text-red-500 text-xs italic">{{ awb_form.destination.errors }}</p>
+                  {% endif %}
+                  {% if awb_form.destination.help_text %}
+                    <p class="text-gray-600 text-xs">{{ awb_form.destination.help_text }}</p>
+                  {% endif %}
+                </div>
+                <div class="col-span-6">
+                  {{ field.label_tag }}
+                  <div class="">
+                    <div class="">
+                      <div class="consignee-field">{{ field }}</div>
+                    </div>
+                    <div class="results" id="consignee_results"></div>
+                  </div>
+                  {% if field.errors %}<p class="text-red-500 text-xs italic">{{ field.errors }}</p>{% endif %}
+                </div>
+                {% elif field.name == "phone_number" or field.name == "phone_number_2" %}
+                  <div class="col-span-2">
+                    {% if field.name == "phone_number" %}
+                      <label for="id_country_code_1" class="text-xs text-gray-600">Code</label>
+                      <input type="text" id="id_country_code_1" class="text-sm peer block pt-1 pb-1 w-full appearance-none border border-gray-300 bg-white py-3 px-3 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent" readonly tabindex="-1">
+                    {% elif field.name == "phone_number_2" %}
+                      <label for="id_country_code_2" class="text-xs text-gray-600">Code</label>
+                      <input type="text" id="id_country_code_2" class="text-sm peer block pt-1 pb-1 w-full appearance-none border border-gray-300 bg-white py-3 px-3 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent" readonly tabindex="-1">
+                    {% endif %}
+                  </div>
+                  <div class="col-span-4">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}<p class="text-red-500 text-xs italic">{{ field.errors }}</p>{% endif %}
+                    {% if field.help_text %}<p class="text-gray-600 text-xs">{{ field.help_text }}</p>{% endif %}
+                  </div>
+              {% else %}
+                <div class='{% if field.name in "city state_county country document_type document_number document_front document_back phone_number email_address state_abbreviation   " %}col-span-6{% else %}col-span-6{% endif %}'>
+                  {{ field.label_tag }}
+                  {{ field }}
+                  {% if field.errors %}<p class="text-red-500 text-xs italic">{{ field.errors }}</p>{% endif %}
+                  {% if field.help_text %}<p class="text-gray-600 text-xs">{{ field.help_text }}</p>{% endif %}
+                </div>
+              {% endif %}
+              {% if forloop.last %}
+                <!-- Consignee Address Search Field -->
+                <div class="col-span-12 mt-4">
+                  <div class="relative w-full">
+                    <input type="text"
+                           id="consignee_google_search"
+                           class="address-search-field w-full pr-10 px-3 py-3 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                           data-search-type="consignee"
+                           style="font-size: 10px"
+                           readonly>
+                    <button type="button"
+                            class="google-search-button absolute inset-y-0 right-0 px-3 py-3 flex items-center"
+                            data-search-id="consignee_google_search"
+                            title="Search on Google">
+                      <svg xmlns="http://www.w3.org/2000/svg"
+                           class="h-4 w-4 text-gray-500 hover:text-gray-700"
+                           fill="none"
+                           viewBox="0 0 24 24"
+                           stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        
+      </div>
+      <div class="p-4 mt-3 bg-gray-50 rounded-md shadow-md">
+        <div class="grid grid-cols-2 items-center mb-4">
+          <div class="flex">
+            <div>
+              <h1 class="text-xl font-semibold">Box Detail</h1>
+            </div>
+            <div class="flex ml-5">
+              <input type="checkbox"
+                     id="toggle_box_item"
+                     name="create_shipment_invoice"
+                     {% if create_shipment_invoice %}checked{% endif %}>
+              <label class="mt-1.5 ml-2">Create Shipment Invoice:</label>
+            </div>
+          </div>
+          <div class="grid grid-flow-col gap-2">
+            <div class="grid grid-flow-col gap-2">
+              <div class="text-xs">
+                <label for="total_box_count">Total Box Count:</label>
+                <input type="number"
+                       name="total_box_count"
+                       class="peer block w-full appearance-none border border-gray-300 bg-white px-3 pt-1 pb-1 text-gray-800 rounded-md"
+                       min="1"
+                       id="total_box_count"
+                       value="{{ total_box_count }}"
+                       required>
+              </div>
+              <div class="text-xs">
+                {{ awb_form.dividing_factor.label_tag }}
+                {{ awb_form.dividing_factor }}
+                {% if awb_form.dividing_factor.errors %}
+                  <p class="text-red-500 text-xs italic">{{ awb_form.dividing_factor.errors }}</p>
+                {% endif %}
+               
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <table id="box-details-table"
+                 class="table-auto border-collapse border border-gray-300 w-full text-sm">
+            <thead class="bg-gray-200 text-left">
+              <tr>
+                <th class="border border-gray-300 px-2 py-1">Box AWB Number</th>
+                <th class="border border-gray-300 px-2 py-1">Box Number</th>
+                <th class="border border-gray-300 px-2 py-1">Length</th>
+                <th class="border border-gray-300 px-2 py-1">Breadth</th>
+                <th class="border border-gray-300 px-2 py-1">Height</th>
+                <th class="border border-gray-300 px-2 py-1">Actual Weight</th>
+                <th class="border border-gray-300 px-2 py-1">Volumetric Weight</th>
+                <th class="border border-gray-300 px-2 py-1">Charged Weight</th>
+                {% comment %} <th class="border border-gray-300 px-2 py-1">Action</th> {% endcomment %}
+              </tr>
+            </thead>
+            <tfoot class="bg-gray-200 text-left">
+              <tr>
+                <th class="border border-gray-300 px-2 py-1"></th>
+                <th class="border border-gray-300 px-2 py-1"></th>
+                <th class="border border-gray-300 px-2 py-1"></th>
+                <th class="border border-gray-300 px-2 py-1"></th>
+                <th class="border border-gray-300 px-2 py-1"></th>
+                <th class="border border-gray-300 px-2 py-1">Total A.WT: 0.00</th>
+                <th class="border border-gray-300 px-2 py-1">Total V. WGT: 0.00</th>
+                <th class="border border-gray-300 px-2 py-1">Total C.WT: 0.00</th>
+                {% comment %} <th class="border border-gray-300 px-2 py-1"></th> {% endcomment %}
+              </tr>
+            </tfoot>
+            <tbody id="box_detail">
+              {% for form in box_details_formset %}
+                {% for hidden in form.hidden_fields %}
+                  {{ hidden }}
+                {% endfor %}
+                <tr data-index="{{ forloop.counter0 }}"
+                    class="{% if form.errors %}bg-red-50{% else %}border-t{% endif %}">
+                  <td class="border border-gray-300 px-2 py-1">
+                    <input type="text" name="box_awb_no" id="box_awb_no" class="text-sm peer block w-full appearance-none border border-gray-300 bg-gray-100 px-3 pt-1 pb-1 text-gray-800 rounded-md" readonly>
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1">
+                    {{ form.box_number }}
+                    {% if form.box_number.errors %}<div class="text-red-500 text-xs italic">{{ form.box_number.errors }}</div>{% endif %}
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1">
+                    {{ form.length }}
+                    {% if form.length.errors %}<div class="text-red-500 text-xs italic">{{ form.length.errors }}</div>{% endif %}
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1">
+                    {{ form.breadth }}
+                    {% if form.breadth.errors %}<div class="text-red-500 text-xs italic">{{ form.breadth.errors }}</div>{% endif %}
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1">
+                    {{ form.height }}
+                    {% if form.height.errors %}<div class="text-red-500 text-xs italic">{{ form.height.errors }}</div>{% endif %}
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1">
+                    {{ form.actual_weight }}
+                    {% if form.actual_weight.errors %}
+                      <div class="text-red-500 text-xs italic">{{ form.actual_weight.errors }}</div>
+                    {% endif %}
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1">
+                    {{ form.volumetric_weight }}
+                    {% if form.volumetric_weight.errors %}
+                      <div class="text-red-500 text-xs italic">{{ form.volumetric_weight.errors }}</div>
+                    {% endif %}
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1">
+                    {{ form.charged_weight }}
+                    {% if form.charged_weight.errors %}
+                      <div class="text-red-500 text-xs italic">{{ form.charged_weight.errors }}</div>
+                    {% endif %}
+                  </td>
+                  {% comment %} <td class="border border-gray-300 px-2 py-1 flex gap-2">
+                    <button type="button"
+                            tabindex="-1"
+                            title="Add Box Detail"
+                            id="add-box-detail"
+                            class="add-box-detail bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 text-sm">
+                            <i class="fi fi-rr-plus"></i>
+                    </button>
+                    <button type="button"
+                            tabindex="-1"
+                            class="remove-box-detail bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 text-sm">
+                      Remove
+                    </button>
+                  </td> {% endcomment %}
+                </tr>
+                {% if form.non_field_errors %}
+                  <tr class="bg-red-50">
+                    <td colspan="7" class="border border-gray-300 px-2 py-1">
+                      <div class="text-red-500 text-xs italic">
+                        {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                      </div>
+                    </td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="p-4 mt-3 bg-gray-50 rounded-md shadow-md" id="box_item">
+        <h1 class="text-xl font-semibold mb-4">Box Items</h1>
+        <div>
+          <table class="table-auto border-collapse border border-gray-300 w-full text-sm">
+            <thead class="bg-gray-200 text-left">
+              <tr>
+                <th class="border border-gray-300 px-2 py-1 w-[7%]">Box Number</th>
+                <th class="border border-gray-300 px-2 py-1 w-[25%]">Description</th>
+                <th class="border border-gray-300 px-2 py-1 w-[7%]">HS Code</th>
+                <th class="border border-gray-300 px-2 py-1 w-[7%]">Unit Type</th>
+                <th class="border border-gray-300 px-2 py-1 w-[7%]">Quantity</th>
+                <th class="border border-gray-300 px-2 py-1 w-[7%]">Unit Weight</th>
+                <th class="border border-gray-300 px-2 py-1 w-[7%]">Unit Rate</th>
+                <th class="border border-gray-300 px-2 py-1 w-[7%]">Amount</th>
+                <th class="border border-gray-300 px-2 py-1 w-[7%]">Action</th>
+              </tr>
+            </thead>
+            <tfoot class="bg-gray-200 text-left">
+              <tr>
+                <th class="border border-gray-300 px-2 py-1"></th>
+                <th class="border border-gray-300 px-2 py-1"></th>
+                <th class="border border-gray-300 px-2 py-1"></th>
+                <th class="border border-gray-300 px-2 py-1"></th>
+                <th id="totalQuantityCell"
+                    class="border border-gray-300 px-2 py-1 text-right text-sm">Total Quantity: 0.00</th>
+                <th id="totalUnitWeightCell"
+                    class="border border-gray-300 px-2 py-1 text-right text-sm">Total U.WT: 0.00</th>
+                <th id="totalUnitRateCell"
+                    class="border border-gray-300 px-2 py-1 text-right text-sm"></th>
+                <th id="totalAmountCell"
+                    class="border border-gray-300 px-2 py-1"
+                    colspan="2">Total Amount: 0.00</th>
+              </tr>
+            </tfoot>
+            <tbody id="box_item_list">
+              {% for form in box_item_formset %}
+                {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+                <tr data-index="{{ forloop.counter0 }}"
+                    class="{% if form.errors %}bg-red-50{% else %}border-t{% endif %}"
+                    name="box_item-{{ forloop.counter0 }}">
+                  <td class="border border-gray-300 px-2 py-1">
+                    {{ form.box_number }}
+                    {% if form.box_number.errors %}<div class="text-red-500 text-xs italic">{{ form.box_number.errors }}</div>{% endif %}
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1">
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                      <div class="text-red-500 text-xs italic">{{ form.description.errors }}</div>
+                    {% endif %}
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1">
+                    {{ form.hs_code }}
+                    {% if form.hs_code.errors %}<div class="text-red-500 text-xs italic">{{ form.hs_code.errors }}</div>{% endif %}
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1">
+                    {{ form.unit_type }}
+                    {% if form.unit_type.errors %}<div class="text-red-500 text-xs italic">{{ form.unit_type.errors }}</div>{% endif %}
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1">
+                    {{ form.quantity }}
+                    {% if form.quantity.errors %}<div class="text-red-500 text-xs italic">{{ form.quantity.errors }}</div>{% endif %}
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1">
+                    {{ form.unit_weight }}
+                    {% if form.unit_weight.errors %}
+                      <div class="text-red-500 text-xs italic">{{ form.unit_weight.errors }}</div>
+                    {% endif %}
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1">
+                    {{ form.unit_rate }}
+                    {% if form.unit_rate.errors %}<div class="text-red-500 text-xs italic">{{ form.unit_rate.errors }}</div>{% endif %}
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1">
+                    {{ form.amount }}
+                    {% if form.amount.errors %}<div class="text-red-500 text-xs italic">{{ form.amount.errors }}</div>{% endif %}
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1 flex gap-2">
+                    <button type="button"
+                            tabindex="-1"
+                            title="Add Box Item"
+                            id="add-box-item"
+                            class="add-box-item bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 text-sm">
+                            <i class="fi fi-rr-plus"></i>
+                    </button>
+                    <button type="button"
+                            tabindex="-1"
+                            class="remove-box-item bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 text-sm">
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+                {% if form.non_field_errors %}
+                  <tr class="bg-red-50">
+                    <td colspan="9" class="border border-gray-300 px-2 py-1">
+                      <div class="text-red-500 text-xs italic">
+                        {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                      </div>
+                    </td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <button type="submit" class="px-4 py-2 w-full bg-primary text-white rounded-md hover:bg-primary-dark">
+        Create AWB
+      </button>
+      
+      <div class="h-16"></div> <!-- Reduced spacer height to match smaller buttons -->
+    </form>
+    <div class="mt-6 text-center">
+      <a href="#" class="text-gray-600 hover:underline font-semibold text-lg">← Back to AWB List</a>
+    </div>
+  </div>
+  <div class="mt-6 text-center">
+    
+  </div>
+
+
+{% endblock content %}
+{% block js %}
+  {% include "awb/awb/js/agency_detail.html" %}
+  {% include "awb/awb/js/awb_update.html" %}
+  {% include "awb/awb/js/update_calculate_box_detail.html" %}
+  {% include "awb/awb/js/mainjs.html" %}
+  {% include "awb/awb/js/tab_index.html" %}
+  {% include "awb/awb/js/zipcode.html" %}
+  {% include "awb/awb/js/hs-code.html" %}
+  {% include "awb/awb/js/remove_box_item.html" %}
+  {% include "awb/awb/js/google_search.html" %}
+  {% include "awb/awb/js/update_vendor_with_hub.html" %}
+  {% include "awb/awb/js/update_service_and_prd_type_with_vendor.html" %}
+  {% include "awb/awb/js/add_box_item.html" %}
+  <script>
+    $(document).ready(function() {
+      function updateManagementForm() {
+        const totalBoxes = parseInt($('#total_box_count').val(), 10) || 1;
+        $('#id_box_details-TOTAL_FORMS').val(totalBoxes);
+        $('#id_box_details-INITIAL_FORMS').val('0');
+        $('#id_box_details-MIN_NUM_FORMS').val('1');
+        $('#id_box_details-MAX_NUM_FORMS').val('1000');
+        console.log('Updated box details management form:', $('#id_box_details-TOTAL_FORMS').val());
+      }
+
+      function updateBoxNumberOptions() {
+        const totalBoxes = parseInt($('#total_box_count').val(), 10) || 1;
+        $('.box-number-select').empty();
+        for (let i = 1; i <= totalBoxes; i++) {
+          $('.box-number-select').append(
+            $('<option>', {
+              value: `Box-${i}`,
+              text: `Box-${i}`
+            })
+          );
+        }
+      }
+
+      function updateBoxItemsManagementForm() {
+        const visibleRows = $('#box_item_list tr').length;
+        $('#id_box_item-TOTAL_FORMS').val(visibleRows);
+        $('#id_box_item-INITIAL_FORMS').val('0');
+        $('#id_box_item-MIN_NUM_FORMS').val('0');
+        $('#id_box_item-MAX_NUM_FORMS').val('1000');
+        console.log('Updated box items management form:', $('#id_box_item-TOTAL_FORMS').val());
+      }
+
+      updateManagementForm();
+      updateBoxNumberOptions();
+      updateBoxItemsManagementForm();
+      
+      $('#total_box_count').on('change', function() {
+        updateManagementForm();
+        updateBoxNumberOptions();
+        if (window.boxItemFunctions && window.boxItemFunctions.updateBoxItemDropdowns) {
+          const boxCount = parseInt($(this).val(), 10) || 1;
+          window.boxItemFunctions.updateBoxItemDropdowns(boxCount);
+        }
+      });
+      $(document).ready(function() {
+        // Function to import box AWB numbers
+        function importBoxAWBNumbers() {
+          const boxAwbNumbers = [];
+          $('#box_detail tr').each(function() {
+            const boxAwbNo = $(this).find('input[name$="-box_awb_no"]').val();
+            if (boxAwbNo) {
+              boxAwbNumbers.push(boxAwbNo);
+            }
+          });
+      
+          if (boxAwbNumbers.length > 0) {
+            $('[name="awb-forwarding_number"]').val(boxAwbNumbers.join(', '));
+            $('#box_awb_results').text('');
+          } else {
+            $('#box_awb_results').text('No Box AWB numbers found in the table.');
+          }
+        }
+      
+        // Trigger only when box_awb_no input changes
+        $('#box_detail').on('input', 'input[name$="-box_awb_no"]', function() {
+          if ($('#import_box_awb').is(':checked')) {
+            importBoxAWBNumbers();
+          }
+        });
+      });
+      
+    });
+  </script>
+  <script>
+    $(document).ready(function () {
+      // Store the name of the button that was clicked
+      let clickedButtonName = null;
+      
+      // Capture the button click before form submission
+      $("#awb_create_form button[type='submit']").on('click', function() {
+          clickedButtonName = this.name;
+      });
+      
+      $("#awb_create_form").submit(function (event) {
+          event.preventDefault();
+          
+          // Clean up empty box item rows
+          $("#box_item_list tr").each(function () {
+              const $row = $(this);
+              const unitType = $row.find("[name$='-unit_type']").val();
+              const description = $row.find("[name$='-description']").val().trim();
+              const hsCode = $row.find("[name$='-hs_code']").val().trim();
+              const quantity = $row.find("[name$='-quantity']").val().trim();
+              const unitWeight = $row.find("[name$='-unit_weight']").val().trim();
+              const unitRate = $row.find("[name$='-unit_rate']").val().trim();
+              const amount = $row.find("[name$='-amount']").val().trim();
+              const hasOnlyDefaults = 
+                  (unitType === "1" || unitType !== "") &&
+                  description === "" &&
+                  hsCode === "" &&
+                  quantity === "" &&
+                  (unitWeight == "0" || unitWeight == "0.00" || unitWeight === "") &&
+                  unitRate === "" &&
+                  (amount === "" || amount === "0" || amount === "0.00");
+              if (hasOnlyDefaults) {
+                  $row.remove();
+                  $row.find('[name$="-DELETE"]').prop('checked', true);
+                  $row.hide();
+                  const currentTotal = parseInt($('#id_box_item-TOTAL_FORMS').val());
+                  $('#id_box_item-TOTAL_FORMS').val(currentTotal - 1);
+              }
+          });
+          
+          // If a specific button was clicked, add it back to the form data
+          if (clickedButtonName) {
+              const hiddenInput = $('<input>').attr({
+                  type: 'hidden',
+                  name: clickedButtonName,
+                  value: 'clicked'
+              });
+              $(this).append(hiddenInput);
+          }
+          
+          // Submit the form
+          this.submit();
+      });
+  });
+  </script>
+  <script>
+    //hide awb no
+    
+  </script>
+  <script>
+    $(function() {
+      // Cache selectors
+      const $awbInput = $('#awb_no_container input');
+      const $custom = $('#{{ awb_form.is_custom.id_for_label }}'); // the checkbox input
+  
+      // Function to toggle readonly and background color
+      function toggleAwbReadonly() {
+        if ($custom.is(':checked')) {
+          $awbInput.prop('readonly', false);              // Make writable
+          $awbInput.removeClass('bg-gray-300');           // Remove gray background
+        } else {
+          $awbInput.prop('readonly', true);               // Make readonly
+          $awbInput.addClass('bg-gray-300');              // Add gray background
+        }
+      }
+  
+      // Bind change event
+      $custom.on('change', toggleAwbReadonly);
+  
+      // Run on page load in case of form errors or preset value
+      toggleAwbReadonly();
+    });
+  </script>
+
+  <script>
+    $(function() {
+      const $cash     = $('#awb_is_cash_user');
+      const $select   = $('#awb_agency');
+      const $dropdown = $select.closest('.ui.dropdown');
+  
+      function toggleAgency() {
+        if ($cash.is(':checked')) {
+          // 1) Clear the real <select>
+          $select
+            .val('')                          // clear value
+            .find('option:selected')         // ensure no <option> remains selected
+            .prop('selected', false);
+  
+          // 2) Wipe and refresh the Semantic UI dropdown
+          $dropdown
+            .dropdown('clear')               // clear UI tags
+            .dropdown('set selected', [])    // force no selection
+            .dropdown('refresh')             // sync UI ← select
+            .addClass('disabled');           // grey‐out
+  
+          // 3) Disable the underlying <select> so it's not submitted
+          $select.prop('disabled', true);
+  
+        } else {
+          // Re-enable both UI and real select
+          $dropdown
+            .removeClass('disabled')
+            .dropdown('enable');
+          $select.prop('disabled', false);
+        }
+      }
+  
+      // Bind on change, and run once on page load
+      $cash.on('change', toggleAgency);
+      toggleAgency();
+    });
+  </script>
+
+  <script>
+    $(function() {
+      // Cache
+      const $cash     = $('#awb_is_cash_user');       // your “Cash User” checkbox
+      const $select   = $('#awb_agency');             // the real <select>
+      const $dropdown = $select.closest('.ui.dropdown'); // Semantic UI wrapper
+  
+      function toggleAgency() {
+        if ($cash.is(':checked')) {
+          // 1) Clear the <select> value & remove any selected attributes
+          $select
+            .val('')                                  // clear the value
+            .find('option').removeAttr('selected');   // drop any selected flags
+  
+          // 2) Force no selectedIndex
+          if ($select[0]) $select[0].selectedIndex = -1;
+  
+          // 3) Reset the Semantic UI control
+          $dropdown
+            .dropdown('clear')                       // clear UI tags
+            .dropdown('refresh')                     // sync UI ← select
+            .addClass('disabled');                   // grey‐out
+  
+          // 4) Disable the real <select> to exclude from submission
+          $select.prop('disabled', true);
+  
+        } else {
+          // re-enable both
+          $dropdown
+            .removeClass('disabled')
+            .dropdown('enable');
+          $select.prop('disabled', false);
+        }
+      }
+  
+      // Bind
+      $cash.on('change', toggleAgency);
+  
+      // Run once after everything’s initialized
+      setTimeout(toggleAgency, 0);
+    });
+  </script>
+  <script>
+    const companyName = "SHIP GLOBAL NEPAL";
+    const $dropdown = $('[name="awb-company"]');
+    
+    const value = $dropdown.find('option').filter(function () {
+      return $(this).text().trim() === companyName;
+    }).val();
+    
+    if (value) {
+      $dropdown.dropdown('set selected', value);
+    }
+  </script>
+  
+
+<!-- Reason for Export -->
+  <script>
+    $(document).ready(function () {
+      const reasonForExport = "GIFT";
+      const $dropdown = $('[name="awb-reason_for_export"]');
+  
+      // Find the matching option value
+      const value = $dropdown.find('option').filter(function () {
+        return $(this).text().trim() === reasonForExport;
+      }).val();
+  
+      if (value) {
+        $dropdown.val(value).change(); // Set value and trigger change
+        $dropdown.parent('.ui.dropdown').dropdown('set selected', value); // Semantic UI
+      }
+    });
+  </script>
+
+  <!-- Incoterms -->
+<script>
+  $(document).ready(function () {
+    const incoterms = "CIF";
+    const $dropdown = $('[name="awb-incoterms"]');
+
+    const value = $dropdown.find('option').filter(function () {
+      return $(this).text().trim() === incoterms;
+    }).val();
+
+    if (value) {
+      $dropdown.val(value).change(); // Set value and trigger change
+      $dropdown.parent('.ui.dropdown').dropdown('set selected', value); // Semantic UI
+    }
+  });
+</script>
+
+<!-- Shipment Terms -->
+<script>
+  $(document).ready(function () {
+    const shipmentTerms = "DDU";
+    const $dropdown = $('[name="awb-shipment_terms"]');
+
+    const value = $dropdown.find('option').filter(function () {
+      return $(this).text().trim() === shipmentTerms;
+    }).val();
+
+    if (value) {
+      $dropdown.val(value).change(); // Set value and trigger change
+      $dropdown.parent('.ui.dropdown').dropdown('set selected', value); // Semantic UI
+    }
+  });
+</script>
+
+
+{% endblock js %}

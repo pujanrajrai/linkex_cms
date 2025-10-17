@@ -1,0 +1,40 @@
+<script>
+    $(document).ready(function () {
+        $("#awb_create_form").submit(function (event) {
+            event.preventDefault();
+            $("#box_item_list tr").each(function () {
+                const $row = $(this);
+                const boxNumber = $row.find("[name$='-box_number']").val();
+                const unitType = $row.find("[name$='-unit_type']").val();
+                const description = $row.find("[name$='-description']").val().trim();
+                const hsCode = $row.find("[name$='-hs_code']").val().trim();
+                const quantity = $row.find("[name$='-quantity']").val().trim();
+                const unitWeight = $row.find("[name$='-unit_weight']").val().trim();
+                const unitRate = $row.find("[name$='-unit_rate']").val().trim();
+                const amount = $row.find("[name$='-amount']").val().trim();
+                
+                // Only remove rows that are completely empty (not just default values)
+                // This prevents accidentally hiding rows that users want to keep
+                const isCompletelyEmpty = 
+                    description === "" &&
+                    hsCode === "" &&
+                    quantity === "" &&
+                    unitWeight === "" &&
+                    unitRate === "" &&
+                    (amount === "" || amount === "0" || amount === "0.00");
+                
+                // Only remove if completely empty AND it's not the last row
+                const totalRows = $("#box_item_list tr").length;
+                if (isCompletelyEmpty && totalRows > 1) {
+                    $row.remove();
+                    $row.find('[name$="-DELETE"]').prop('checked', true);
+                    // Hide the row
+                    $row.hide();
+                    const currentTotal = parseInt($('#id_box_item-TOTAL_FORMS').val());
+                    $('#id_box_item-TOTAL_FORMS').val(currentTotal - 1);
+                }
+              });
+            this.submit();
+        });
+    });
+</script>

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block pagetitle %}
+    {{ billing_zone.name }}
+{% endblock pagetitle %}
+{% block button %}
+    <a href="{% url 'hub:pages:billingzone:service_create' billing_zone.id %}">
+        <button class="bg-white text-primary border-2 border-primary hover:bg-secondary hover:text-white hover:border-secondary transition-colors duration-300 font-medium px-4 py-2 rounded flex items-center gap-2">
+            <i class="fi fi-rr-plus text-sm mt-[3px]"></i>
+            <span>Add Billing Service</span>
+        </button>
+    </a>
+{% endblock button %}
+{% block content %}
+    <div class="w-full">
+        <div class="p-4 bg-gray-50 rounded-md shadow-md">
+            <h1 class="text-xl font-semibold mb-4">Hub Details</h1>
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
+                <!-- Use unique IDs and readonly fields -->
+                <div>
+                    <label for="zone_name" class="block text-gray-700 font-medium mb-1">Zone Name</label>
+                    <input id="zone_name"
+                           type="text"
+                           readonly
+                           class="w-full border border-gray-300 bg-gray-100 px-3 py-2 rounded-md"
+                           value="{{ billing_zone.name }}">
+                </div>
+            </div>
+        </div>
+        <div class="bg-white p-5">
+            <div class="overflow-x-auto">
+                <table id="dataTable"
+                       class="display min-w-full border-collapse border border-gray-300 w-full">
+                    <thead class="bg-gray-200">
+                        <tr id="search-row"></tr>
+                        <tr class="bg-primary text-white">
+                            <th class="p-3 border">SN</th>
+                            <!-- Added Serial Number Column -->
+                            <th class="p-3 border" data-search="false">Name</th>
+                            <th class="p-3 border" data-search="false">Currency</th>
+                            <th class="p-3 border" data-search="false">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for service in services %}
+                            <tr>
+                                <td class="p-2 border sn-column"></td>
+                                <!-- Empty cell for SN -->
+                                <td class="p-2 border">{{ service.billing_service.name }}</td>
+                                <td class="p-2 border">{{ service.currency }}</td>
+                                <td class="p-2 border">
+                                    <div class="flex items-center gap-x-3">
+                                        <a href="{% url 'hub:pages:billingzone:update_billing_zone_service' service.id %}"
+                                           class="text-blue-500 hover:text-blue-700">Edit</a>
+                                        <a href="{% url 'hub:pages:billingzone:delete_billing_zone_service' service.id %}"
+                                           onclick="return confirm('Are you sure you want to delete this billing service?')"
+                                           class="text-red-500 hover:text-red-700">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endblock %}

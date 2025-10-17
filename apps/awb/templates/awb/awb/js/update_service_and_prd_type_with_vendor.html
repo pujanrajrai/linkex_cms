@@ -1,0 +1,126 @@
+<script>
+    $(document).ready(function () {
+        // Initialize Semantic UI dropdowns
+  
+
+        // Store initial values
+        const initialProductTypeId = $('#awb_product_type').val();
+        const initialServiceId = $('#awb_service').val();
+
+        // Change handler for vendor dropdown
+        $('#awb_vendor').change(function () {
+            const vendor_id = $(this).val();
+            const $productTypeSelect = $('#awb_product_type');
+            const $servicesSelect = $('#awb_service');
+
+            if (vendor_id) {
+                // === Get Product Types ===
+                $.ajax({
+                    url: "{% url 'awb:pages:master:product_type:get_product_type' 0 %}".replace("0", vendor_id),
+                    type: "GET",
+                    success: function (response) {
+                        $productTypeSelect.empty();
+                        $productTypeSelect.append('<option value="">Select product type</option>');
+                        response.forEach(function (item) {
+                            $productTypeSelect.append(
+                                $('<option>', { value: item.id, text: item.name })
+                            );
+                        });
+                        $productTypeSelect.dropdown('refresh');
+                        
+                        // Try to restore initial product type if it exists in the new options
+                        if (initialProductTypeId && response.some(item => item.id == initialProductTypeId)) {
+                            $productTypeSelect.dropdown('set selected', initialProductTypeId);
+                        } else {
+                            $productTypeSelect.dropdown('clear');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching product type:", error);
+                    }
+                });
+
+                // === Get Services ===
+                $.ajax({
+                    url: "{% url 'awb:pages:master:service:get_services_with_vendor' 0 %}".replace("0", vendor_id),
+                    type: "GET",
+                    success: function (response) {
+                        $servicesSelect.empty();
+                        $servicesSelect.append('<option value="">Select service</option>');
+                        response.forEach(function (item) {
+                            $servicesSelect.append(
+                                $('<option>', { value: item.id, text: item.name })
+                            );
+                        });
+                        $servicesSelect.dropdown('refresh');
+                        
+                        // Try to restore initial service if it exists in the new options
+                        if (initialServiceId && response.some(item => item.id == initialServiceId)) {
+                            $servicesSelect.dropdown('set selected', initialServiceId);
+                        } else {
+                            $servicesSelect.dropdown('clear');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching service:", error);
+                    }
+                });
+
+                $.ajax({
+                    url: "{% url 'awb:pages:master:unit_type:get_vendor_unit_type' 0 %}".replace("0", vendor_id),
+                    type: "GET",
+                    success: function (response) {
+                        const unitTypes = response || [];
+
+                        // Update all unit type dropdowns in box item formset
+                        $('#box_item_list tr').each(function() {
+                            const $rowUnitType = $(this).find('[name$="-unit_type"]');
+                            
+                            // Store current value before clearing
+                            const currentValue = $rowUnitType.val();
+
+                            // Clear existing options
+                            $rowUnitType.empty();
+
+                            // Add a default empty option (optional)
+                            $rowUnitType.append($('<option>', {
+                                value: '',
+                                text: '---------'
+                            }));
+
+                            // Append new unit type options
+                            unitTypes.forEach(ut => {
+                                $rowUnitType.append(
+                                    $('<option>', {
+                                        value: ut.id,
+                                        text: ut.name
+                                    })
+                                );
+                            });
+
+                            // Re-initialize the dropdown
+                            $rowUnitType.dropdown('refresh');
+
+                            // Restore previous value if it exists in new options
+                            if (currentValue && unitTypes.some(ut => ut.id == currentValue)) {
+                                $rowUnitType.dropdown('set selected', currentValue);
+                            } else {
+                                $rowUnitType.dropdown('clear');
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching unit types:', error);
+                    }
+                });
+            } else {
+                $productTypeSelect.empty();
+                $productTypeSelect.dropdown('refresh');
+                $servicesSelect.empty();
+                $servicesSelect.dropdown('refresh');
+                $productTypeSelect.dropdown('clear');
+                $servicesSelect.dropdown('clear');
+            }
+        });
+    });
+</script>

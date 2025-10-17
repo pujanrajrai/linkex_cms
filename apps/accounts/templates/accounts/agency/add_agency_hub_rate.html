@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %} {{ title }} {% endblock title %}
+
+{% block pagetitle %} {% if is_adding %}Add {% else %}Update {% endif %} Hub Rate: {{ composite }} for Agency: {{ agency.company_name }}{% endblock %}
+{% load agency_tags %}
+{% block content %}
+    <div class=" rounded-lg shadow-lg mx-auto">
+        <!-- Agency Update Form -->
+        <form method="post" id="agencyUpdateForm">
+            {% csrf_token %}
+            <!-- Hub Rate Table -->
+            {% if is_adding %}{{ hub_form }}{% endif %}
+            <div class="p-4 mt-3 bg-gray-50 rounded-md shadow-md">
+                <div class="flex justify-between items-center mb-4">
+                    <h1 class="text-xl font-semibold">Hub Rate</h1>
+                    <h1 class="text-xl font-semibold">{{ hub.name }}</h1>
+                </div>
+                {{ formset.management_form }}
+                <table id="box-details-table"
+                       class="table-auto border-collapse border border-gray-300 w-full text-sm">
+                    <thead class="bg-gray-200 text-left">
+                        <tr>
+                            <th class="border border-gray-300 px-2 py-1">Weight</th>
+                            <th class="border border-gray-300 px-2 py-1">Rate</th>
+                            <th class="border border-gray-300 px-2 py-1">Rate Type</th>
+                        </tr>
+                    </thead>
+                    <tbody id="box_detail">
+                        {% for form in formset %}
+                            <tr class="border-t">
+                                <td class="border border-gray-300 px-2 py-1">{{ form.weight_range }} {{ form.weight_range_hidden }}</td>
+                                <td class="border border-gray-300 px-2 py-1">{{ form.rate }}</td>
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <input type="text"
+                                           tabindex="-1"
+                                           value="{% if form.has_ending %}Per KG{% else %}Total{% endif %}"
+                                           readonly
+                                           class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-1 text-sm rounded-md">
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- Submit Button -->
+            <button type="submit" class="bg-primary text-white p-3 mt-5 w-full text-xl">{% if is_adding %}Add{% else %}Update{% endif %}</button>
+        </form>
+        <!-- Back Button -->
+        <div class="mt-6 text-center">
+            <a href="javascript:window.history.back()"
+               class="text-gray-600 hover:underline font-semibold text-lg">← Go Back</a>
+        </div>
+    </div>
+    <script>
+    $(document).ready(function() {
+        const $hubRateErrors = $("#hubRateErrors");
+        const $form = $("#agencyUpdateForm");
+
+        // Change "select" event to "change" for proper event handling
+        $("#id_hub").on("change", function(e) {
+            const selectedHub = $(this).val();
+            if (!selectedHub) return;
+
+            // Make AJAX call to get hub rates
+            $.ajax({
+                url: "{% url 'accounts:pages:agency:get_hub_rates' %}",
+                data: { "hubs[]": [selectedHub] },
+                success: function(data) {
+                    if (!data.hub_rates || !data.hub_rates[selectedHub]) {
+                        console.error("Error loading hub data");
+                        return;
+                    }
+
+                    const hubInfo = data.hub_rates[selectedHub];
+                    
+                    // Update each row in the formset with the corresponding rate
+                    $("#box_detail tr").each(function() {
+                        const weightRangeId = $(this).find('input[name$="-weight_range"]').val();
+                        if (weightRangeId && hubInfo.rates[weightRangeId]) {
+                            $(this).find('input[name$="-rate"]').val(hubInfo.rates[weightRangeId]);
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching hub rates:", error);
+                }
+            });
+        });
+
+        // Improve UX with validation on change
+        $(document).on('change', 'input[name$="-rate"]', function() {
+            const value = $(this).val().trim();
+            if (value === '') {
+                $(this).addClass('border-red-500');
+            } else {
+                $(this).removeClass('border-red-500');
+            }
+        });
+    });
+    </script>
+{% endblock %}

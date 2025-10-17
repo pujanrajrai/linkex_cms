@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+{% block title %} {{ title }} {% endblock title %}
+
+{% block pagetitle %}
+    AWB Details
+{% endblock pagetitle %}
+{% block button %}
+    <a href="{% url 'awb:pages:awb:create' %}">
+        <button class="bg-white text-primary border-2 border-primary hover:bg-secondary hover:text-white hover:border-secondary transition-colors duration-300 font-medium px-4 py-2 rounded flex items-center gap-2">
+            <i class="fi fi-rr-plus text-sm mt-[3px]"></i>
+            <span>Add AWB</span>
+        </button>
+    </a>
+{% endblock button %}
+{% block content %}
+    <style>
+        /* General table styling */
+        .data-table,
+        .data-table th,
+        .data-table td {
+            font-size: 13px; /* Set font size to 13px for both head and body */
+            white-space: nowrap; /* Prevent text wrapping */
+            border: 1px solid #d1d5db; /* Tailwind gray-300 border */
+            padding: 0.25rem; /* Consistent padding */
+        }
+        /* Search input styling */
+        .search-input {
+            width: 100%;
+            padding: 4px 6px;
+            font-size: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            transition: border 0.3s ease;
+        }
+        .search-input:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+        /* Column header styling */
+        .data-table th {
+            position: relative;
+            padding-right: 30px;
+        }
+        /* Search container styling */
+        .search-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 2% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 81%; /* Reduced from 90% to 81% (90% of 90%) */
+            max-width: 1080px; /* Reduced from 1200px to 1080px */
+            border-radius: 8px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9); /* Additional 10% reduction */
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+    </style>
+
+
+    
+    <div class="bg-white p-5">
+        <!-- Tab Navigation Design -->
+         {% if request.user.role == 'admin' %}
+        <div class="mb-2 mt-[-14px]">
+            <div class="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
+            <div class="flex">
+                <!-- Active Tab - Shipment Details -->
+                <div class="flex-1 relative">
+                <a href="{% url 'awb:pages:awb:list' %}">
+                <div class="{% if active_tab == 'shipment' %}bg-blue-600 text-white px-4 py-2 flex items-center justify-center space-x-1 text-sm font-medium{% else %}bg-gray-50 text-gray-600 px-4 py-2 flex items-center justify-center space-x-1 text-sm font-medium hover:bg-gray-100 transition-colors duration-200{% endif %}">
+                    <i class="fi fi-rr-shipping-fast"></i>
+                    <span>Shipment</span>
+                </div>
+                </a>
+                <!-- Active tab indicator -->
+                {% if active_tab == 'shipment' %}
+                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"></div>
+                {% endif %}
+                </div>
+                
+                <!-- Inactive Tab - Invoice Details -->
+                <div class="flex-1 relative border-l border-gray-200">
+                    <a href="{% url 'awb:pages:awb:list' %}?shipment_without_invoice=true">
+                <div class="{% if active_tab == 'shipment_without_invoice' %}bg-blue-600 text-white px-4 py-2 flex items-center justify-center space-x-1 text-sm font-medium{% else %}bg-gray-50 text-gray-600 px-4 py-2 flex items-center justify-center space-x-1 text-sm font-medium hover:bg-gray-100 transition-colors duration-200{% endif %}">
+                    <i class="fi fi-rr-receipt"></i>
+                    <span>Shipment Without Invoice</span>
+                </div>
+                </a>
+                {% if active_tab == 'shipment_without_invoice' %}
+                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"></div>
+                {% endif %}
+                </div>
+            </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="overflow-x-auto">
+
+            
+            
+            <table id="dataTable"
+                   class="data-table display min-w-full border-collapse w-full">
+                <thead>
+                    <tr id="search-row"></tr>
+                    <tr class="bg-primary text-white">
+                        <th data-search="false">Action</th>
+                        <th data-search="true">Date</th>
+                        <th data-search="true">AWB No</th>
+                        <th data-search="true">Shipper</th>
+                        <th data-search="true">Consignee(s)</th>
+                        <th data-search="true">Destination</th>
+                        <th data-search="true">Pieces</th>
+                        <th data-search="true">AW-VW-CW</th>
+                        <th data-search="true">Verified</th>
+                        <th data-search="true">FWD NO</th>
+                        <th data-search="true">Company</th>
+                        <th data-search="true">Run No</th>
+                        <th data-search="true">Type</th>
+                        <th data-search="true">Hub</th>
+                        <th data-search="true">Origin</th>
+                        <th data-search="true">Service</th>
+                        <th data-search="true">Shipment Value</th>
+                        <th data-search="true">Consignor(s)</th>
+                        <th data-search="false"></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+    <!-- Include Tracking Modal -->
+    {% include "awb/awb/js/tracking-modal.html" %}
+{% endblock content %}
+{% block js %}
+    <script>
+        $(document).ready(function () {
+            if ($.fn.DataTable.isDataTable('#dataTable')) {
+                $('#dataTable').DataTable().destroy();
+            }
+
+            // Helper function to replace URL placeholders with actual AWB number
+            function getUrl(urlTemplate, awbno) {
+                return urlTemplate.replace('0', awbno);
+            }
+
+            var table = $('#dataTable').DataTable({
+                processing: true,
+                serverSide: true,
+                searching: true,
+                paging: true,
+                ordering: true,
+                info: true,
+                pageLength: 50,
+                // Set default ordering to created_at column (index 1) in descending order
+                order: [[1, 'desc']],
+                // Include the default search box ('f') along with the length selector ('l')
+                dom: '<"top"lf>rt<"bottom"ip><"clear">',
+                ajax: {
+                    url: "{% url 'awb:pages:awb:list' %}?shipment_without_invoice={{ shipment_without_invoice }}",
+                    type: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                },
+                columns: [
+                {
+                    data: null,
+                    render: function(data) {
+                        let detailUrl  = getUrl("{% url 'awb:pages:awb:detail' 0 %}", data.awbno);
+                        let printUrl   = getUrl("{% url 'awb:pages:awb:print' 0 %}", data.awbno);
+                        let updateUrl  = getUrl("{% url 'awb:pages:awb:update' 0 %}", data.awbno);
+                        let exportUrl  = getUrl("{% url 'awb:pages:awb:export_awb' 0 %}", data.awbno);
+                        
+                
+                        // Conditional airplane tracking button based on departure status
+                        let trackBtn = '';
+                        if (data.has_departed) {
+                            trackBtn = `
+                            <button class="bg-green-700 text-white px-2 py-1 rounded-md shadow-md hover:bg-green-900 transition-all duration-300 track-btn" 
+                                    data-awbno="${data.awbno}" title="Shipment Departed - Click to Track">
+                                <i class="fi fi-rr-plane-departure"></i>
+                            </button>`;
+                        } else {
+                            trackBtn = `
+                            <button class="bg-red-700 text-white px-2 py-1 rounded-md shadow-md hover:bg-red-900 transition-all duration-300 track-btn" 
+                                    data-awbno="${data.awbno}" title="Shipment NOT Departed - Click to Track">
+                                <i class="fi fi-rr-plane-departure"></i>
+                            </button>`;
+                        }
+                
+                        let buttonHtml = `
+                            <a href="${detailUrl}" target="_blank" title="Detail">
+                                <button class="bg-primary text-white px-2 py-1 rounded-md shadow-md hover:bg-blue-700 transition-all duration-300">
+                                    <i class="fi fi-rr-eye"></i>
+                                </button>
+                            </a>
+                            <a href="${printUrl}" target="_blank" title="Print">
+                                <button class="bg-secondary text-white px-2 py-1 rounded-md shadow-md hover:bg-blue-700 transition-all duration-300">
+                                    <i class="fi fi-rr-print"></i>
+                                </button>
+                            </a>
+                            <a href="${updateUrl}" target="_blank" title="Update">
+                                <button class="bg-primary text-white px-2 py-1 rounded-md shadow-md hover:bg-blue-700 transition-all duration-300">
+                                    <i class="fi fi-rr-edit"></i>
+                                </button>
+                            </a>
+                            <a href="${exportUrl}" target="_blank" title="Export">
+                                <button class="bg-primary text-white px-2 py-1 rounded-md shadow-md hover:bg-blue-700 transition-all duration-300">
+                                    <i class="fi fi-rr-file-export"></i>
+                                </button>
+                            </a>
+                            ${trackBtn}
+                        `;
+                
+                        return `<div class="flex items-center gap-x-3">${buttonHtml}</div>`;
+                    },
+                    searchable: false
+                },
+                    {
+                        data: "created_at",
+                        name: "created_at",
+                        render: function(data) {
+                            if (!data) return '';
+                            const date = new Date(data);
+                            return date.toLocaleString('en-US', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true
+                            });
+                        }
+                    },
+                    { 
+                        data: "awbno", 
+                        name: "awbno",
+                        render: function(data) {
+                            return `
+                                <div class="flex justify-between gap-x-3">
+                                    <span>${data}</span>
+                                    <button class="copy-btn" data-value="${data}" title="Copy AWB">
+                                        <i class="fi fi-rr-copy text-gray-500 hover:text-gray-700 cursor-pointer"></i>
+                                    </button>
+                                </div>
+                            `;
+                        }
+                    },
+                    {% comment %} { data: "agency__name", name: "agency__name" }, {% endcomment %}
+                    {
+                        data: "agency__name", 
+                        name: "agency__name",
+                        render: function(data, type, row) {
+                            // If agency__name exists and is not empty, use it
+                            if (data && data.trim() !== "") {
+                                return data;
+                            }
+                            // Otherwise fall back to consignor__company
+                            return row.consignor__company || "";
+                        }
+                    },
+                    { data: "consignee__person_name", name: "consignee__person_name" },
+                    { data: "destination__name", name: "destination__name" },
+                    { data: "total_box", name: "total_box" },
+                    {
+                        data: null,
+                        name: "weight",
+                        render: function(data) {
+                            return `${data.total_actual_weight} - ${data.total_volumetric_weight} - ${data.total_charged_weight}`;
+                        }
+                    },
+                    {% comment %} {
+                        data: null,
+                        name: "statuses",
+                        render: function(data) {
+                            return '<span style="font-size: 8px;">' + (data.statuses || 'No status available') + '</span>';
+                        }
+                    }, {% endcomment %}
+                    { 
+                        data: null, 
+                        name: "is_verified",
+                        render: function(data) {
+                            return data.is_verified ? `<span class="text-green-500 px-2 py-1 rounded-md shadow-md" title="Verified">
+                                <i class="fi fi-rr-check"></i>
+                            </span>` : `<span class="text-red-500 px-2 py-1 rounded-md shadow-md" title="Unverified">
+                                <i class="fi fi-rr-cross"></i>
+                            </span>`;
+                        }
+                    },
+                    { data: "forwarding_number", name: "forwarding_number" },
+                    { data: "company__name", name: "company__name" },
+                    { data: "runawb__run__run_no", name: "runawb__run__run_no" },
+                    { data: "product_type__name", name: "product_type__name" },
+                    { data: "hub__name", name: "hub__name" },
+                    { data: "origin__name", name: "origin__name" },
+                    { data: "service__name", name: "service__name" },
+                    { data: "shipment_value", name: "shipment_value" },
+                    { data: "consignor__person_name", name: "consignor__person_name" },
+                    { 
+                        data: null,
+                        render: function(data) {
+                            let cancelUrl = getUrl("{% url 'awb:pages:awb:cancel' 0 %}", data.awbno);
+                            let createDate = new Date(data.created_at);
+                            let currentDate = new Date();
+                            let hoursDifference = (currentDate - createDate) / (1000 * 60 * 60);
+                            let buttonHtml = "";
+                            if (!data.is_cancelled && hoursDifference <= 24) {
+                                buttonHtml += `
+                                    <a href="${cancelUrl}" title="Cancel" onclick="return confirm('Are you sure you want to cancel this shipment?')">
+                                        <button class="bg-red-300 text-white px-2 py-1 rounded-md shadow-md hover:bg-red-700 transition-all duration-300">
+                                            <i class="fi fi-rr-time-past"></i>
+                                        </button>
+                                    </a>
+                                `;
+                            } else if (data.is_cancelled) {
+                                buttonHtml += `
+                                    <span class="text-red-500 px-2 py-1 rounded-md shadow-md" title="Cancelled">
+                                        <i class="fi fi-rr-cross"></i>
+                                    </span>
+                                `;
+                            }
+                            return `<div class="flex items-center gap-x-3">${buttonHtml}</div>`;
+                        },
+                        searchable: false
+                    }
+                ],
+                initComplete: function () {
+                    // Add search inputs for searchable columns
+                    var searchRow = $("#search-row");
+                    $("#dataTable thead tr:last th").each(function () {
+                        var isSearchable = $(this).attr("data-search") === "true";
+                        var title = $(this).text();
+                        
+                        if (isSearchable) {
+                            // Create a container for the search input
+                            var searchContainer = $('<div class="search-container"></div>');
+                            
+                            // Create the search input
+                            var searchInput = $('<input type="text" class="search-input" placeholder="Search ' + title + '">');
+                            
+                            // Add event handler
+                            searchInput.on('keyup change', function() {
+                                var columnIndex = $(this).closest('td').index();
+                                table.column(columnIndex).search(this.value).draw();
+                            });
+                            
+                            // Add the input to the container
+                            searchContainer.append(searchInput);
+                            
+                            // Add the container to the search row
+                            searchRow.append($('<td class="p-2 border"></td>').append(searchContainer));
+                        } else {
+                            searchRow.append($('<td class="p-2 border"></td>'));
+                        }
+                    });
+                }
+            });
+        });
+
+        // Copy button functionality
+        $(document).on("click", ".copy-btn", function() {
+            var button = $(this);
+            var value = button.attr("data-value");
+            navigator.clipboard.writeText(value).then(() => {
+                button.html('<i class="fi fi-rr-check text-green-500"></i>');
+                setTimeout(() => {
+                    button.html('<i class="fi fi-rr-copy text-gray-500 hover:text-gray-700 cursor-pointer"></i>');
+                }, 1500);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        });
+
+
+    </script>
+{% endblock js %}

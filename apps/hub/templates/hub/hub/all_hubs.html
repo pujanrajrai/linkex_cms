@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ title }}
+{% endblock title %}
+{% block pagetitle %}
+    All Hubs Rate
+{% endblock pagetitle %}
+{% load agency_tags %}
+{% block button %}
+{% endblock button %}
+{% block content %}
+    <!-- Hub Rates -->
+    <div class="bg-white p-8 mt-3 rounded-lg shadow-lg mx-auto">
+        <div class="flex justify-between items-center mb-2">
+            <h1 class="text-xl font-semibold mb-4">Hub Rates</h1>
+            {% if request.user.role == 'admin' %}
+                <div class="flex items-center gap-6">
+                    <form method="post"
+                          action="{% url 'hub:pages:hub:upload_all_hubs' %}"
+                          class="flex items-center gap-3"
+                          enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="relative">{{ upload_form.file }}</div>
+                        <button type="submit"
+                                class="bg-primary text-white px-6 py-2.5 rounded-lg hover:bg-primary-dark transition-colors duration-200 flex items-center gap-2">
+                            <i class="fi fi-rr-cloud-upload-alt"></i>
+                            Upload
+                        </button>
+                    </form>
+                    <a href="{% url 'hub:pages:hub:download_hub_rate_template_all_hubs' %}"
+                       class="bg-primary text-white px-6 py-2.5 rounded-lg hover:bg-primary-dark transition-colors duration-200 flex items-center gap-2">
+                        <i class="fi fi-rr-cloud-download"></i>
+                        Download Template
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        {% if hubs_dict %}
+            <div class="overflow-x-auto">
+                <div class="min-w-full inline-block align-middle">
+                    <div class="overflow-hidden">
+                        <table class="table-auto border-collapse border border-gray-300 min-w-max text-sm">
+                            <thead class="bg-gray-200 text-left">
+                                <tr>
+                                    <th class="border border-gray-300 px-2 py-1 sticky left-0 bg-gray-200">Weight</th>
+                                    <th class="border border-gray-300 px-2 py-1 sticky left-[120px] bg-gray-200">Rate Type</th>
+                                    {% for hub_data in hubs_dict.values %}
+                                        {% for bzs in hub_data.bzs_items %}
+                                            <th class="border border-gray-300 px-2 py-1 whitespace-nowrap">
+                                                <div class="flex justify-between items-center">
+                                                    <span>{{ bzs.hub_billing_zone.hub.name }} - {{ bzs.hub_billing_zone.name }} - {{ bzs.billing_service.name }}</span>
+                                                    {% if request.user.role == 'admin' %}
+                                                        <a href="{% url 'hub:pages:hub:update_billing_zone_service' bzs.pk %}"
+                                                           title="Update"
+                                                           class="ml-2">
+                                                            <button class="text-black rounded-md hover:bg-gray-100 transition-all duration-300 p-1">
+                                                                <i class="fi fi-rr-edit"></i>
+                                                            </button>
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                            </th>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for weight_range in weight_ranges %}
+                                    <tr class="border-t">
+                                        <td class="border border-gray-300 px-2 py-1 sticky left-0 bg-white">
+                                            <input type="text"
+                                                   value="{{ weight_range }}"
+                                                   readonly
+                                                   class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-1 text-sm rounded-md">
+                                        </td>
+                                        <td class="border border-gray-300 px-2 py-1 sticky left-[120px] bg-white">
+                                            <input type="text"
+                                                   value="{% if weight_range.ending %}Per KG{% else %}Total{% endif %}"
+                                                   readonly
+                                                   class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-1 text-sm rounded-md">
+                                        </td>
+                                        {% for hub_data in hubs_dict.values %}
+                                            {% for bzs in hub_data.bzs_items %}
+                                                <td class="border border-gray-300 px-2 py-1">
+                                                    <input type="number"
+                                                           value="{{ hub_rates_dict|get_item:bzs.pk|get_item:weight_range.pk|default:'0.00' }}"
+                                                           readonly
+                                                           class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-1 text-sm rounded-md">
+                                                </td>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <p class="text-gray-600">No hub rates available.</p>
+        {% endif %}
+    </div>
+{% endblock content %}
