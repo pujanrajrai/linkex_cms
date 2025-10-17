@@ -110,7 +110,7 @@
                 flex-shrink: 0;
             }
             
-            /* Desktop: hide row-2 on larger screens, show inline */
+            /* Desktop: Layout adjustment */
             @media (min-width: 769px) {
                 /* Scale desktop view to 90% for better space utilization */
                 body {
@@ -121,22 +121,30 @@
                 
                 .navbar {
                     display: flex;
+                    flex-direction: row;
                     align-items: center;
                     gap: 20px;
+                    flex-wrap: nowrap;
                 }
                 
                 .navbar-row-1 {
+                    display: flex;
                     flex: 0 0 auto;
+                    align-items: center;
+                    gap: 10px;
                 }
                 
                 .navbar-row-2 {
+                    display: flex;
                     flex: 1;
                     padding: 0;
                     margin: 0 20px;
+                    visibility: visible !important;
                 }
                 
                 .navbar-search-form {
                     max-width: 500px;
+                    display: flex !important;
                 }
             }
             
@@ -352,7 +360,7 @@
                         },
                         colors: {
                             primary: "#10345A",
-                            secondary: "#ea4431",
+                            secondary: "#ED1C24",
                             active: "#14579E",
                         },
                     },

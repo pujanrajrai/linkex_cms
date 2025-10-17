@@ -33,7 +33,7 @@ body {
   position: relative;
   z-index: 2;
   padding: 15px 20px;
-  background: #ea4431;
+  background: #ED1C24;
 }
 
 .nav-title {
@@ -43,7 +43,7 @@ body {
 
 .add-user-btn {
   font-family: "Poppins", sans-serif;
-  background: #ea4431;
+  background: #ED1C24;
   color: white;
   border: none;
   padding: 8px 15px;
@@ -168,7 +168,7 @@ body {
 }
 
 .menu-link:hover {
-  color: #ea4431;
+  color: #ED1C24;
   background: #e9ecef;
 }
 
@@ -227,7 +227,7 @@ body {
 
 .dropdown-content a:hover {
   background: #dadfe4;
-  color: #ea4431;
+  color: #ED1C24;
 }
 
 /* Accordion style in expanded sidebar */
