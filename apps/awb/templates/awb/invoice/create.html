@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+  {{ title }}
+{% endblock title %}
+
+{% block pagetitle %}
+  Create Invoice - AWB {{ awb.awbno }}
+{% endblock pagetitle %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+  <!-- Include Tab Navigation -->
+  {% include 'awb/awb/tab.html' %}
+  
+  <!-- Main Content Card -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-lg font-semibold text-white">Create Invoice</h1>
+          <p class="text-blue-100 text-xs mt-1">AWB: {{ awb.awbno }} | {{ awb.agency.company_name|default:"Cash Customer" }}</p>
+        </div>
+        <div class="flex items-center space-x-2 text-white">
+          <i class="fi fi-rr-receipt text-sm"></i>
+          <span class="text-xs">Invoice Management</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Content -->
+    <div class="p-4">
+      <form method="post" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        
+        <!-- Line 1: Weight, Per Kg Customs Fee, Total Amount -->
+        <div class="bg-blue-50 rounded-md p-3 border border-blue-200">
+          <h3 class="text-xs font-medium text-blue-800 mb-2 flex items-center">
+            <i class="fi fi-rr-scale text-blue-600 mr-1 text-sm"></i>
+            Weight & Customs Calculation
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div>
+              <label for="{{ form.total_weight.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                Total Weight (Kg)
+              </label>
+              {{ form.total_weight }}
+              {% if form.total_weight.errors %}
+              <div class="text-red-600 text-xs mt-1">{{ form.total_weight.errors.0 }}</div>
+              {% endif %}
+            </div>
+            <div>
+              <label for="{{ form.per_kg_customs_fee.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                Per Kg Customs Fee
+              </label>
+              {{ form.per_kg_customs_fee }}
+              {% if form.per_kg_customs_fee.errors %}
+              <div class="text-red-600 text-xs mt-1">{{ form.per_kg_customs_fee.errors.0 }}</div>
+              {% endif %}
+            </div>
+            <div>
+              <label for="{{ form.total_amount.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                Total Amount
+              </label>
+              {{ form.total_amount }}
+              {% if form.total_amount.errors %}
+              <div class="text-red-600 text-xs mt-1">{{ form.total_amount.errors.0 }}</div>
+              {% endif %}
+            </div>
+            <div class="flex items-end">
+              <div class="text-xs text-gray-600 bg-white px-3 py-2 rounded border w-full text-center">
+                <div class="text-gray-500">Total Customs:</div>
+                <div class="font-medium text-green-600" id="total_customs_display">0.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Line 2: Total Boxes, Per Box Handling Fee -->
+        <div class="bg-green-50 rounded-md p-3 border border-green-200">
+          <h3 class="text-xs font-medium text-green-800 mb-2 flex items-center">
+            <i class="fi fi-rr-box text-green-600 mr-1 text-sm"></i>
+            Box & Handling Calculation
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div>
+              <label for="{{ form.total_box.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                Total Boxes
+              </label>
+              {{ form.total_box }}
+              {% if form.total_box.errors %}
+              <div class="text-red-600 text-xs mt-1">{{ form.total_box.errors.0 }}</div>
+              {% endif %}
+            </div>
+            <div>
+              <label for="{{ form.per_box_handling_fee.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                Per Box Handling Fee
+              </label>
+              {{ form.per_box_handling_fee }}
+              {% if form.per_box_handling_fee.errors %}
+              <div class="text-red-600 text-xs mt-1">{{ form.per_box_handling_fee.errors.0 }}</div>
+              {% endif %}
+            </div>
+            <div class="flex items-end">
+              <div class="text-xs text-gray-600 bg-white px-3 py-2 rounded border w-full text-center">
+                <div class="text-gray-500">Total Handling:</div>
+                <div class="font-medium text-blue-600" id="total_handling_display">0.00</div>
+              </div>
+            </div>
+            <div></div> <!-- Empty column for spacing -->
+          </div>
+        </div>
+
+        <!-- Line 3: Grand Total, Paid Amount, Payment Method -->
+        <div class="bg-purple-50 rounded-md p-3 border border-purple-200">
+          <h3 class="text-xs font-medium text-purple-800 mb-2 flex items-center">
+            <i class="fi fi-rr-money text-purple-600 mr-1 text-sm"></i>
+            Final Amount & Payment Details
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div>
+              <label for="{{ form.grand_total.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                Grand Total (Auto)
+              </label>
+              {{ form.grand_total }}
+              {% if form.grand_total.errors %}
+              <div class="text-red-600 text-xs mt-1">{{ form.grand_total.errors.0 }}</div>
+              {% endif %}
+            </div>
+            <div>
+              <label for="{{ form.total_paid_amount.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                Total Paid Amount
+              </label>
+              {{ form.total_paid_amount }}
+              {% if form.total_paid_amount.errors %}
+              <div class="text-red-600 text-xs mt-1">{{ form.total_paid_amount.errors.0 }}</div>
+              {% endif %}
+            </div>
+            <div>
+              <label for="{{ form.payment_method.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                Payment Method
+              </label>
+              {{ form.payment_method }}
+              {% if form.payment_method.errors %}
+              <div class="text-red-600 text-xs mt-1">{{ form.payment_method.errors.0 }}</div>
+              {% endif %}
+            </div>
+            <div></div> <!-- Empty column for spacing -->
+          </div>
+        </div>
+
+        <!-- Document and Remarks in Single Row -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="{{ form.document.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+              Invoice Document
+            </label>
+            {{ form.document }}
+            {% if form.document.errors %}
+            <div class="text-red-600 text-xs mt-1">{{ form.document.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div>
+            <label for="{{ form.remark.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+              Remarks
+            </label>
+            {{ form.remark }}
+            {% if form.remark.errors %}
+            <div class="text-red-600 text-xs mt-1">{{ form.remark.errors.0 }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+          <a href="{% url 'awb:pages:invoice:list' awb.awbno %}" 
+             class="px-3 py-1 border border-gray-300 rounded text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+            <i class="fi fi-rr-arrow-left mr-1"></i>
+            Cancel
+          </a>
+          <button type="submit" 
+                  class="px-4 py-1 bg-blue-600 border border-transparent rounded text-xs font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+            <i class="fi fi-rr-check mr-1"></i>
+            Create Invoice
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get form fields
+    const totalBoxField = document.querySelector('input[name="total_box"]');
+    const totalWeightField = document.querySelector('input[name="total_weight"]');
+    const perBoxFeeField = document.querySelector('input[name="per_box_handling_fee"]');
+    const perKgFeeField = document.querySelector('input[name="per_kg_customs_fee"]');
+    const totalAmountField = document.querySelector('input[name="total_amount"]');
+    const grandTotalField = document.querySelector('input[name="grand_total"]');
+    
+    // Get display elements
+    const totalHandlingDisplay = document.getElementById('total_handling_display');
+    const totalCustomsDisplay = document.getElementById('total_customs_display');
+
+    // Make grand total readonly
+    if (grandTotalField) {
+        grandTotalField.setAttribute('readonly', true);
+        grandTotalField.style.backgroundColor = '#f3f4f6';
+        grandTotalField.style.color = '#6b7280';
+    }
+
+    function calculateTotals() {
+        const totalBox = parseFloat(totalBoxField?.value) || 0;
+        const totalWeight = parseFloat(totalWeightField?.value) || 0;
+        const perBoxFee = parseFloat(perBoxFeeField?.value) || 0;
+        const perKgFee = parseFloat(perKgFeeField?.value) || 0;
+        const totalAmount = parseFloat(totalAmountField?.value) || 0;
+
+        // Calculate individual totals
+        const totalHandling = totalBox * perBoxFee;
+        const totalCustoms = totalWeight * perKgFee;
+        
+        // Update display elements
+        if (totalHandlingDisplay) {
+            totalHandlingDisplay.textContent = totalHandling.toFixed(2);
+        }
+        if (totalCustomsDisplay) {
+            totalCustomsDisplay.textContent = totalCustoms.toFixed(2);
+        }
+
+        // Calculate grand total: total per kg + total handling + total amount
+        const grandTotal = totalCustoms + totalHandling + totalAmount;
+        
+        if (grandTotalField) {
+            grandTotalField.value = grandTotal.toFixed(2);
+        }
+    }
+
+    // Add event listeners for auto-calculation
+    [totalBoxField, totalWeightField, perBoxFeeField, perKgFeeField, totalAmountField].forEach(field => {
+        if (field) {
+            field.addEventListener('input', calculateTotals);
+        }
+    });
+
+    // Initial calculation
+    calculateTotals();
+});
+</script>
+{% endblock content %}

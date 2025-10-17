@@ -1,0 +1,482 @@
+<!-- Tracking Modal HTML Structure -->
+<div id="trackingModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+  <div class="relative top-4 mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-lg rounded-md bg-white max-h-[90vh] overflow-y-auto">
+    <div class="mt-3">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-bold text-gray-900">Shipment Tracking</h3>
+        <span class="close text-gray-400 hover:text-gray-600 cursor-pointer text-2xl font-bold">&times;</span>
+      </div>
+      
+      <div id="modalContent">
+        <!-- Content will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Tracking Modal Specific Styles */
+  .shipment-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 25px;
+    padding: 15px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+  }
+
+  .info-item-compact {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .info-label-compact {
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    min-width: 80px;
+  }
+
+  .info-value-compact {
+    font-size: 12px;
+    font-weight: 500;
+    color: #1e293b;
+  }
+
+  .weight-highlight {
+    color: #059669 !important;
+    font-weight: 700 !important;
+  }
+
+  .timeline-container {
+    margin: 20px 0;
+    position: relative;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px solid #cbd5e1;
+    overflow: hidden;
+  }
+
+  .timeline-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+  }
+
+  .timeline-item-enhanced {
+    position: relative;
+    padding-left: 50px;
+    margin-bottom: 30px;
+  }
+
+  .timeline-item-enhanced:last-child {
+    margin-bottom: 0;
+  }
+
+  .timeline-dot {
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    border: 4px solid white;
+    box-shadow: 0 0 0 4px #dbeafe, 0 4px 12px rgba(59, 130, 246, 0.3);
+    z-index: 3;
+  }
+
+  .timeline-line {
+    position: absolute;
+    left: 9px;
+    top: 32px;
+    width: 2px;
+    height: calc(100% + 10px);
+    background: linear-gradient(180deg, #3b82f6 0%, #93c5fd 50%, #dbeafe 100%);
+    z-index: 1;
+  }
+
+  .timeline-content {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid #e5e7eb;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .timeline-content:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  }
+
+  .timeline-content::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 20px;
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid white;
+  }
+
+  .status-title {
+    font-weight: 700;
+    color: #1f2937;
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .status-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 0.875rem;
+    color: #6b7280;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8fafc;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .source-badge {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border: 1px solid #93c5fd;
+  }
+
+  .contact-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 40px;
+  }
+
+  .contact-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+  }
+
+  .contact-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+  }
+
+  .contact-header {
+    padding: 20px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+  }
+
+  .consignor-header {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  }
+
+  .consignee-header {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  }
+
+  .contact-body {
+    padding: 25px;
+  }
+
+  .contact-item {
+    margin-bottom: 16px;
+  }
+
+  .contact-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .contact-label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+  }
+
+  .contact-value {
+    color: #1f2937;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .phone-value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .contact-cards {
+      grid-template-columns: 1fr;
+    }
+    
+    .shipment-info {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Tracking button functionality
+  $(document).on("click", ".track-btn", function() {
+      var awbno = $(this).attr("data-awbno");
+      var button = $(this);
+      
+      // Show loading state
+      var originalHtml = button.html();
+      button.html('<i class="fi fi-rr-spinner animate-spin"></i>');
+      button.prop('disabled', true);
+      
+      // Make API call
+      $.ajax({
+          url: '/awb/apis/tracking-awb/',
+          type: 'GET',
+          data: { awbno: awbno },
+          success: function(response) {
+              showTrackingModal(response);
+          },
+          error: function(xhr, status, error) {
+              alert('Error fetching tracking data: ' + error);
+          },
+          complete: function() {
+              // Restore button state
+              button.html(originalHtml);
+              button.prop('disabled', false);
+          }
+      });
+  });
+
+  // Modal functionality
+  var modal = document.getElementById("trackingModal");
+  var spans = document.getElementsByClassName("close");
+
+  // Handle multiple close buttons
+  for (var i = 0; i < spans.length; i++) {
+    spans[i].onclick = function() {
+      modal.style.display = "none";
+    }
+  }
+
+  window.onclick = function(event) {
+      if (event.target == modal) {
+          modal.style.display = "none";
+      }
+  }
+
+  function showTrackingModal(data) {
+      var modalContent = document.getElementById("modalContent");
+      
+      var html = `
+          <div style="margin-bottom: 35px;">
+              <h3 style="color: #1e40af; margin-bottom: 20px; font-size: 1.6rem; font-weight: 800; text-align: center;">
+                  📦 Shipment Timeline - ${data.awb.awbno}
+              </h3>
+              
+              <!-- Shipment Info Section -->
+              <div class="shipment-info">
+                  ${data.awb.forwarding_number ? `
+                      <div class="info-item-compact">
+                          <div class="info-label-compact">Forwarding Number</div>
+                          <div class="info-value-compact">${data.awb.forwarding_number}</div>
+                      </div>
+                  ` : ''}
+                  ${data.awb.service ? `
+                      <div class="info-item-compact">
+                          <div class="info-label-compact">Service</div>
+                          <div class="info-value-compact">${data.awb.service}</div>
+                      </div>
+                  ` : ''}
+                  <div class="info-item-compact">
+                      <div class="info-label-compact">Total Boxes</div>
+                      <div class="info-value-compact weight-highlight">${data.awb.total_box}</div>
+                  </div>
+                  <div class="info-item-compact">
+                      <div class="info-label-compact">Actual Weight</div>
+                      <div class="info-value-compact weight-highlight">${data.awb.total_actual_weight} kg</div>
+                  </div>
+                  <div class="info-item-compact">
+                      <div class="info-label-compact">Volumetric Weight</div>
+                      <div class="info-value-compact weight-highlight">${data.awb.total_volumetric_weight} kg</div>
+                  </div>
+                  <div class="info-item-compact">
+                      <div class="info-label-compact">Charged Weight</div>
+                      <div class="info-value-compact weight-highlight">${data.awb.total_charged_weight} kg</div>
+                  </div>
+              </div>
+              
+              <div class="timeline-container">
+      `;
+      
+      data.timeline.forEach(function(item, index) {
+          const isLast = index === data.timeline.length - 1;
+          const statusIcon = getStatusIcon(item.status);
+          
+          html += `
+              <div class="timeline-item-enhanced">
+                  <div class="timeline-dot"></div>
+                  ${!isLast ? '<div class="timeline-line"></div>' : ''}
+                  <div class="timeline-content">
+                      <div class="status-title">
+                          ${statusIcon}
+                          ${item.status}
+                      </div>
+                      <div class="status-meta">
+                          <div class="meta-item">
+                              <i class="fi fi-rr-clock" style="font-size: 14px; color: #3b82f6;"></i>
+                              <span>${new Date(item.timestamp).toLocaleString('en-US', {
+                                  year: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  hour12: true
+                              })}</span>
+                          </div>
+                          ${item.location ? `
+                              <div class="meta-item">
+                                  <i class="fi fi-rr-marker" style="font-size: 14px; color: #ef4444;"></i>
+                                  <span>${item.location}</span>
+                              </div>
+                          ` : ''}
+                          <div class="source-badge">
+                              ${item.source}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          `;
+      });
+      
+      html += `
+              </div>
+          </div>
+          
+          <div class="contact-cards">
+              <div class="contact-card">
+                  <div class="contact-header consignor-header">
+                      <i class="fi fi-rr-user" style="font-size: 18px;"></i>
+                      Consignor Details
+                  </div>
+                  <div class="contact-body">
+                      <div class="contact-item">
+                          <div class="contact-label">Company</div>
+                          <div class="contact-value">${data.awb.consignor.company}</div>
+                      </div>
+                      <div class="contact-item">
+                          <div class="contact-label">Contact Person</div>
+                          <div class="contact-value">${data.awb.consignor.person_name}</div>
+                      </div>
+                      <div class="contact-item">
+                          <div class="contact-label">Address</div>
+                          <div class="contact-value">${data.awb.consignor.address1}</div>
+                      </div>
+                      <div class="contact-item">
+                          <div class="contact-label">City</div>
+                          <div class="contact-value">${data.awb.consignor.city}</div>
+                      </div>
+                      <div class="contact-item">
+                          <div class="contact-label">Phone</div>
+                          <div class="contact-value phone-value">
+                              <i class="fi fi-rr-phone-call" style="font-size: 14px; color: #059669;"></i>
+                              ${data.awb.consignor.phone_number}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              
+              <div class="contact-card">
+                  <div class="contact-header consignee-header">
+                      <i class="fi fi-rr-users" style="font-size: 18px;"></i>
+                      Consignee Details
+                  </div>
+                  <div class="contact-body">
+                      <div class="contact-item">
+                          <div class="contact-label">Company</div>
+                          <div class="contact-value">${data.awb.consignee.company}</div>
+                      </div>
+                      <div class="contact-item">
+                          <div class="contact-label">Contact Person</div>
+                          <div class="contact-value">${data.awb.consignee.person_name}</div>
+                      </div>
+                      <div class="contact-item">
+                          <div class="contact-label">Address</div>
+                          <div class="contact-value">${data.awb.consignee.address1}</div>
+                      </div>
+                      <div class="contact-item">
+                          <div class="contact-label">City</div>
+                          <div class="contact-value">${data.awb.consignee.city}</div>
+                      </div>
+                      <div class="contact-item">
+                          <div class="contact-label">Phone</div>
+                          <div class="contact-value phone-value">
+                              <i class="fi fi-rr-phone-call" style="font-size: 14px; color: #dc2626;"></i>
+                              ${data.awb.consignee.phone_number}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      `;
+      
+      modalContent.innerHTML = html;
+      modal.style.display = "block";
+  }
+
+  function getStatusIcon(status) {
+      const statusLower = status.toLowerCase();
+      if (statusLower.includes('assigned') || statusLower.includes('created')) {
+          return '<i class="fi fi-rr-document" style="color: #3b82f6;"></i>';
+      } else if (statusLower.includes('picked') || statusLower.includes('collected')) {
+          return '<i class="fi fi-rr-truck-side" style="color: #f59e0b;"></i>';
+      } else if (statusLower.includes('departed') || statusLower.includes('transit')) {
+          return '<i class="fi fi-rr-plane-departure" style="color: #8b5cf6;"></i>';
+      } else if (statusLower.includes('delivered')) {
+          return '<i class="fi fi-rr-check" style="color: #10b981;"></i>';
+      } else if (statusLower.includes('label')) {
+          return '<i class="fi fi-rr-label" style="color: #6366f1;"></i>';
+      } else {
+          return '<i class="fi fi-rr-time-forward" style="color: #6b7280;"></i>';
+      }
+  }
+</script>

@@ -1,0 +1,72 @@
+<script>
+  // Initialize Semantic UI dropdowns
+  $('.ui.dropdown').dropdown();
+
+  $('#awb_hub').change(function () {
+    const hubId = $(this).val();
+    const currentVendorId = $('#awb_vendor').val();
+
+    if (hubId) {
+      $.ajax({
+        url: "{% url 'hub:pages:run:get_hub_vendors' %}",
+        type: "GET",
+        data: { hub_id: hubId },
+        success: function (response) {
+          const vendors = response.vendors || [];
+          const currencyName = response.currency;
+          const $vendorSelect = $('#awb_vendor');
+          const $currencySelect = $('#awb_currency');
+
+          // rebuild vendor options
+          $vendorSelect
+            .empty()
+            .append('<option value="">Select vendor</option>');
+          vendors.forEach(v =>
+            $vendorSelect.append(
+              $('<option>', { value: v.id, text: v.info })  // updated line
+            )
+          );
+
+          // refresh dropdown
+          $vendorSelect.dropdown('clear').dropdown('refresh');
+
+          // if only one vendor, auto-select it
+          if (vendors.length === 1) {
+            $vendorSelect.dropdown('set selected', vendors[0].id);
+          }
+          // otherwise restore previous selection if still valid
+          else if (vendors.some(v => v.id == currentVendorId)) {
+            $vendorSelect.dropdown('set selected', currentVendorId);
+          }
+
+          // select currency by name
+          const currencyValue = $currencySelect
+            .find('option')
+            .filter(function () {
+              return $(this).text() === currencyName;
+            })
+            .val();
+          if (currencyValue) {
+            $currencySelect.dropdown('set selected', currencyValue);
+          } else {
+            $currencySelect.dropdown('clear');
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error('Error fetching vendors:', error);
+        }
+      });
+    } else {
+      // clear both vendor & currency if no hub selected
+      $('#awb_vendor')
+        .empty()
+        .append('<option value="">Select vendor</option>')
+        .dropdown('clear')
+        .dropdown('refresh');
+      $('#awb_currency').dropdown('clear');
+    }
+  });
+
+  // on page load, trigger if hub already has a value
+  $('#awb_hub').val() && $('#awb_hub').trigger('change');
+</script>

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %} {{ title }} {% endblock title %}
+
+{% block pagetitle %}Add Ledger Entry{% endblock %}
+{% block content %}
+    <div class="bg-white p-8 rounded-lg shadow-lg mx-auto">
+        <!-- Zip Code Creation Form -->
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <div class="grid grid-cols-3 gap-4">
+                {% for field in form %}
+                    {% if field.name != 'invoice' %}
+                        <div class="relative mb-6">
+                            {{ field.label_tag }}
+                            {% if field.name == 'amount' %}<span id="agency-balance-display" class="text-sm text-gray-600 ml-1"></span>{% endif %}
+                            {{ field }}
+                            {{ field.errors }}
+                            {% if field.help_text %}<p class="help">{{ field.help_text|safe }}</p>{% endif %}
+                        </div>
+                    {% else %}
+                        <div class="relative mb-6 invoice-field" style="display: none;">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {{ field.errors }}
+                            {% if field.help_text %}<p class="help">{{ field.help_text|safe }}</p>{% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <!-- Submit Button -->
+            <div class="flex justify-end">
+                <button type="submit" class="bg-primary text-white p-3 w-full text-xl">Create</button>
+            </div>
+        </form>
+        <!-- Back Button -->
+        <div class="mt-6 text-center">
+            <a href="{% url 'finance:pages:ledger:list' %}"
+               class="text-gray-600 hover:underline font-semibold text-lg">← Back to Ledger List</a>
+        </div>
+    </div>
+    <!-- Tailwind CSS Styling -->
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %} {{ title }} {% endblock title %}
+
+{% block pagetitle %}Create Run{% endblock %}
+{% block content %}
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full mx-auto">
+        <!-- Run Creation Form -->
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <div class="grid grid-cols-12 gap-4">
+                {% for field in form %}
+                    {% if field.name == 'manifest' %}
+                        <div class="col-span-8 relative mb-12">
+                        {% else %}
+                            <div class="col-span-4 relative mb-6">
+                            {% endif %}
+                            {{ field.label_tag }} {{ field }}
+                            {{ field.errors }}
+                            {% if field.help_text %}<p class="help">{{ field.help_text|safe }}</p>{% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <!-- Submit Button -->
+                <button type="submit" class="bg-primary text-white p-3 w-full text-xl">Create</button>
+            </form>
+            <!-- Back Button -->
+            <div class="mt-6 text-center">
+                <a href="{% url 'hub:pages:run:list' %}"
+                   class="text-gray-600 hover:underline font-semibold text-lg">← Back to Run List</a>
+            </div>
+        </div>
+        <!-- Tailwind CSS Styling -->
+        <script>
+        $(document).ready(function() {
+            // Initialize dropdowns
+            $('#id_manifest').dropdown({
+                allowAdditions: false,
+                multiple: true
+            });
+            
+            // Setup change handler for hub dropdown
+            $('#id_hub').change(function () {
+                const hubId = $(this).val();
+                console.log('Hub changed:', hubId);
+                
+                if (hubId) {
+                    $.ajax({
+                        url: "{% url 'hub:pages:run:get_hub_vendors' %}",
+                        type: "GET",
+                        data: { hub_id: hubId },
+                        success: function (response) {
+                            console.log('Vendors Response:', response);
+                            
+                            // Clear and update vendor dropdown
+                            $('#id_vendor').dropdown('clear');
+                            $('#id_vendor').dropdown('setup menu', {
+                                values: response.map(function(vendor) {
+                                    return {
+                                        name: vendor.account_number,
+                                        value: vendor.id
+                                    };
+                                })
+                            });
+                            $('#id_vendor').dropdown('refresh');
+                            
+                            // Clear manifest dropdown when hub changes
+                            $('#id_manifest').dropdown('clear');
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching vendors:', error);
+                        }
+                    });
+                } else {
+                    // Clear vendor dropdown if no hub selected
+                    $('#id_vendor').dropdown('clear');
+                    $('#id_vendor').dropdown('setup menu', { values: [] });
+                    $('#id_vendor').dropdown('refresh');
+                }
+            });
+            
+            // Setup change handler for vendor dropdown
+            $('#id_vendor').change(function () {
+                const vendorId = $(this).val();
+                console.log('Vendor changed:', vendorId);
+                
+                if (vendorId) {
+                    $.ajax({
+                        url: "{% url 'hub:pages:run:get_vendor_default_manifest' %}",
+                        type: "GET",
+                        data: { vendor_id: vendorId },
+                        success: function (response) {
+                            console.log('API Response:', response);
+                            
+                            setTimeout(function() {
+                                console.log('Attempting to set dropdown value...');
+                                
+                                // Clear existing selections
+                                $('#id_manifest').dropdown('clear');
+                                
+                                // Select each manifest from the response
+                                response.forEach(function(manifest) {
+                                    console.log('Selecting manifest:', manifest.display_name);
+                                    $('#id_manifest').dropdown('set selected', manifest.display_name);
+                                });
+                                
+                                // Refresh the dropdown
+                                $('#id_manifest').dropdown('refresh');
+                                
+                                console.log('Dropdown value set attempt completed');
+                            }, 100);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching manifests:', error);
+                        }
+                    });
+                }
+            });
+        });
+        </script>
+    {% endblock %}

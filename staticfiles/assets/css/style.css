@@ -1,0 +1,344 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #f1f1f1;
+}
+
+.navbar {
+  margin-left: 85px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background: #10345a;
+  color: white;
+  padding-right: 15px;
+  transition: all 0.3s ease-in-out;
+}
+
+.navbar.active {
+  margin-left: 250px;
+}
+
+.menu-toggle {
+  font-size: 24px;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+  padding: 15px 20px;
+  background: #f97c29;
+}
+
+.nav-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.add-user-btn {
+  font-family: "Poppins", sans-serif;
+  background: #F09119;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.add-user-btn i {
+  margin-left: 5px;
+  font-size: 12px;
+}
+
+.add-user-btn:hover {
+  background: #c9760d;
+}
+
+.sidebar {
+  width: 85px;
+  height: 100vh;
+  background: #F8F9FA;
+  position: fixed;
+  top: 0;
+  left: 0;
+  transition: all 0.3s;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.sidebar.active {
+  width: 250px;
+}
+
+.sidebar.active .sidebar-menu {
+  height: 80vh;
+  overflow-y: scroll;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.sidebar-logo img {
+  width: 70px;
+  height: 36px;
+  -o-object-fit: contain;
+  object-fit: contain;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.menu-item {
+  position: relative;
+  width: 100%;
+}
+
+/* Hover dropdown for collapsed sidebar */
+.sidebar:not(.active) .menu-item:hover .dropdown-content {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Touch hover support for mobile */
+.sidebar:not(.active) .menu-item.touch-hover .dropdown-content {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Accordion style for expanded sidebar */
+.sidebar.active .menu-item.active .dropdown-content {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  position: static;
+  box-shadow: none;
+  width: 100%;
+  margin-left: 0;
+  padding-left: 30px;
+  background: #e9ecef;
+}
+
+.menu-link {
+  color: #333;
+  font-size: 16px;
+  text-decoration: none;
+  padding: 12px 15px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  position: relative;
+}
+
+.menu-link i {
+  font-size: 22px;
+  width: 24px;
+  text-align: center;
+}
+
+.menu-link .menu-text {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: all 0.3s;
+}
+
+.menu-link:hover {
+  color: #F09119;
+  background: #e9ecef;
+}
+
+/* Arrow indicator for dropdowns */
+.menu-link::after {
+  content: "\f105";
+  /* FontAwesome right arrow */
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  position: absolute;
+  right: 15px;
+  opacity: 0;
+  transition: all 0.3s;
+}
+
+/* Show arrow in expanded sidebar */
+.sidebar.active .menu-link::after {
+  opacity: 1;
+}
+
+/* Rotate arrow for active accordion */
+.sidebar.active .menu-item.active .menu-link::after {
+  transform: rotate(90deg);
+}
+
+/* Make menu text visible in expanded sidebar */
+.sidebar.active .menu-link .menu-text {
+  opacity: 1;
+  width: auto;
+}
+
+/* Dropdown/Submenu styles */
+.dropdown-content {
+  position: absolute;
+  top: 0;
+  left: 85px;
+  width: 200px;
+  background: #e9ecef;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 0 5px 5px 0;
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  z-index: 10;
+}
+
+.dropdown-content a {
+  display: block;
+  padding: 10px 15px;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.dropdown-content a:hover {
+  background: #dadfe4;
+  color: #F09119;
+}
+
+/* Accordion style in expanded sidebar */
+.sidebar.active .dropdown-content {
+  border-radius: 0;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.sidebar.active .dropdown-content a {
+  font-size: 14px;
+  padding: 8px 15px;
+}
+
+/* Main content area */
+.content {
+  margin-left: 85px;
+  padding: 20px;
+  transition: all 0.3s;
+}
+
+.content.active {
+  margin-left: 250px;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 100px;
+  }
+
+  .sidebar.active {
+    width: 250px;
+  }
+
+  .navbar {
+    margin-left: 0;
+  }
+
+  .content {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 992px) {
+  .sidebar {
+    width: 60px;
+  }
+
+  .sidebar.active {
+    width: 250px;
+  }
+
+  .navbar {
+    margin-left: 60px;
+  }
+
+  .content {
+    margin-left: 60px;
+  }
+
+  .sidebar-logo img {
+    width: 50px;
+    height: 36px;
+    -o-object-fit: contain;
+    object-fit: contain;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 0;
+    display: none;
+  }
+
+  .sidebar.active {
+    width: 250px;
+    display: block;
+  }
+
+  .navbar {
+    margin-left: 0;
+  }
+
+  .content {
+    margin-left: 0;
+  }
+
+  .navbar.active {
+    margin-left: 250px;
+  }
+
+  .content.active {
+    margin-left: 250px;
+  }
+}
+
+@media (max-width: 576px) {
+  .menu-toggle {
+    font-size: 20px;
+  }
+
+  .menu-link {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .add-user-btn {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+}
+
+/*# sourceMappingURL=style.css.map */

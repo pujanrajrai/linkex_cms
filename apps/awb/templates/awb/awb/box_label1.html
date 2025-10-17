@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Print Box Labels</title>
+
+  <!-- Tailwind via CDN (for quick setup) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="m-0 p-0 print:m-0 print:p-0">
+{% if awb.vendor.code == "COURIERX" %}
+  <style>
+  .rotate-180 {
+    transform: rotate(90deg);
+  }
+  @page {
+    margin: 0;
+    size: auto; /* use default printer page size */
+  }
+
+  @media print {
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Hide headers and footers (browser support varies) */
+    html, body {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Chrome-specific fix (has limited effect) */
+    @page {
+      margin: 0;
+    }
+  }
+</style>
+{% endif %}
+  {% for box in box_details %}
+    <div class="flex items-center justify-center h-screen w-screen print:break-after-page">
+      <img
+        src="data:image/png;base64,{{ box.box_label|safe }}"
+        alt="Box Label {{ box.get_box_number }}"
+        class="transform rotate-180 origin-center
+               max-w-[180mm] max-h-[260mm] object-contain"
+      />
+    </div>
+  {% endfor %}
+
+  <script>
+    // Trigger the print dialog as soon as the page loads
+    window.onload = function() {
+      window.print();
+    };
+
+    // After the print dialog is closed (whether printed or cancelled), close this tab/window
+    window.onafterprint = function() {
+      window.close();
+    };
+  </script>
+</body>
+</html>

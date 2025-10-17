@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %} {{ title }} {% endblock title %}
+
+{% block pagetitle %}{{ obj }}{% endblock %}
+
+{% block content %}
+{% csrf_token %} 
+    <style>
+    /* Ensure search row is not clickable */
+    #search-row td {
+        pointer-events: auto !important;
+    }
+    </style>
+    <!-- Data Table -->
+    <div class="bg-white p-5">
+        <div class="overflow-x-auto">
+            <table id="dataTable"
+                   class="display min-w-full border-collapse border border-gray-300 w-full">
+                <thead class="bg-gray-200">
+                    <tr class="bg-primary text-white">
+                        <th class="p-3 border">SN</th>
+                        <th class="p-3 border" data-search="false">Date/Time</th>
+                        <th class="p-3 border" data-search="false">Changd By</th>
+                        <th class="p-3 border" data-search="false">Changes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% comment %} {% if history_entries %}
+                    {% for entry in history_entries %}
+                        <tr>
+                            <td class="p-2 border sn-column">{{ forloop.counter}}</td>
+                            <td class="p-2 border">{{ entry.date }}</td>
+                            <td class="p-2 border">{{ entry.changed_by }}</td>
+                            <td class="p-2 border">
+                                <ul>
+                                    {% for change in entry.changes %}
+                                        <li>{{ change }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            
+                        </tr>
+                    {% endfor %}
+                    {% else %}
+                        <!-- Ensure the row count matches the headers -->
+                        <tr>
+                            <td colspan="3" class="text-center">No history available</td>
+                        </tr>
+                    {% endif %} {% endcomment %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function() {
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').DataTable().destroy();
+        }
+        
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        console.log("csrftoken", csrftoken)
+
+        $('#dataTable').DataTable({
+            processing: true,
+            serverSide: true,
+           
+            ajax: {
+                url: "{% url 'history_list' %}",  
+                type: "POST",
+                data: function(d) {
+                    // Add model_name and object_id to the request data
+                    d.csrfmiddlewaretoken = csrftoken;
+
+                    d.model_name = '{{ model_name }}';  
+                    d.object_id = '{{ obj.id }}';     
+                    return d
+                },
+                beforeSend: function(xhr) {
+                    // Add the CSRF token to the AJAX request headers
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+                dataSrc: 'data',  // Points to the 'data' key in the returned JSON
+            },
+            columns: [
+                { 
+                    data: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    },
+                    name: "sn", 
+                    searchable: false 
+                },
+                { data: 'date' },
+                { data: 'changed_by' },
+                { 
+                    data: 'changes', 
+                    render: function(data, type, row) {
+                        // Render the changes array as a string
+                        return data.join(', ');
+                    }
+                },
+            ]
+        });
+    });
+</script>
+{% endblock %}
+

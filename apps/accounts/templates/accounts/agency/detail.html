@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% block title %} {{ title }} {% endblock title %}
+
+{% block pagetitle %}
+    Agency Details
+{% endblock pagetitle %}
+{% block content %}
+    <div class="bg-white p-8 rounded-lg shadow-lg mx-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-xl font-semibold">Agency Details</h1>
+            {% if request.user.role == 'admin' %}
+                <div class="flex justify-between">
+                    <a href="{% url 'accounts:pages:agency:update' agency.id %}"
+                       class="bg-secondary text-white px-4 py-2 rounded-md hover:bg-secondary-dark transition-all duration-300 flex items-center gap-2">
+                        <i class="fi fi-rr-edit text-sm" style="margin-top: 3px;"></i>
+                        <span>Edit Agency</span>
+                    </a>&nbsp;
+                    <a href="{% url 'history_list' %}?model_name=Agency&object_id={{ agency.pk }}"
+                       title="History">
+                        <button class="bg-primary text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-700 transition-all duration-300">
+                            <i class="fi fi-rr-time-past"></i>
+                        </button>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        <div class="grid grid-cols-4 gap-4 mb-4">
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Company Name</label>
+                <input type="text"
+                       value="{{ agency.company_name }}"
+                       readonly
+                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-2 text-gray-800 rounded-md">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Owner Name</label>
+                <input type="text"
+                       value="{{ agency.owner_name }}"
+                       readonly
+                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-2 text-gray-800 rounded-md">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Country</label>
+                <input type="text"
+                       value="{{ agency.country.name }}"
+                       readonly
+                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-2 text-gray-800 rounded-md">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Email</label>
+                <input type="text"
+                       value="{{ agency.email }}"
+                       readonly
+                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-2 text-gray-800 rounded-md">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Zip Code</label>
+                <input type="text"
+                       value="{{ agency.zip_code }}"
+                       readonly
+                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-2 text-gray-800 rounded-md">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">State</label>
+                <input type="text"
+                       value="{{ agency.state }}"
+                       readonly
+                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-2 text-gray-800 rounded-md">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">City</label>
+                <input type="text"
+                       value="{{ agency.city }}"
+                       readonly
+                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-2 text-gray-800 rounded-md">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Address 1</label>
+                <input type="text"
+                       value="{{ agency.address1 }}"
+                       readonly
+                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-2 text-gray-800 rounded-md">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Address 2</label>
+                <input type="text"
+                       value="{{ agency.address2 }}"
+                       readonly
+                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-2 text-gray-800 rounded-md">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Contact No 1</label>
+                <input type="text"
+                       value="{{ agency.contact_no_1 }}"
+                       readonly
+                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-2 text-gray-800 rounded-md">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Contact No 2</label>
+                <input type="text"
+                       value="{{ agency.contact_no_2 }}"
+                       readonly
+                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-2 text-gray-800 rounded-md">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Credit Limit</label>
+                <input type="text"
+                       value="{{ agency.credit_limit }}"
+                       readonly
+                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-2 text-gray-800 rounded-md">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Max Users</label>
+                <input type="text"
+                       value="{{ agency.max_user }}"
+                       readonly
+                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-2 text-gray-800 rounded-md">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Agency Code</label>
+                <input type="text"
+                       value="{{ agency.agency_code }}"
+                       readonly
+                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-2 text-gray-800 rounded-md">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Status</label>
+                <input type="text"
+                       value="{% if agency.is_blocked %}Blocked{% else %}Active{% endif %}"
+                       readonly
+                       class="peer block w-full border border-gray-300 {% if agency.is_blocked %}bg-red-100{% else %}bg-green-100{% endif %} px-3 py-2 text-gray-800 rounded-md">
+            </div>
+            <div></div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Company PAN/VAT</label>
+                {% if agency.company_pan_vat %}
+                    <a class="text-blue-500 hover:text-blue-700"
+                       href="{{ agency.company_pan_vat.url }}"
+                       target="_blank">View PAN/VAT</a>
+                {% else %}
+                    <span class="text-gray-500">No PAN/VAT uploaded</span>
+                {% endif %}
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Citizenship Front</label>
+                {% if agency.citizenship_front %}
+                    <a class="text-blue-500 hover:text-blue-700"
+                       href="{{ agency.citizenship_front.url }}"
+                       target="_blank">View Citizenship Front</a>
+                {% else %}
+                    <span class="text-gray-500">No citizenship front uploaded</span>
+                {% endif %}
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Citizenship Back</label>
+                {% if agency.citizenship_back %}
+                    <a class="text-blue-500 hover:text-blue-700"
+                       href="{{ agency.citizenship_back.url }}"
+                       target="_blank">View Citizenship Back</a>
+                {% else %}
+                    <span class="text-gray-500">No citizenship back uploaded</span>
+                {% endif %}
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Passport</label>
+                {% if agency.passport %}
+                    <a class="text-blue-500 hover:text-blue-700"
+                       href="{{ agency.passport.url }}"
+                       target="_blank">View Passport</a>
+                {% else %}
+                    <span class="text-gray-500">No passport uploaded</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- Agency Users -->
+    <div class="bg-white p-8 mt-3 rounded-lg shadow-lg mx-auto">
+        <div class="flex justify-between items-center mb-2">
+            <h1 class="text-xl font-semibold mb-4">Agency Users</h1>
+            <div class="flex">
+                {% if agency.users.count < agency.max_user %}
+                    {% if request.user.role == 'admin' or request.user.is_default_user %}
+                        <a href="{% url 'accounts:pages:agency:add_agency_user' agency.pk %}"
+                           class="bg-primary text-white px-4 py-2 rounded-md shadow-md hover:bg-primary-dark transition-all duration-300 inline-flex items-center gap-2">
+                            <i class="fi fi-rr-user-add"></i>
+                            <span>Add User</span>
+                        </a>
+                    {% endif %}
+                {% endif %}
+                <a href="{% url 'accounts:pages:agency:user_history_by_agency' agency_id=agency.pk %}"
+                   title='History'>
+                    <button class="bg-primary text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-700 transition-all duration-300">
+                        <i class="fi fi-rr-time-past"></i>
+                    </button>
+                </a>
+            </div>
+        </div>
+        {% if agency.users.all %}
+            <table class="table-auto border-collapse border border-gray-300 w-full text-sm">
+                <thead class="bg-gray-200 text-left">
+                    <tr>
+                        <th class="border border-gray-300 px-2 py-1">Email</th>
+                        <th class="border border-gray-300 px-2 py-1">Default User</th>
+                        <th class="border border-gray-300 px-2 py-1">Status</th>
+                        {% if request.user.role == 'admin' or request.user.is_default_user %}
+                            <th class="border border-gray-300 px-2 py-1">Action</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in agency.users.all %}
+                        <tr class="border-t">
+                            <td class="border border-gray-300 px-2 py-1">
+                                <input type="text"
+                                       value="{{ user.email }}"
+                                       readonly
+                                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-1 text-sm rounded-md">
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
+                                <input type="text"
+                                       value="{% if user.is_default_user %}Yes{% else %}No{% endif %}"
+                                       readonly
+                                       class="peer block w-full border border-gray-300 bg-gray-200 px-3 py-1 text-sm rounded-md">
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
+                                <input type="text"
+                                       value="{% if user.is_blocked %}Inactive{% else %}Active{% endif %}"
+                                       readonly
+                                       class="peer block w-full border border-gray-300 {% if user.is_blocked %}bg-green-100{% else %}bg-red-100{% endif %} px-3 py-1 text-sm rounded-md">
+                            </td>
+                            {% if request.user.role == 'admin' or request.user.is_default_user %}
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <div class="flex items-center gap-x-3">
+                                        <!-- Update Button -->
+                                        <a href="{% url 'accounts:pages:user:agency_user_update' agency_pk=agency.pk pk=user.pk %}"
+                                           title='Update'>
+                                            <button class="bg-secondary text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-700 transition-all duration-300">
+                                                <i class="fi fi-rr-edit"></i>
+                                            </button>
+                                        </a>
+                                        <!-- Update Button -->
+                                        <a href="{% url 'accounts:pages:user:agency_change_password' agency_pk=agency.pk pk=user.pk %}"
+                                           title='Password Change'>
+                                            <button class="bg-primary text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-700 transition-all duration-300">
+                                                <i class="fi fi-rr-key"></i>
+                                            </button>
+                                        </a>
+                                        <!-- Block Button -->
+                                        {% if request.user.pk != user.pk %}
+                                            {% if user.is_blocked %}
+                                                <a href="{% url 'accounts:pages:user:unblock' pk=user.pk %}"
+                                                   onclick="return confirm('Are you sure you want to unblock this user?')"
+                                                   title="Unblock">
+                                                    <button class="bg-red-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-green-700 transition-all duration-300">
+                                                        <i class="fi fi-rr-unlock"></i>
+                                                    </button>
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'accounts:pages:user:block' pk=user.pk %}"
+                                                   onclick="return confirm('Are you sure you want to block this user?')"
+                                                   title="Block">
+                                                    <button class="bg-green-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-red-700 transition-all duration-300">
+                                                        <i class="fi fi-rr-lock"></i>
+                                                    </button>
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-gray-600">No users found for this agency.</p>
+        {% endif %}
+    </div>
+
+    {% if request.user.role == 'admin' %}
+        <div class="bg-white p-8 mt-3 rounded-lg shadow-lg mx-auto flex gap-2">
+            <a href="{% url 'accounts:pages:agency:list' %}"
+               class="bg-primary text-white p-3 flex-1 text-xl text-center">Back To List</a>
+            <a href="{% url 'accounts:pages:agency:update' agency.id %}"
+               class="bg-secondary text-white p-3 flex-1 text-xl text-center">Update Agency</a>
+            {% if not agency.is_blocked %}
+                <a href="{% url 'accounts:pages:agency:block' agency.id %}"
+                   class="bg-green-600 text-white p-3 flex-1 text-xl text-center">Block Agency</a>
+            {% else %}
+                <a href="{% url 'accounts:pages:agency:unblock' agency.id %}"
+                   class="bg-red-600 text-white p-3 flex-1 text-xl text-center">Unblock Agency</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock content %}

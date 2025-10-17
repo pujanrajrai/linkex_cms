@@ -1,0 +1,774 @@
+{% extends "base.html" %}
+{% block title %} {{ title }} {% endblock title %}
+
+{% block pagetitle %}
+    Add AWB to Run
+{% endblock pagetitle %}
+{% block button %}
+    <div class="relative">
+        <button id="exportDropdown"
+                class="bg-blue-500 text-white font-medium px-4 py-2 rounded hover:bg-blue-600 transition flex items-center">
+            <i class="fi fi-rr-download mr-2"></i>
+            Export
+            <i class="fi fi-rr-angle-down ml-2"></i>
+        </button>
+        <div id="exportOptions"
+             class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+           
+        </div>
+    </div>
+    <script>
+        const dropdown = document.getElementById('exportDropdown');
+        const options = document.getElementById('exportOptions');
+        
+        dropdown.addEventListener('click', () => {
+            options.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target)) {
+                options.classList.add('hidden');
+            }
+        });
+
+        fetch("{% url 'hub:pages:run:manifest_formats_data' %}")
+        .then(response => response.json())
+        .then(data => {
+            // Populate the dropdown with the fetched data
+            data.forEach(format => {
+                const optionElement = document.createElement('a');
+                optionElement.href = `{% url 'hub:pages:run:export_excel' run.id %}?type=${format.name}`;
+                optionElement.target = '_blank';
+                optionElement.classList.add('block', 'px-4', 'py-2', 'text-gray-800', 'hover:bg-gray-100');
+                optionElement.textContent = format.display_name;
+                options.appendChild(optionElement);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching manifest formats:', error);
+        });
+    </script>
+{% endblock button %}
+{% block content %}
+     <div class="flex gap-4">
+        <!-- Run Details Section (100% width) -->
+        <div class="w-full">
+            <div class="bg-white p-3 mb-3 rounded-lg shadow">
+                <!-- Run Details Header -->
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-lg font-semibold mb-2">Run Details</h2>
+                    <div class="flex items-center">
+                        <div class="flex  mr-[100px]">
+                            {% for format in run.manifest.all %}
+                                <a href="{% url 'hub:pages:run:export_excel' run.id %}?type={{ format.name }}"
+                                   target="_blank"
+                                   class="bg-secondary mr-3 text-white font-medium px-2 py-1 text-sm rounded hover:bg-blue-600 transition hover:cursor-pointer hover:bg-blue-600 hover:text-white">
+                                    {{ format.display_name }}
+                                </a>
+                            {% endfor %} 
+                        </div>
+                        <div class="flex">
+                            {% if not run.is_locked %}
+                                <a href="{% url 'hub:pages:run:update' run.id %}"
+                                   class="bg-secondary text-white font-medium px-2 py-1 text-sm rounded hover:bg-blue-600 transition hover:cursor-pointer hover:bg-blue-600 hover:text-white">
+                                    Edit Run
+                                </a>&nbsp;
+                            {% endif %}
+                            {% if not run.is_locked %}
+                                <a href="{% url 'hub:pages:run:lock_run' run.id %}"
+                                   class="bg-secondary text-white font-medium px-2 py-1 text-sm rounded hover:bg-blue-600 transition hover:cursor-pointer hover:bg-blue-600 hover:text-white">
+                                    Lock Run
+                                </a>&nbsp;
+                            {% endif %}
+                            {% if run.is_locked %}
+                                <a href="{% url 'hub:pages:run:unlock_run' run.id %}"
+                                   class="bg-secondary text-white font-medium px-2 py-1 text-sm rounded hover:bg-blue-600 transition hover:cursor-pointer hover:bg-blue-600 hover:text-white">
+                                    Unlock Run
+                                </a>&nbsp;
+                            {% endif %}
+                            <a href="{% url 'hub:pages:run:run_history' run_id=run.id %}"
+                               class="bg-secondary text-white font-medium px-2 py-1 text-sm rounded hover:bg-blue-600 transition hover:cursor-pointer hover:bg-blue-600 hover:text-white">
+                                <i class="fi fi-rr-time-past"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Run Details Grid -->
+                 <div class="grid grid-cols-1 md:grid-cols-6 gap-2 mb-4">
+                    <div class="mb-2">
+                        <p class="text-gray-600 text-xs mb-1">Run Number</p>
+                        <input type="text"
+                               value="{{ run.run_no }}"
+                               class="peer block w-full appearance-none border border-gray-300 bg-gray-100 px-2 pt-2 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                               readonly>
+                    </div>
+                    <div class="mb-2">
+                        <p class="text-gray-600 text-xs mb-1">Company</p>
+                        <input type="text"
+                               value="{{ run.company.name }}"
+                               class="peer block w-full appearance-none border border-gray-300 bg-gray-100 px-2 pt-2 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                               readonly>
+                    </div>
+                    <div class="mb-2">
+                        <p class="text-gray-600 text-xs mb-1">Hub</p>
+                        <input type="text"
+                               value="{{ run.hub.name }}"
+                               class="peer block w-full appearance-none border border-gray-300 bg-gray-100 px-2 pt-2 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                               readonly>
+                    </div>
+                    <div class="mb-2">
+                        <p class="text-gray-600 text-xs mb-1">Vendor</p>
+                        <input type="text"
+                               value="{{ run.vendor.name }}"
+                               class="peer block w-full appearance-none border border-gray-300 bg-gray-100 px-2 pt-2 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                               readonly>
+                    </div>
+                    <div class="mb-2">
+                        <p class="text-gray-600 text-xs mb-1">Flight Number</p>
+                        <input type="text"
+                               value="{{ run.flight_no }}"
+                               class="peer block w-full appearance-none border border-gray-300 bg-gray-100 px-2 pt-2 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                               readonly>
+                    </div>
+                    <div class="mb-2">
+                        <p class="text-gray-600 text-xs mb-1">Flight Departure Date</p>
+                        <input type="text"
+                               value="{{ run.flight_departure_date }}"
+                               class="peer block w-full appearance-none border border-gray-300 bg-gray-100 px-2 pt-2 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                               readonly>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-2 mb-4">
+                    <div class="mb-2">
+                        <p class="text-gray-600 text-xs mb-1">MAWB Number</p>
+                        <input type="text"
+                               value="{{ run.mawb_no }}"
+                               class="peer block w-full appearance-none border border-gray-300 bg-gray-100 px-2 pt-2 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                               readonly>
+                    </div>
+                    {% comment %}{% endcomment %} <div class="mb-2">
+                        <p class="text-gray-600 text-xs mb-1">Actual Weight</p>
+                        <input type="text"
+                               value="{{ run.total_actual_weight }}"
+                               class="peer block w-full appearance-none border border-gray-300 bg-gray-100 px-2 pt-2 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                               readonly>
+                    </div>
+                    <div class="mb-2">
+                        <p class="text-gray-600 text-xs mb-1">Volumetric Weight</p>
+                        <input type="text"
+                               value="{{ run.total_volumetric_weight }}"
+                               class="peer block w-full appearance-none border border-gray-300 bg-gray-100 px-2 pt-2 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                               readonly>
+                    </div>
+                    <div class="mb-2">
+                        <p class="text-gray-600 text-xs mb-1">Charged Weight</p>
+                        <input type="text"
+                               value="{{ run.total_charged_weight }}"
+                               class="peer block w-full appearance-none border border-gray-300 bg-gray-100 px-2 pt-2 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                               readonly>
+                    </div>
+                    <div class="mb-2">
+                        <p class="text-gray-600 text-xs mb-1">Boxes</p>
+                        <input type="text"
+                               value="{{ run.total_boxes }}"
+                               class="peer block w-full appearance-none border border-gray-300 {% if run.total_boxes != run.total_bag %}bg-red-100{% else %}bg-gray-100{% endif %} px-2 pt-2 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                               readonly>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <p class="text-gray-600 text-xs mb-1">Bags</p>
+                        <input type="text"
+                               value="{{ run.unique_bag_count }}"
+                               class="peer block w-full appearance-none border border-gray-300 {% if run.total_boxes != run.unique_bag_count %}bg-red-100{% else %}bg-gray-100{% endif %} px-2 pt-2 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                               readonly>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <p class="text-gray-600 text-xs mb-1">Shipment</p>
+                        <input type="text"
+                               value="{{ run.total_shipment }}"
+                               class="peer block w-full appearance-none border border-gray-300 bg-gray-100 px-2 pt-2 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                               readonly>
+                    </div> 
+                </div>
+            </div>
+        </div>
+    </div> 
+    <!-- Run Status Section (100% width) -->
+    <div class="bg-white p-3 mb-3 rounded-lg shadow mt-4">
+        <h2 class="text-lg font-semibold mb-2">Run Status</h2>
+        <table class="table-auto border-collapse border border-gray-300 w-full text-sm">
+            <thead class="bg-gray-200 text-left">
+                <tr>
+                    <th class="border border-gray-300 px-2 py-1">Date</th>
+                    <th class="border border-gray-300 px-2 py-1">Status</th>
+                    <th class="border border-gray-300 px-2 py-1">Location</th>
+                    <th class="border border-gray-300 px-2 py-1">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <form method="post"
+                      action="{% url 'hub:pages:run:update_run_status' run.id %}">
+                    {% csrf_token %}
+                    <tr>
+                        <td class="border border-gray-300 px-2 py-1">{{ run_status_form.created_at }}</td>
+                        <td class="border border-gray-300 px-2 py-1">{{ run_status_form.status }}</td>
+                        <td class="border border-gray-300 px-2 py-1">{{ run_status_form.location }}</td>
+                        <td class="border border-gray-300 px-2 py-1">
+                            <button type="submit"
+                                    class="bg-green-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                                    tabindex="-1">
+                                <i class="fi fi-rr-plus"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </form>
+                {% for status in run_status %}
+                    <tr>
+                        <td class="border border-gray-300 px-2 py-1">{{ status.created_at|date:"d-m-Y" }}</td>
+                        <td class="border border-gray-300 px-2 py-1">{{ status.status }}</td>
+                        <td class="border border-gray-300 px-2 py-1">{{ status.location }}</td>
+                        <td class="border border-gray-300 px-2 py-1">
+                            <a href="{% url 'hub:pages:run:delete_run_status' status.id %}"
+                               onclick="return confirm('Are you sure you want to delete this run status?')"
+                               class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                               tabindex="-1">
+                                <i class="fi fi-rr-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Add AWB Form Section -->
+    
+    <div class="bg-white p-3 mb-3 rounded-lg shadow">
+        <!-- Error Display Area -->
+        <div id="errorContainer" class="hidden mb-4">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                 role="alert">
+                <span id="errorMessage" class="block sm:inline"></span>
+                <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                    <button id="closeError" type="button" class="text-red-700">
+                        <i class="fi fi-rr-cross-small"></i>
+                    </button>
+                </span>
+            </div>
+        </div>
+        <form id="runAwbFrom" method="post" class="mt-4">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            <table class="table-auto border-collapse border border-gray-300 w-full text-sm">
+                <thead class="bg-gray-200 text-left">
+                    <tr>
+                        <th class="border border-gray-300 px-2 py-1 w-[8%]">AWB Number</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[10%]">Bag Details</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[8%]">Forwarding Number</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[5%]">Total Boxes</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[10%]">AW-VW-CW</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[18%]">Consignee-Consignor-Destination</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[5%]">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="awbTableBody">
+                    {% for form in formset %}
+                        <tr class="awb-row" data-form-idx="{{ forloop.counter0 }}">
+                            <td class="border border-gray-300 px-2 py-1">
+                                <input type="text"
+                                       name="{{ form.prefix }}-awb_number"
+                                       class="awb-input w-full p-1 border rounded"
+                                       required
+                                       value="{% if form.awb_number.value %}{{ form.awb_number.value }}{% endif %}">
+                                {{ form.awb_number.errors }}
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
+                                <input type="text"
+                                       name="{{ form.prefix }}-bagging_number"
+                                       class="bagging-input w-full p-1 border rounded"
+                                       required
+                                       value="{% if form.bagging_number.value %}{{ form.bagging_number.value }}{% endif %}">
+                                {{ form.bagging_number.errors }}
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
+                                <input type="text"
+                                       name="{{ form.prefix }}-forwarding_number"
+                                       class="forwarding-input w-full p-1 border rounded"
+                                       value="{% if form.forwarding_number.value %}{{ form.forwarding_number.value }}{% endif %}">
+                                {{ form.forwarding_number.errors }}
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
+                                <input type="number"
+                                       name="{{ form.prefix }}-total_boxes"
+                                       class="total-boxes w-full p-1 border rounded bg-gray-50"
+                                       readonly
+                                       tabindex="-1"
+                                       value="{% if form.total_boxes.value %}{{ form.total_boxes.value }}{% endif %}">
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
+                                <input type="text"
+                                       name="{{ form.prefix }}-aw_vw_cw"
+                                       class="weight-input w-full p-1 border rounded bg-gray-50"
+                                       readonly
+                                       tabindex="-1"
+                                       value="{% if form.aw_vw_cw.value %}{{ form.aw_vw_cw.value }}{% endif %}">
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
+                                <input type="text"
+                                       name="{{ form.prefix }}-consignee_consignor_destination"
+                                       class="ccd-input w-full p-1 border rounded bg-gray-50"
+                                       readonly
+                                       tabindex="-1"
+                                       value="{% if form.consignee_consignor_destination.value %}{{ form.consignee_consignor_destination.value }}{% endif %}">
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
+                                <button type="button"
+                                        class="delete-row bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                                        tabindex="-1">
+                                    <i class="fi fi-rr-trash"></i>
+                                </button>
+                                <button type="button"
+                                        class="add-row bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 transition hidden"
+                                        tabindex="-1">
+                                    <i class="fi fi-rr-plus"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="flex justify-end mt-4">
+                <button type="submit"
+                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                    Add AWB to Run
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow">
+        <h2 class="text-xl font-semibold mb-3">AWBs in this Run</h2>
+        <div class="overflow-x-auto">
+            <table id="awbTable"
+                   class="table-auto border-collapse border border-gray-300 w-full text-sm">
+                <thead class="bg-gray-200 text-left">
+                    <tr>
+                        <th class="border border-gray-300 px-2 py-1 w-[10%]">AWB Number</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[10%]">Forwarding No</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[10%]">Consignor</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[10%]">Consignee</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[10%]">Destination</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[12%]">A.Weight</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[10%]">V.Weight</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[10%]">C.Weight</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[5%]">Boxes</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[10%]">Bag No</th>
+                        <th class="border border-gray-300 px-2 py-1 w-[10%]">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="awbs_list">
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            $('#awbTable').DataTable({
+                processing: true,
+                serverSide: true,
+                paging: false,        
+                searching: false,     
+                ordering: false,
+                info: false,
+                ordering: false, 
+                scrollY: false,
+                ajax: '{% url "hub:pages:run:run_awbs_data" run.id %}',
+                columns: [
+                    { data: 'awb_number' },
+                    { data: 'forwarding_number' },
+                    { data: 'consignor' },
+                    { data: 'consignee' },
+                    { data: 'destination' },
+                    { data: 'actual_weight' },
+                    { data: 'volumetric_weight' },
+                    { data: 'charged_weight' },
+                    { data: 'boxes' },
+                    { data: 'bag_numbers' },
+                    {
+                        data: null,
+                        orderable: false,
+                        searchable: false,
+                        render: function (data, type, row, meta) {
+                            const awbNo = row.awb_number;
+                            const forwardingNumber = row.forwarding_number || '';
+                            const bags = row.bag_numbers || '';
+                            const runId = '{{ run.id }}';  // Use the Django context variable
+    
+                            return `
+                                <div class="flex gap-2">
+                                    <a href="/hub/pages/run/remove-awb/${runId}/${awbNo}/" class="bg-red-600 text-white px-2 py-1 text-sm rounded hover:bg-red-700 transition" onclick="return confirm('Are you sure you want to remove this AWB from the run?')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                    <a href="#" class="edit-awb bg-blue-600 text-white px-2 py-1 text-sm rounded hover:bg-blue-700 transition" data-awb="${awbNo}" data-forwarding="${forwardingNumber}" data-bags="${bags}">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
+                            `;
+                        }
+                    }
+                ],
+                createdRow: function(row, data, dataIndex) {
+                    $('td', row).addClass('border border-gray-300');
+                }
+            });
+        });
+    </script>
+    <script>
+    $(document).ready(function() {
+        // Set focus on first AWB input on page load
+        $('.awb-input:first').focus();
+
+        // Update form indices
+        function updateFormIndices() {
+            $('#awbTableBody tr.awb-row').each(function(idx) {
+                $(this).attr('data-form-idx', idx);
+                $(this).find('input').each(function() {
+                    var name = $(this).attr('name');
+                    if (name) {
+                        var newName = name.replace(/\d+/, idx);
+                        $(this).attr('name', newName);
+                    }
+                });
+            });
+            // Update total forms count in management form
+            $('#id_form-TOTAL_FORMS').val($('#awbTableBody tr.awb-row').length);
+        }
+
+        // Remove empty rows before form submission
+        function removeEmptyRows() {
+            $('.awb-row').each(function() {
+                var $row = $(this);
+                var isEmpty = true;
+                $row.find('input').not('[readonly]').each(function() {
+                    if ($(this).val().trim()) {
+                        isEmpty = false;
+                        return false;
+                    }
+                });
+                if (isEmpty && $('.awb-row').length > 1) {
+                    $row.remove();
+                }
+            });
+            updateFormIndices();
+        }
+
+        // Validate bag numbers against total boxes
+        function validateBagNumbers($row) {
+            var totalBoxes = parseInt($row.find('.total-boxes').val()) || 0;
+            var baggingDetails = $row.find('.bagging-input').val().trim();
+            var awbNo = $row.find('.awb-input').val().trim();
+            
+            if (baggingDetails && totalBoxes) {
+                var bagsArray = baggingDetails.split(',').map(item => item.trim()).filter(item => item);
+                
+                // Check if number of bags matches total boxes
+                if (bagsArray.length !== totalBoxes) {
+                    showError(`Number of bag numbers (${bagsArray.length}) does not match number of boxes (${totalBoxes})`, awbNo);
+                    return false;
+                }
+                
+                // Validate each bag number is a valid integer
+                for (let i = 0; i < bagsArray.length; i++) {
+                    if (!(/^\d+$/.test(bagsArray[i]))) {
+                        showError(`Invalid bag number format at position ${i + 1}`, awbNo);
+                        return false;
+                    }
+                }
+                
+                return true;
+            }
+            return false;
+        }
+
+        // Check if AWB number exists
+        function isAWBNumberDuplicate(awbNo, currentRow) {
+            var isDuplicate = false;
+            $('.awb-row').not(currentRow).each(function() {
+                if ($(this).find('.awb-input').val().trim() === awbNo) {
+                    isDuplicate = true;
+                    return false; // break the loop
+                }
+            });
+            return isDuplicate;
+        }
+
+        // Show add button only on last row
+        function updateAddButtons() {
+            $('.add-row').addClass('hidden');
+            $('.awb-row:last .add-row').removeClass('hidden');
+        }
+
+        // Show error message
+        function showError(message, awbNo) {
+            $('#errorMessage').html(`AWB Number<a target="_blank" href="/awb/pages/awb/detail/${awbNo}/" class="text-blue-500">${awbNo}</a> : ${message}`);
+            $('#errorContainer').removeClass('hidden');
+        }
+
+        // Hide error message
+        function hideError() {
+            $('#errorContainer').addClass('hidden');
+            $('#errorMessage').text('');
+        }
+
+        // Handle AWB input blur
+        $(document).on('blur', '.awb-input', function() {
+            var $row = $(this).closest('tr');
+            var awbNo = $(this).val().trim();
+            var $awbInput = $(this);
+            
+            if (awbNo) {
+                // Check for duplicate AWB first
+                if (isAWBNumberDuplicate(awbNo, $row)) {
+                    showError('AWB number already exists in the table', awbNo);
+                    $awbInput.addClass('border-red-500');
+                    $row.find('.total-boxes, .weight-input, .ccd-input').val('');
+                    $row.find('.bagging-input').val('').removeClass('border-red-500');
+                    $row.find('.add-row').addClass('hidden');
+                    return;
+                }
+
+                $.ajax({
+                    url: '{% url "hub:pages:run:get_awb_details" %}',
+                    data: { 
+                        awb_no: awbNo,
+                        run_id: '{{ run.id }}'
+                    },
+                    success: function(response) {
+                        hideError();
+                        $awbInput.removeClass('border-red-500');
+                        $row.find('.total-boxes').val(response.total_boxes);
+                        $row.find('.forwarding-input').val(response.forwarding_number);
+                        
+                        // Format and set the weights
+                        var weights = [
+                            response.total_actual_weight || '0',
+                            response.total_volume || '0',
+                            response.total_charged_weight || '0'
+                        ].map(w => parseFloat(w).toFixed(2));
+                        
+                        $row.find('.weight-input').val(weights.join(' - '));
+                        
+                        $row.find('.ccd-input').val(
+                            response.consignee + ' - ' + 
+                            response.consignor + ' - ' + 
+                            response.destination
+                        );
+
+                        // Set bagging details if they exist
+                        if (response.bagging_details) {
+                            $row.find('.bagging-input').val(response.bagging_details);
+                        }
+
+                        // Focus on bagging input if it's empty
+                        if (!$row.find('.bagging-input').val().trim()) {
+                            $row.find('.bagging-input').focus();
+                        }
+                    },
+                    error: function(xhr) {
+                        var errorMsg = xhr.responseJSON?.error || 'Error validating AWB';
+                        showError(errorMsg, awbNo);
+                        $awbInput.addClass('border-red-500');
+                        
+                        $row.find('.total-boxes, .weight-input, .ccd-input').val('');
+                        $row.find('.bagging-input').val('').removeClass('border-red-500');
+                        $row.find('.add-row').addClass('hidden');
+                    }
+                });
+            } else {
+                $awbInput.removeClass('border-red-500');
+            }
+        });
+
+        // Handle bagging details input
+        $(document).on('blur', '.bagging-input', function() {
+            var $row = $(this).closest('tr');
+            var $input = $(this);
+            
+            if (validateBagNumbers($row)) {
+                $input.removeClass('border-red-500');
+                hideError();
+                // If this is the last row and we have valid AWB data, clone a new row
+                if ($row.is(':last-child') && $row.find('.ccd-input').val()) {
+                    cloneNewRow($row);
+                }
+            } else {
+                $input.addClass('border-red-500');
+            }
+        });
+
+        // Add row button click handler
+        $(document).on('click', '.add-row', function() {
+            var $currentRow = $(this).closest('tr');
+            cloneNewRow($currentRow);
+        });
+
+        // Function to clone a new row
+        function cloneNewRow($currentRow) {
+            var $newRow = $currentRow.clone(true);
+            
+            // Clear all input values in the new row
+            $newRow.find('input').val('');
+            $newRow.find('input').removeClass('border-red-500');
+            $newRow.find('input').removeAttr('required');
+            $newRow.find('.error').remove(); // Remove any error messages
+            
+            $currentRow.after($newRow);
+            updateFormIndices();
+            updateAddButtons();
+            
+            // Focus on the AWB input of the new row
+            $newRow.find('.awb-input').focus();
+            
+            return $newRow;
+        }
+
+        // Delete row
+        $(document).on('click', '.delete-row', function() {
+            hideError();
+            if ($('.awb-row').length > 1) {
+                $(this).closest('tr').remove();
+                updateFormIndices();
+                updateAddButtons();
+            } else {
+                // Clear inputs if it's the last row instead of deleting
+                var $row = $(this).closest('tr');
+                $row.find('input').val('').removeClass('border-red-500');
+                $row.find('.error').remove();
+            }
+        });
+
+        // Handle edit button click
+        $(document).on('click', '.edit-awb', function(e) {
+            e.preventDefault();
+            var awbNo = $(this).data('awb');
+            var $lastRow = $('.awb-row:last');
+            
+            // If last row has data and is not empty, create a new row
+            if ($lastRow.find('.awb-input').val().trim() || 
+                $lastRow.find('.bagging-input').val().trim() || 
+                $lastRow.find('.forwarding-input').val().trim()) {
+                var $newRow = cloneNewRow($lastRow);
+                $lastRow = $newRow;
+            } else {
+                // Clear any existing data in last row
+                $lastRow.find('input').val('').removeClass('border-red-500');
+                $lastRow.find('.error').remove();
+            }
+            
+            // Set AWB number and trigger blur to load details
+            $lastRow.find('.awb-input').val(awbNo).trigger('blur');
+            
+            // Scroll to the row
+            $('html, body').animate({
+                scrollTop: $lastRow.offset().top - 150
+            }, 500);
+        });
+
+        // Form submission
+        $('#runAwbFrom').on('submit', function(e) {
+            e.preventDefault();
+            var $rows = $('.awb-row');
+            var hasFilledRows = false;
+            
+            // First pass: Check for any filled rows and mark them
+            $rows.each(function() {
+                var $row = $(this);
+                var awbNo = $row.find('.awb-input').val().trim();
+                var baggingNumber = $row.find('.bagging-input').val().trim();
+                var forwardingNumber = $row.find('.forwarding-input').val().trim();
+                
+                // Check if any of the required fields have data
+                if (awbNo || baggingNumber || forwardingNumber) {
+                    hasFilledRows = true;
+                    $row.data('has-data', true);
+                } else {
+                    // If all fields are empty, remove the row
+                    $row.remove();
+                }
+            });
+        
+            // If no rows have data, prevent submission
+            if (!hasFilledRows) {
+                showError('Please enter at least one AWB number or bag details', '');
+                return;
+            }
+        
+            // Update form indices after removing rows
+            updateFormIndices();
+        
+            var isValid = true;
+            var forwardingNumbers = new Set();
+            var awbNumbers = new Set();
+        
+            // Validate remaining rows
+            $('.awb-row').each(function() {
+                var $row = $(this);
+                var awbNo = $row.find('.awb-input').val().trim();
+                var baggingNumber = $row.find('.bagging-input').val().trim();
+                var forwardingNumber = $row.find('.forwarding-input').val().trim();
+        
+                // Validate required fields
+                if (!awbNo) {
+                    isValid = false;
+                    showError('AWB number is required', '');
+                    $row.find('.awb-input').addClass('border-red-500');
+                }
+        
+                if (!baggingNumber) {
+                    isValid = false;
+                    showError('Bag details are required', awbNo);
+                    $row.find('.bagging-input').addClass('border-red-500');
+                }
+        
+                if (awbNo) {
+                    // Check for duplicate AWB numbers
+                    if (awbNumbers.has(awbNo)) {
+                        isValid = false;
+                        showError('Duplicate AWB number: ' + awbNo, awbNo);
+                        $row.find('.awb-input').addClass('border-red-500');
+                    } else {
+                        awbNumbers.add(awbNo);
+                    }
+        
+                    // Check for duplicate forwarding numbers
+                    if (forwardingNumber && forwardingNumbers.has(forwardingNumber)) {
+                        isValid = false;
+                        showError('Duplicate forwarding number: ' + forwardingNumber, awbNo);
+                        $row.find('.forwarding-input').addClass('border-red-500');
+                    } else if (forwardingNumber) {
+                        forwardingNumbers.add(forwardingNumber);
+                    }
+                    // Validate bag numbers
+                    if (!validateBagNumbers($row)) {
+                        isValid = false;
+                    }
+                }
+            });
+        
+            if (!isValid) {
+                // If validation fails, add a new empty row if there isn't one
+                var $lastRow = $('.awb-row:last');
+                if ($lastRow.data('has-data')) {
+                    cloneNewRow($lastRow);
+                }
+            } else {
+                this.submit();
+            }
+        });
+        
+        // Initialize
+        updateAddButtons();
+    });
+    </script>
+{% endblock content %}

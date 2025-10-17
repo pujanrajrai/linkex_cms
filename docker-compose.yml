@@ -1,0 +1,46 @@
+services:
+  linkex_web:
+    container_name: linkex_web # Name the web container
+    build:
+      context: .
+      dockerfile: ${DOCKERFILE:-Dockerfile.local}
+    volumes:
+      - ./:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    stdin_open: true # Keeps STDIN open (like -i flag)
+    tty: true
+    depends_on:
+      - linkex_db
+      - linkex_redis
+    restart: ${RESTART_POLICY} # Use restart policy from .env
+
+  linkex_db:
+    container_name: linkex_db
+    image: postgres:16
+    restart: ${RESTART_POLICY}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    command: >
+      postgres
+      -c max_wal_size=2GB
+      -c checkpoint_timeout=15min
+      -c checkpoint_completion_target=0.9
+
+  linkex_redis:
+    container_name: linkex_redis # Name the Redis container
+    image: redis:7
+    restart: ${RESTART_POLICY}
+    ports:
+      - ":6379"
+
+volumes:
+  postgres_data:

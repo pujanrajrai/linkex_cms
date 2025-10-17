@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block pagetitle %}Create Invoice{% endblock %}
+{% block content %}
+    <div class="bg-white p-8 rounded-lg shadow-lg mx-auto">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <div class="grid grid-cols-3 gap-4">
+                {% for field in form %}
+                    <div class="relative mb-6">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {{ field.errors }}
+                        {% if field.help_text %}<p class="help">{{ field.help_text|safe }}</p>{% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <!-- Submit Button -->
+            <div class="flex justify-end">
+                <button type="submit" class="bg-primary text-white p-3 w-full text-xl">Create</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

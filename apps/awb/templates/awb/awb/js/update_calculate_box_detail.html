@@ -1,0 +1,145 @@
+<script>
+    $(document).ready(function () {
+      // Utility: Round to nearest 0.5
+      function roundToNearestHalf(value) {
+        const decimal = value - Math.floor(value);
+        if (decimal === 0) return value;
+        return decimal <= 0.5 ? Math.floor(value) + 0.5 : Math.ceil(value);
+      }
+  
+      // Ensure hidden fields for rounded actual weight
+      function ensureHiddenFields() {
+        $("#box_detail tr").each(function (index) {
+          let $row = $(this);
+          if ($row.find("[name$='-rounded_actual_weight']").length === 0) {
+            $row.find("td:nth-child(5)").append(
+              '<input type="hidden" name="box_details-' + index + '-rounded_actual_weight" class="rounded-actual-weight">'
+            );
+          }
+        });
+      }
+  
+      {% comment %} function calculateAmounts() {
+        let totalAmount = 0;
+        $("#box_item_list tr:visible").each(function () {
+          let $row = $(this);
+          let quantity = parseFloat($row.find("[name$='-quantity']").val()) || 0;
+          let unitRate = parseFloat($row.find("[name$='-unit_rate']").val()) || 0;
+          let amount = quantity * unitRate;
+          $row.find("[name$='-amount']").val(amount.toFixed(2));
+          totalAmount += amount;
+        });
+  
+        $("#totalAmountCell").text("Total Amount: " + totalAmount.toFixed(2));
+        if ($("#toggle_box_item").is(":checked")) {
+          $("#id_shipment_value, #awb_shipment_value").val(totalAmount.toFixed(2));
+        }
+      } {% endcomment %}
+
+      function calculateAmounts() {
+        let totalQuantity = 0;
+        let totalUnitWeight = 0;
+        let totalUnitRate = 0;
+        let totalAmount = 0;
+
+        $("#box_item_list tr:visible").each(function () {
+          let $row = $(this);
+          let quantity = parseFloat($row.find("[name$='-quantity']").val()) || 0;
+          let unitWeight = parseFloat($row.find("[name$='-unit_weight']").val()) || 0;
+          let unitRate = parseFloat($row.find("[name$='-unit_rate']").val()) || 0;
+          let amount = quantity * unitRate;
+
+          $row.find("[name$='-amount']").val(amount.toFixed(2));
+
+          totalQuantity += quantity;
+          totalUnitWeight += unitWeight;
+          totalUnitRate += unitRate;
+          totalAmount += amount;
+        });
+
+        $("#totalQuantityCell").text("Total Quantity: " + totalQuantity.toFixed(2));
+        $("#totalUnitWeightCell").text("Total U.WT: " + totalUnitWeight.toFixed(2));
+        $("#totalAmountCell").text("Total Amount: " + totalAmount.toFixed(2));
+
+        if ($("#toggle_box_item").is(":checked")) {
+          $("#id_shipment_value, #awb_shipment_value").val(totalAmount.toFixed(2));
+        }
+      }
+
+  
+      function calculateWeights() {
+        let totalActualWeight = 0;
+        let totalRoundedActualWeight = 0;
+        let totalVolumetricWeight = 0;
+        let totalChargedWeight = 0;
+        let dividingFactor = parseFloat($("#awb_dividing_factor option:selected").text()) || 5000;
+  
+        ensureHiddenFields();
+  
+        $("#box_detail tr").each(function (index) {
+          let $row = $(this);
+          let boxNumber = "Box-" + (index + 1);
+          $row.find("[name$='-box_number']").val(boxNumber);
+  
+          let length = parseFloat($row.find("[name$='-length']").val()) || 0;
+          let breadth = parseFloat($row.find("[name$='-breadth']").val()) || 0;
+          let height = parseFloat($row.find("[name$='-height']").val()) || 0;
+          let actualWeight = parseFloat($row.find("[name$='-actual_weight']").val()) || 0;
+  
+          let volumetricWeight = (length * breadth * height) / dividingFactor;
+          let roundedActualWeight = roundToNearestHalf(actualWeight);
+          let roundedVolumetricWeight = roundToNearestHalf(volumetricWeight);
+          let chargedWeight = Math.max(roundedActualWeight, roundedVolumetricWeight);
+  
+          $row.find("[name$='-rounded_actual_weight']").val(roundedActualWeight);
+          $row.find("[name$='-volumetric_weight']").val(roundedVolumetricWeight.toFixed(2));
+          $row.find("[name$='-charged_weight']").val(chargedWeight.toFixed(2));
+  
+          totalActualWeight += actualWeight;
+          totalRoundedActualWeight += roundedActualWeight;
+          totalVolumetricWeight += roundedVolumetricWeight;
+          totalChargedWeight += chargedWeight;
+        });
+  
+        $("#box-details-table tfoot tr th:nth-child(6)").text("Total A.WT: " + totalRoundedActualWeight.toFixed(2));
+        $("#box-details-table tfoot tr th:nth-child(7)").text("Total V. WGT: " + totalVolumetricWeight.toFixed(2));
+        $("#box-details-table tfoot tr th:nth-child(8)").text("Total C.WT: " + totalChargedWeight.toFixed(2));
+      }
+  
+      // Initial Setup
+      $("[name$='-volumetric_weight'], [name$='-charged_weight']").prop('readonly', true);
+      $("#id_shipment_value, #awb_shipment_value").prop("readonly", $("#toggle_box_item").is(":checked"));
+      if ($("#toggle_box_item").is(":checked")) {
+        $("#id_shipment_value, #awb_shipment_value").addClass("bg-gray-100");
+      }
+  
+      // Global exposure
+      window.recalculateBoxAmounts = calculateAmounts;
+  
+      // Event bindings
+      $(document).on("input", "[name$='-quantity'], [name$='-unit_rate'], [name$='-unit_weight']", calculateAmounts);
+      $(document).on("input", "[name$='-length'], [name$='-breadth'], [name$='-height'], [name$='-actual_weight']", calculateWeights);
+      $("#awb_dividing_factor").on("change", calculateWeights);
+  
+  
+      $("#toggle_box_item").on("change", function () {
+        const isChecked = $(this).is(":checked");
+        $("#id_shipment_value, #awb_shipment_value").prop("readonly", isChecked);
+        if (isChecked) {
+          calculateAmounts();
+          $("#id_shipment_value, #awb_shipment_value").addClass("bg-gray-100");
+        } else {
+          $("#id_shipment_value, #awb_shipment_value").removeClass("bg-gray-100");
+        }
+      });
+  
+      // Initial Calculations
+      ensureHiddenFields();
+      calculateAmounts();
+      calculateWeights();
+      setTimeout(() => {
+        calculateAmounts();
+        calculateWeights();
+      }, 500);
+    });
+</script>

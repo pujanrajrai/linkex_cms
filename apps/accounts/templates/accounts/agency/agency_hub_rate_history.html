@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %} {{ title }} {% endblock title %}
+
+{% block pagetitle %}{{ agency }} Hub Rate History{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+    <style>
+    /* Ensure search row is not clickable */
+    #search-row td {
+        pointer-events: auto !important;
+    }
+    </style>
+    <!-- Data Table -->
+    <div class="bg-white p-5">
+        <div class="overflow-x-auto">
+            <table id="dataTable"
+                   class="display min-w-full border-collapse border border-gray-300 w-full">
+                <thead class="bg-gray-200">
+                    <tr class="bg-primary text-white">
+                        <th class="p-3 border">SN</th>
+                        <th class="p-3 border">Hub</th>
+                        <th class="p-3 border">Weight Range</th>
+                        <th class="p-3 border">Rate</th>
+                        <th class="p-3 border" data-search="false">Date/Time</th>
+                        <th class="p-3 border" data-search="false">Changed By</th>
+                        <th class="p-3 border" data-search="false">Changes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- DataTable will populate this body -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function() {
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').DataTable().destroy();
+        }
+
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        $('#dataTable').DataTable({
+            processing: true,
+            serverSide: true,
+            searching: true,
+            paging: true,
+            ordering: true,
+            info: true,
+            ajax: {
+                url: "{% url 'accounts:pages:agency:agency_hub_rate_history' agency_id=agency.id %}",
+                type: "POST",
+                data: function(d) {
+                    d.csrfmiddlewaretoken = csrftoken;
+                    d.agency_id = '{{ agency.id }}';
+                    return d;
+                },
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+                dataSrc: 'data',  // Points to the 'data' key in the returned JSON
+            },
+            columns: [
+                { 
+                    data: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    },
+                    name: "sn", 
+                    searchable: false 
+                },
+                { data: 'hub' },
+                { data: 'weight_range' },
+                { data: 'rate' },
+                { data: 'date' },
+                { data: 'changed_by' },
+                {
+                    data: 'changes',
+                    render: function(data, type, row) {
+                        return data.join(', ');
+                    }
+                }
+            ]
+        });
+    });
+</script>
+{% endblock %}

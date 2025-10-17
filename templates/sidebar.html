@@ -1,0 +1,261 @@
+{% load static %}
+<!-- Sidebar -->
+{% if request.user.role == 'admin' %}
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <a href="/">
+                <img src="{% static 'images/company/logo.png' %}" alt="Logo">
+                <span class="menu-text text-sm" style="font-size:9px; margin-left: 15px; ">{{ request.user.full_name|slice:":10" }}</span>
+            </a>
+        </div>
+        <nav class="sidebar-menu">
+            <!-- Each menu item with potential submenu -->
+            <div class="menu-item">
+                <a href="{% url 'awb:pages:report:dashboard' %}"
+                   title="Dashboard"
+                   class="menu-link {% if current ==  "dashboard" %}active{% endif %}">
+                    <img src="{% static 'images/icons/dashboard.png' %}"
+                         width="30"
+                         height="30"
+                         alt="Dashboard"
+                         class="text-3xl">
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'accounts:pages:user:list' %}"
+                   title="Users"
+                   class="menu-link {% if current ==  "users" %}active{% endif %}">
+                    <img src="{% static 'images/icons/profile-user.png' %}"
+                         width="30"
+                         height="30"
+                         alt="Users"
+                         class="text-3xl">
+                    <span class="menu-text">Users</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'accounts:pages:agency:list' %}"
+                   title="Agency"
+                   class="menu-link {% if current ==  "agency" %}active{% endif %}">
+                    <img src="{% static 'images/icons/building.png' %}"
+                         width="30"
+                         height="30"
+                         alt="Agency"
+                         class="text-3xl">
+                    <span class="menu-text">Agency</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="#"
+                   title="Shipment Master"
+                   class="menu-link menu-arrow-link {% if current ==  "shipment_master" %}active{% endif %}">
+                    <img src="{% static 'images/icons/setting.png' %}"
+                         width="30"
+                         height="30"
+                         alt="Shipment Master"
+                         class="text-3xl">
+                    <span class="menu-text">Shipment Master</span>
+                </a>
+                <div class="dropdown-content">
+                    <a href="{% url 'awb:pages:master:country:list' %}">Country</a>
+                    <a href="{% url 'awb:pages:master:currency:list' %}">Currency</a>
+                    <a href="{% url 'awb:pages:master:document_type:list' %}">Document Type</a>
+                    <a href="{% url 'awb:pages:master:product_type:list' %}">Product Type</a>
+                    <a href="{% url 'awb:pages:master:service:list' %}">Services</a>
+                    <a href="{% url 'awb:pages:master:company:list' %}">Company</a>
+                    <a href="{% url 'awb:pages:master:zipcode:list' %}">Zip Code</a>
+                    <a href="{% url 'awb:pages:master:hscode:list' %}">HSCODE</a>
+                    <a href="{% url 'awb:pages:master:unit_type:list' %}">UnitType</a>
+                    <a href="{% url 'awb:pages:master:vendor:list' %}">Vendor</a>
+                    <a href="{% url 'awb:pages:master:manifest:list' %}">Manifest</a>
+                    <a href="{% url 'awb:pages:master:dividing_factor:list' %}">Dividing Factor</a>
+                </div>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'accounts:pages:agency:request_list' %}"
+                   title="Agency Requests"
+                   class="menu-link {% if current ==  "agency" %}active{% endif %}">
+                    <img src="{% static 'images/icons/mail.png' %}"
+                         width="30"
+                         height="30"
+                         alt="Agency Requests"
+                         class="text-3xl">
+                    <span class="menu-text">Agency Requests</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'awb:pages:pickup_request:list' %}"
+                   title="Pickup Request"
+                   class="menu-link {% if current == "pickup_request" %}active{% endif %}">
+                    <img src="{% static 'images/icons/truck.png' %}"
+                         width="30"
+                         height="30"
+                         alt="Pickup Request"
+                         class="text-3xl">
+                    <span class="menu-text">Pickup Request</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'awb:pages:awb:list' %}"
+                   title="Shipment"
+                   class="menu-link {% if current == "shipment" %}active{% endif %}">
+                    <img src="{% static 'images/icons/parcel.png' %}"
+                         width="30"
+                         height="30"
+                         alt="Shipment"
+                         class="text-3xl">
+                    <span class="menu-text">Shipment</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'hub:pages:hub:list' %}"
+                   title="Hub"
+                   class="menu-link {% if current ==  "hub" %}active{% endif %}">
+                    <img src="{% static 'images/icons/network.png' %}"
+                         width="30"
+                         height="30"
+                         alt="Hub"
+                         class="text-3xl">
+                    <span class="menu-text">Hub</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'awb:pages:awb:upload_fwd_num' %}"
+                   title="Forwarding Number"
+                   class="menu-link {% if current ==  "hub" %}active{% endif %}">
+                    <img src="{% static 'images/icons/upload.png' %}"
+                         width="30"
+                         height="30"
+                         alt="Forwarding Number"
+                         class="text-3xl">
+                    <span class="menu-text">Forwarding Number</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'hub:pages:run:list' %}"
+                   title="Run"
+                   class="menu-link {% if current ==  "run" %}active{% endif %}">
+                    <img src="{% static 'images/icons/running-man.png' %}"
+                         width="30"
+                         height="30"
+                         alt="Run"
+                         class="text-3xl">
+                    <span class="menu-text">Run</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'awb:pages:awb_apiresponses:list' %}"
+                   title="API Responses"
+                   class="menu-link {% if current == "api_responses" %}active{% endif %}">
+                    <img src="{% static 'images/icons/api.png' %}"
+                         width="30"
+                         height="30"
+                         alt="API Responses"
+                         class="text-3xl">
+                    <span class="menu-text">API Responses</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'finance:pages:ledger:list' %}"
+                   title="Ledger"
+                   class="menu-link {% if current ==  "ledger" %}active{% endif %}">
+                    <img src="{% static 'images/icons/ledger.png' %}"
+                         width="30"
+                         height="30"
+                         alt="Ledger"
+                         class="text-3xl">
+                    <span class="menu-text">Ledger</span>
+                </a>
+            </div>
+            {% comment %} <div class="menu-item">
+                <a href="{% url 'finance:pages:payment:list' %}"
+                   title="Payment"
+                   class="menu-link {% if current ==  "payment" %}active{% endif %}">
+                    <img src="{% static 'images/icons/payment-method.png' %}"
+                         width="30"
+                         height="30"
+                         alt="Payment"
+                         class="text-3xl">
+                    <span class="menu-text">Payment</span>
+                </a>
+            </div> {% endcomment %}
+            <div class="menu-item">
+                <a href="{% url 'get_deleted_models' %}"
+                   title="Deleted Models"
+                   class="menu-link {% if current == "delete_history" %}active{% endif %}">
+                    <img src="{% static 'images/icons/delete.png' %}"
+                         width="30"
+                         height="30"
+                         alt="Delete History"
+                         class="text-3xl">
+                    <span class="menu-text">Delete History</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'accounts:pages:auth:logout' %}"
+                   class="menu-link"
+                   title="Logout">
+                    <img src="{% static 'images/icons/logout.png' %}"
+                         width="30"
+                         height="30"
+                         alt="Logout"
+                         class="text-3xl">
+                    <span class="menu-text">Logout</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+{% elif request.user.role == 'agencyuser' %}
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="{% static 'images/company/logo.png' %}" alt="Logo">
+        </div>
+        <nav class="sidebar-menu">
+            <!-- Each menu item with potential submenu -->
+            {% if request.user.is_default_user %}
+                <div class="menu-item">
+                    <a href="{% url 'accounts:pages:user:list' %}"
+                       title="Users"
+                       class="menu-link {% if current ==  "users" %}active{% endif %}">
+                        <span class="material-icons">manage_accounts</span>
+                        <span class="menu-text">Users</span>
+                    </a>
+                </div>
+            {% endif %}
+            <div class="menu-item">
+                <a href="{% url 'accounts:pages:agency:detail' request.user.agency.pk %}"
+                   title="Agency"
+                   class="menu-link {% if current ==  "agency" %}active{% endif %}">
+                    <span class="material-icons">business</span>
+                    <span class="menu-text">Agency</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'awb:pages:awb:list' %}"
+                   title="Shipment"
+                   class="menu-link {% if current == "shipment" %}active{% endif %}">
+                    <span class="material-icons">inventory</span>
+                    <span class="menu-text">Shipment</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'awb:pages:pickup_request:list' %}"
+                   title="Pickup Request"
+                   class="menu-link {% if current == "pickup_request" %}active{% endif %}">
+                    <span class="material-icons">request_page</span>
+                    <span class="menu-text">Pickup Request</span>
+                </a>
+            </div>
+            
+            <div class="menu-item">
+                <a href="{% url 'accounts:pages:auth:logout' %}"
+                   class="menu-link"
+                   title="Logout">
+                    <span class="material-icons">exit_to_app</span>
+                    <span class="menu-text">Logout</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+{% endif %}

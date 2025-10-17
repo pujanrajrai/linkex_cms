@@ -1,0 +1,1067 @@
+{% extends "base.html" %}
+{% block title %} {{ title }} {% endblock title %}
+
+{% block pagetitle %}AWB - {{ awb.awbno }}{% endblock %}
+{% block button %}
+ 
+  <div class="flex gap-1">
+    <a href="{% url 'awb:pages:awb:shipment_history' awb.awbno %}"
+       title="History">
+      <button class="bg-white text-primary border-2 border-primary hover:bg-secondary hover:text-white hover:border-secondary transition-colors duration-300 font-medium px-4 py-2 rounded flex items-center gap-1">
+        <i class="fi fi-rr-time-past"></i>
+      </button>
+    </a>
+    <a href="{% url 'awb:pages:awb:print' awb.awbno %}"
+       target="_blank"
+       title="Print">
+      <button class="bg-white text-primary border-2 border-primary hover:bg-secondary hover:text-white hover:border-secondary transition-colors duration-300 font-medium px-4 py-2 rounded flex items-center gap-1">
+        <i class="fi fi-rr-print"></i>
+      </button>
+    </a>
+    {% if awb.vendor.code == "DTDC" or awb.vendor.code == "SGAU" or awb.vendor.code == "SGUS" or awb.vendor.code == "SGCA" %}
+    <a href="{% url 'awb:pages:awb:print_label1' awb.awbno %}" target="_blank" title="Print">
+      <button class="bg-white text-primary border-2 border-primary hover:bg-secondary hover:text-white hover:border-secondary transition-colors duration-300 font-medium px-4 py-2 rounded flex items-center gap-1">
+        <i class="fi fi-rr-print"></i> 1
+      </button>
+    </a>
+    {%endif%}
+    <a href="{% url 'awb:pages:awb:export_awb' awb.awbno %}?format=excel"
+       title="Export Invoice Excel">
+      <button class="bg-white text-primary border-2 border-primary hover:bg-secondary hover:text-white hover:border-secondary transition-colors duration-300 font-medium px-4 py-2 rounded flex items-center gap-1">
+        <i class="fi fi-rr-file-export"></i>
+      </button>
+    </a>
+    <a href="{% url 'awb:pages:awb:create' %}?awb_no={{ awb.awbno }}"
+       title="Clone AWB">
+      <button class="bg-white text-primary border-2 border-primary hover:bg-secondary hover:text-white hover:border-secondary transition-colors duration-300 font-medium px-4 py-2 rounded flex items-center gap-1">
+        <i class="fi fi-rr-clone"></i>
+      </button>
+    </a>
+    <a href="{% url 'awb:pages:awb:create' %}" title="New AWB">
+      <button class="bg-white text-primary border-2 border-primary hover:bg-secondary hover:text-white hover:border-secondary transition-colors duration-300 font-medium px-4 py-2 rounded flex items-center gap-1">
+        <i class="fi fi-rr-add"></i>
+      </button>
+    </a>
+    <button id="close_current_tab"
+            class="bg-red-500 text-primary border-2 border-primary hover:bg-secondary hover:text-white hover:border-secondary transition-colors duration-300 font-medium px-4 py-2 rounded flex items-center gap-1"
+            title="Close Tab">
+      <i class="fi fi-rr-cross"></i>
+    </button>
+  </div>
+{% endblock %}
+{% block content %}
+    <input type="hidden"
+           name="csrfmiddlewaretoken"
+           value="MpABGvQvyPqUWunEK3BKj8Xy39L3eQCOnX2RybyaIa76UZwvWYzogeXrev71auVs">
+    <!-- Pagination Navigation -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center w-full">
+                {% if prev_awb %}
+                    <a href="{% url 'awb:pages:awb:detail' prev_awb.awbno %}"
+                       class="flex items-center px-4 py-2 text-sm font-medium text-primary bg-white border border-primary rounded-md hover:bg-primary hover:text-white transition-colors duration-300">
+                        <i class="fi fi-rr-angle-left mr-2"></i>
+                        Previous AWB
+                    </a>
+                {% else %}
+                    <!-- placeholder to keep center truly centered when there is no prev -->
+                    <span class="w-32"></span>
+                {% endif %}
+                <div class="flex-1 text-center text-sm text-gray-600">Current AWB: {{ awb.awbno }}</div>
+                {% if next_awb %}
+                    <a href="{% url 'awb:pages:awb:detail' next_awb.awbno %}"
+                       class="flex items-center px-4 py-2 text-sm font-medium text-primary bg-white border border-primary rounded-md hover:bg-primary hover:text-white transition-colors duration-300">
+                        Next AWB
+                        <i class="fi fi-rr-angle-right ml-2"></i>
+                    </a>
+                {% else %}
+                    <!-- placeholder to keep center truly centered when there is no next -->
+                    <span class="w-32"></span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- Main Content -->
+    <div class="w-full pb-20">
+        <!-- Added padding bottom to account for fixed pagination -->
+        <div class="w-full flex items-center justify-between">
+            <!-- First Row: AWB Details, Consignee, Consignor -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+                <!-- AWB Details -->
+                <div class="p-4 bg-gray-50 rounded-md shadow-md">
+                    <div class="flex justify-between gap-2">
+                        <h1 class="text-xl font-semibold mb-4">AWB Details</h1>
+                        {% if awb.is_cash_user %}
+                            <div class="col-span-12">
+                                <h1 class="text-black text-2xl font-semibold" for="awb_forwarding_number">Cash User</h1>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="grid grid-cols-12 gap-2 mt-4">
+                        {% if awb.agency %}
+                            <div class="col-span-12">
+                                <label for="awb_forwarding_number">Agency:</label>
+                                <input type="text"
+                                       autocomplete="new-password"
+                                       value="{{ awb.agency.company_name }}"
+                                       class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                                       readonly>
+                            </div>
+                        {% endif %}
+                        <div class="col-span-12">
+                            <label for="awb_forwarding_number">Company:</label>
+                            <input type="text"
+                                   autocomplete="new-password"
+                                   value="{{ awb.company.name }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="awb_origin">Origin:</label>
+                            <input type="text"
+                                   autocomplete="new-password"
+                                   value="{{ awb.origin.name }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="awb_destination">Destination:</label>
+                            <input type="text"
+                                   autocomplete="new-password"
+                                   value="{{ awb.destination }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="awb_vendor">HUB:</label>
+                            <input type="text"
+                                   autocomplete="new-password"
+                                   value="{{ awb.hub.name }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="awb_vendor">Vendor:</label>
+                            <input type="text"
+                                   autocomplete="new-password"
+                                   value="{{ awb.vendor }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="awb_product_type">Product type:</label>
+                            <input type="text"
+                                   autocomplete="new-password"
+                                   value="{{ awb.product_type.name }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="awb_service">Service:</label>
+                            <input type="text"
+                                   autocomplete="new-password"
+                                   value="{{ awb.service.name }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="awb_shipment_value">Shipment value:</label>
+                            <input type="text"
+                                   autocomplete="new-password"
+                                   value="{{ awb.shipment_value }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="awb_currency">Currency:</label>
+                            <input type="text"
+                                   autocomplete="new-password"
+                                   value="{{ awb.currency.name }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                                   readonly>
+                        </div>
+                        <div class="col-span-12">
+                            <label for="awb_content">Content:</label>
+                            <textarea name="awb-content" cols="40" rows="3" readonly autocomplete="new-password" class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent">
+                                    {{awb.content}}
+                                    </textarea>
+                        </div>
+                        <div class="col-span-12">
+                            <div class="flex justify-between gap-2">
+                                <label for="awb_forwarding_number">Forwarding number:</label>
+                                <div id="import_box_awb_div" class="flex gap-2" style="display: none;">
+                                    <label for="import_box_awb_numbers">Import:</label>
+                                    <input type="checkbox" id="import_box_awb_numbers" />
+                                </div>
+                                {% if request.user.role == 'admin' %}
+                                    <div class="flex gap-2">
+                                        <label for="update_forwarding_number">Update:</label>
+                                        <input type="checkbox" id="update_forwarding_number" />
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <input type="hidden" name="awbno" value="{{ awb.awbno }}" />
+                            <input type="text"
+                                   id="id_forwarding_number"
+                                   name="forwarding_number"
+                                   value="{{ awb.forwarding_number }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                                   readonly>
+                        </div>
+                        <div class="col-span-12">
+                            <label for="awb_reference_number">Reference number:</label>
+                            <input type="text"
+                                   autocomplete="new-password"
+                                   value="{{ awb.reference_number }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                                   readonly>
+                        </div>
+                        <div id="update-button-container"
+                             style="display: none"
+                             class="flex justify-end float-right">
+                            {% csrf_token %}
+                            <button type="button"
+                                    id="update-all-btn"
+                                    class="bg-secondary text-white px-6 py-3 rounded-full shadow-lg hover:bg-secondary-dark">
+                                Update
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Consignee Details -->
+                <div class="p-4 bg-gray-50 rounded-md shadow-md">
+                    <h1 class="text-xl font-semibold mb-4 text-black">Consignor Details</h1>
+                    <div class="grid grid-cols-12 gap-2">
+                        <div class="col-span-12">
+                            <label for="consignor_person_name">Person Name:</label>
+                            <input type="text"
+                                   value="{{ consignor.person_name }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignor_person_name"
+                                   readonly>
+                        </div>
+                        <div class="col-span-12">
+                            <label for="consignor_company">Company:</label>
+                            <input type="text"
+                                   value="{{ consignor.company }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignor_company"
+                                   readonly>
+                        </div>
+                        <div class="col-span-12">
+                            <label for="consignor_address1">Address 1:</label>
+                            <input type="text"
+                                   value="{{ consignor.address1 }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignor_address1"
+                                   readonly>
+                        </div>
+                        <div class="col-span-12">
+                            <label for="consignor_address2">Address 2:</label>
+                            <input type="text"
+                                   value="{{ consignor.address2 }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignor_address2"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignor_country">Country:</label>
+                            <input type="text"
+                                   value="{{ awb.origin.name }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignor_country"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignor_post_zip_code">Zip Code:</label>
+                            <input type="text"
+                                   value="{{ consignor.post_zip_code }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignor_post_zip_code"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignor_city">City:</label>
+                            <input type="text"
+                                   value="{{ consignor.city }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignor_city"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignor_state_county">State/County:</label>
+                            <input type="text"
+                                   value="{{ consignor.state_county }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignor_state_county"
+                                   readonly>
+                        </div>
+                        <div class="col-span-12">
+                            <label for="consignor_phone_number">Phone Number:</label>
+                            <input type="text"
+                                   value="{{ consignor.phone_number }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignor_phone_number"
+                                   readonly>
+                        </div>
+                        <div class="col-span-12">
+                            <label for="consignor_email_address">Email Address:</label>
+                            <input type="email"
+                                   value="{{ consignor.email_address }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignor_email_address"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignor_document_type">Document Type:</label>
+                            <input type="text"
+                                   value="{{ consignor.document_type }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignor_document_type"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignor_document_number">Document Number:</label>
+                            <input type="text"
+                                   value="{{ consignor.document_number }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignor_document_number"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignor_document_front">Document Front:</label>
+                            {% if consignor.document_front %}
+                                <a href="{{ consignor.document_front.url }}"
+                                   target="_blank"
+                                   class="text-blue-600 hover:underline">View File</a>
+                            {% else %}
+                                <span class="text-gray-500">No file uploaded</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignor_document_back">Document Back:</label>
+                            {% if consignor.document_back %}
+                                <a href="{{ consignor.document_back.url }}"
+                                   target="_blank"
+                                   class="text-blue-600 hover:underline">View File</a>
+                            {% else %}
+                                <span class="text-gray-500">No file uploaded</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-span-12 mt-4">
+                            <div class="relative w-full">
+                                <input type="text"
+                                       value="{{ consignor.address1 }}, {% if consignor.address2 %}{{ consignor.address2 }},{% endif %}{{ consignor.post_zip_code }}, {{ consignor.city }}, {{ consignor.state_county }}, {{ awb.origin.name }}"
+                                       class="address-search-field w-full pr-10 px-3 py-3 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                                       data-search-type="consignor"
+                                       style="font-size: 11px"
+                                       readonly>
+                                <a href="https://www.google.com/search?q={{ consignor.address1 }}{% if consignor.address2 %}+{{ consignor.address2 }}{% endif %}+{{ consignor.post_zip_code }}+{{ consignor.city }}+{{ consignor.state_county }}+{{ awb.origin.name }}"
+                                   target="_blank"
+                                   class="google-search-button absolute inset-y-0 right-0 px-3 py-3 flex items-center"
+                                   title="Search on Google">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         class="h-4 w-4 text-gray-500 hover:text-gray-700"
+                                         fill="none"
+                                         viewBox="0 0 24 24"
+                                         stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Consignor Details -->
+                <div class="p-4 bg-gray-50 rounded-md shadow-md">
+                    <h1 class="text-xl font-semibold mb-4 text-black">Consignee Details</h1>
+                    <div class="grid grid-cols-12 gap-2">
+                        <div class="col-span-12">
+                            <label for="consignee_person_name">Person Name:</label>
+                            <input type="text"
+                                   value="{{ consignee.person_name }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignee_person_name"
+                                   readonly>
+                        </div>
+                        <div class="col-span-12">
+                            <label for="consignee_company">Company:</label>
+                            <input type="text"
+                                   value="{{ consignee.company }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignee_company"
+                                   readonly>
+                        </div>
+                        <div class="col-span-12">
+                            <label for="consignee_address1">Address 1:</label>
+                            <input type="text"
+                                   value="{{ consignee.address1 }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignee_address1"
+                                   readonly>
+                        </div>
+                        <div class="col-span-12">
+                            <label for="consignee_address2">Address 2:</label>
+                            <input type="text"
+                                   value="{{ consignee.address2 }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignee_address2"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignee_country">Country:</label>
+                            <input type="text"
+                                   value="{{ awb.destination.name }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignee_country"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignee_post_zip_code">Zip Code:</label>
+                            <input type="text"
+                                   value="{{ consignee.post_zip_code }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignee_post_zip_code"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignee_city">City:</label>
+                            <input type="text"
+                                   value="{{ consignee.city }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignee_city"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignee_state_county">State/County:</label>
+                            <input type="text"
+                                   value="{{ consignee.state_county }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignee_state_county"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignee_country_code">Country Code:</label>
+                            <input type="text"
+                                   value="{{ awb.destination.code }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignee_country_code"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignee_phone_number">Phone Number:</label>
+                            <input type="text"
+                                   value="{{ consignee.phone_number }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignee_phone_number"
+                                   readonly>
+                        </div>
+                        <div class="col-span-12">
+                            <label for="consignee_email_address">Email Address:</label>
+                            <input type="email"
+                                   value="{{ consignee.email_address }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignee_email_address"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignee_document_type">Document Type:</label>
+                            <input type="text"
+                                   value="{{ consignee.document_type }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignee_document_type"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignee_document_number">Document Number:</label>
+                            <input type="text"
+                                   value="{{ consignee.document_number }}"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md placeholder-transparent"
+                                   id="consignee_document_number"
+                                   readonly>
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignee_document_front">Document Front:</label>
+                            {% if consignee.document_front %}
+                                <a href="{{ consignee.document_front.url }}"
+                                   target="_blank"
+                                   class="text-blue-600 hover:underline">View File</a>
+                            {% else %}
+                                <span class="text-gray-500">No file uploaded</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-span-6">
+                            <label for="consignee_document_back">Document Back:</label>
+                            {% if consignee.document_back %}
+                                <a href="{{ consignee.document_back.url }}"
+                                   target="_blank"
+                                   class="text-blue-600 hover:underline">View File</a>
+                            {% else %}
+                                <span class="text-gray-500">No file uploaded</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-span-12">
+                            <div class="relative w-full">
+                                <input type="text"
+                                       value="{{ consignee.address1 }}, {% if consignee.address2 %}{{ consignee.address2 }},{% endif %}{{ consignee.post_zip_code }}, {{ consignee.city }}, {{ consignee.state_county }}, {{ awb.destination.name }}"
+                                       class="address-search-field w-full pr-10 px-3 py-3 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent"
+                                       data-search-type="consignor"
+                                       style="font-size: 11px"
+                                       readonly>
+                                <a href="https://www.google.com/search?q={{ consignee.address1 }}{% if consignee.address2 %}+{{ consignee.address2 }}{% endif %}+{{ consignee.post_zip_code }}+{{ consignee.city }}+{{ consignee.state_county }}+{{ awb.destination.name }}"
+                                   target="_blank"
+                                   class="google-search-button absolute inset-y-0 right-0 px-3 py-3 flex items-center"
+                                   title="Search on Google">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         class="h-4 w-4 text-gray-500 hover:text-gray-700"
+                                         fill="none"
+                                         viewBox="0 0 24 24"
+                                         stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Status Details -->
+                <div class="p-4 bg-white rounded-lg shadow-md border border-gray-100">
+                    {%if request.user.role == 'admin' %}
+                    {% if run %}
+                        <div class="mt-6">
+                            <div class="p-4 bg-white rounded-lg shadow-md border border-gray-100">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h1 class="text-xl font-semibold text-primary">Run Detail</h1>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Run Number</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">MAWB No</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            {% for run_awb in run %}
+                                                <tr class="hover:bg-gray-50">
+                                                    <td class="px-4 py-3 text-sm text-gray-700">{{ run_awb.run.run_no }}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">{{ run_awb.run.mawb_no }}</td>
+                                                </tr>
+                                            {% empty %}
+                                                <tr>
+                                                    <td colspan="4" class="px-4 py-3 text-sm text-gray-500 text-center">No run details available</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% endif %}
+                    <h1 class="text-xl font-semibold mb-4 text-primary">Shipment Status</h1>
+                    <div class="grid grid-cols-12 gap-2">
+                        <div class="col-span-12 h-[250px] overflow-y-auto rounded-lg border border-gray-200">
+                            <table class="table-auto w-full text-sm">
+                                <thead class="bg-gray-50 sticky top-0">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Status</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Location</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Date</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200" id="shipment-status-table">
+                                    <form method="post" action="{% url 'awb:pages:awb:add_status' awb.awbno %}">
+                                        {% csrf_token %}
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-4 py-3">{{ shipment_status_form.status }}</td>
+                                            <td class="px-4 py-3">{{ shipment_status_form.location }}</td>
+                                            <td class="px-4 py-3">{{ shipment_status_form.created_at }}</td>
+                                            <td class="px-4 py-3">
+                                                <button type="submit"
+                                                        class="bg-primary text-white px-3 py-1.5 rounded-md hover:bg-primary-dark transition-colors duration-200 flex items-center gap-1"
+                                                        tabindex="-1">
+                                                    <i class="fi fi-rr-plus text-sm"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </form>
+                                    {% for status in shipment_status %}
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-4 py-3 text-sm text-gray-700">{{ status.status }}</td>
+                                            <td class="px-4 py-3 text-sm text-gray-700">{{ status.location }}</td>
+                                            <td class="px-4 py-3 text-sm text-gray-700">
+                                                {{status.created_at|date:"M d, Y H:i"}}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                <a href="{% url 'awb:pages:awb:delete_status' status.id %}"
+                                                   onclick="return confirm('Are you sure you want to delete this run status?')"
+                                                   class="bg-red-500 text-white px-3 py-1.5 rounded-md hover:bg-red-600 transition-colors duration-200 flex items-center gap-1"
+                                                   tabindex="-1">
+                                                    <i class="fi fi-rr-trash text-sm"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    {% if events %}
+                                        <tr class="bg-gray-50">
+                                        <td colspan="4" class="px-4 py-3 text-sm font-medium text-gray-600">External Tracking Events</td>
+                                        </tr>
+                                        {% for ev in events %}
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-4 py-3 text-sm text-gray-700">{{ ev.Status }}</td>
+                                            <td class="px-4 py-3 text-sm text-gray-700">{{ ev.Location|default:"–" }}</td>
+                                            <td class="px-4 py-3 text-sm text-gray-700">
+                                            {{ ev.EventDate1 }} – {{ ev.EventTime1 }}
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-700">–</td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                                <script>
+                                    $(document).ready(function(){
+                                      var awbno  = "{{ awb.awbno }}";
+                                      var apiUrl = "/awb/apis/tracking-awb/?awbno=" + awbno;
+                                      var $tbody = $("#shipment-status-table");
+                                    
+                                      $.getJSON(apiUrl)
+                                        .done(function(data){
+                                          if (data.events && data.events.length) {
+                                            // Divider row (2 columns now)
+                                            $tbody.append(
+                                              '<tr class="bg-gray-50">' +
+                                                '<td colspan="2" class="px-4 py-3 text-sm font-medium text-gray-600">' +
+                                                  'External Tracking Events' +
+                                                '</td>' +
+                                              '</tr>'
+                                            );
+                                    
+                                            data.events.forEach(function(ev){
+                                              // ev.EventDate is "DD/MM/YYYY"
+                                              var parts = ev.EventDate.split('/');
+                                              // two-digit year, then day, then month
+                                              var yy  = parts[2].slice(-2);
+                                              var dd  = parts[0].padStart(2, '0');
+                                              var mm  = parts[1].padStart(2, '0');
+                                              var date = yy + '-' + dd + '-' + mm;
+                                    
+                                              var when = date + ' – ' + ev.EventTime1;
+                                    
+                                              var row = '' +
+                                                '<tr class="hover:bg-gray-50">' +
+                                                  '<td class="px-4 py-3 text-sm text-gray-700" colspan="2">' + ev.Status + '</td>' +
+                                                  '<td class="px-4 py-3 text-sm text-gray-700">' + when     + '</td>' +
+                                                '</tr>';
+                                    
+                                              $tbody.append(row);
+                                            });
+                                          }
+                                        })
+                                        .fail(function(){
+                                          console.error("Failed to fetch external tracking events.");
+                                        });
+                                    });
+                                    </script>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Box Details -->
+        <!-- Box Items -->
+        <div class="p-4 mt-3 bg-gray-50 rounded-md shadow-md">
+            <div class="grid grid-cols-2 items-center mb-4">
+                <div class="flex">
+                    <h1 class="text-xl font-semibold ">Box Detail</h1>
+                    <div class="flex ml-5">
+                        <input type="checkbox"
+                               disabled
+                               id="toggle_box_item"
+                               {% if box_items %}checked{% endif %}
+                               name="create_shipment_invoice">
+                        <label for="toggle_box_item" class="mt-1 ml-2">Create Shipment Invoice:</label>
+                    </div>
+                </div>
+                <div class="grid grid-flow-col gap-2">
+                    {% if awb.runawb_set.all %}
+                        <div class="text-xs">
+                            <label for="box_total_total_box_count">Run Number:</label>
+                            <input type="number"
+                                   id="box_total_total_box_count"
+                                   class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md"
+                                   value="{% for runawb in awb.runawb_set.all %}{{ runawb.run.run_no }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                                   readonly>
+                        </div>
+                    {% endif %}
+                    <div class="text-xs">
+                        <label for="box_total_total_box_count">Total Boxes:</label>
+                        <input type="number"
+                               id="box_total_total_box_count"
+                               class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md"
+                               value="{{ awb.total_box }}"
+                               readonly>
+                    </div>
+                    <div class="text-xs">
+                        <label for="box_total_dividing_factor">Dividing Factor:</label>
+                        <input type="text"
+                               id="box_total_dividing_factor"
+                               class="peer block w-full appearance-none border border-gray-300 bg-gray-300 px-3 pt-1 pb-1 text-gray-800 focus:outline-none rounded-md"
+                               value="{{ awb.dividing_factor.factor }}"
+                               readonly>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <table id="box-details-table"
+                       class="table-auto border-collapse border border-gray-300 w-full text-sm">
+                    <thead class="bg-gray-200 text-left">
+                        <tr>
+                            <th class="border border-gray-300 px-2 py-1">Box AWB Number</th>
+                            <th class="border border-gray-300 px-2 py-1">Box Number</th>
+                            <th class="border border-gray-300 px-2 py-1">Length</th>
+                            <th class="border border-gray-300 px-2 py-1">Breadth</th>
+                            <th class="border border-gray-300 px-2 py-1">Height</th>
+                            <th class="border border-gray-300 px-2 py-1">Actual Weight (kg)</th>
+                            <th class="border border-gray-300 px-2 py-1">Volumetric Weight (kg)</th>
+                            <th class="border border-gray-300 px-2 py-1">Charged Weight (kg)</th>
+                        </tr>
+                    </thead>
+                    <tfoot class="bg-gray-200 text-left">
+                        <tr>
+                            <th class="border border-gray-300 px-2 py-1"></th>
+                            <th class="border border-gray-300 px-2 py-1"></th>
+                            <th class="border border-gray-300 px-2 py-1"></th>
+                            <th class="border border-gray-300 px-2 py-1"></th>
+                            <th class="border border-gray-300 px-2 py-1"></th>
+                            <th class="border border-gray-300 px-2 py-1">Total A.WT: {{ awb.total_actual_weight }}</th>
+                            <th class="border border-gray-300 px-2 py-1">Total V. WGT: {{ awb.total_volumetric_weight }}</th>
+                            <th class="border border-gray-300 px-2 py-1">Total C.WT: {{ awb.total_charged_weight }}</th>
+                        </tr>
+                    </tfoot>
+                    {{ box_awb_number_formset.management_form }}
+                    <tbody id="box_detail">
+                        {% for box in box_details %}
+                            <tr class="border-t">
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <input type="hidden"
+                                           name="form-{{ forloop.counter0 }}-box_id"
+                                           value="{{ box.id }}" />
+                                    <input type="text"
+                                           name="form-{{ forloop.counter0 }}-box_awb_no"
+                                           value="{{ box.box_awb_no }}"
+                                           readonly
+                                           class="box-awb-field peer block w-full appearance-none border border-gray-300 px-3 pt-1 pb-1 text-gray-800 bg-gray-300 rounded-md">
+                                </td>
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <input type="text"
+                                           name="box-detail[{{ box.id }}][box_number]"
+                                           value="Box-{{ forloop.counter }}"
+                                           readonly
+                                           class="peer block w-full appearance-none border border-gray-300 px-3 pt-1 pb-1 text-gray-800 bg-gray-300 rounded-md">
+                                </td>
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <input type="number"
+                                           name="box-detail[{{ box.id }}][length]"
+                                           value="{{ box.length }}"
+                                           readonly
+                                           class="peer block w-full appearance-none border border-gray-300 px-3 pt-1 pb-1 text-gray-800 bg-gray-300 rounded-md">
+                                </td>
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <input type="number"
+                                           name="box-detail[{{ box.id }}][breadth]"
+                                           value="{{ box.breadth }}"
+                                           readonly
+                                           class="peer block w-full appearance-none border border-gray-300 px-3 pt-1 pb-1 text-gray-800 bg-gray-300 rounded-md">
+                                </td>
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <input type="number"
+                                           name="box-detail[{{ box.id }}][height]"
+                                           value="{{ box.height }}"
+                                           readonly
+                                           class="peer block w-full appearance-none border border-gray-300 px-3 pt-1 pb-1 text-gray-800 bg-gray-300 rounded-md">
+                                </td>
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <input type="number"
+                                           name="box-detail[{{ box.id }}][actual_weight]"
+                                           value="{{ box.actual_weight }}"
+                                           readonly
+                                           class="peer block w-full appearance-none border border-gray-300 px-3 pt-1 pb-1 text-gray-800 bg-gray-300 rounded-md">
+                                </td>
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <input type="number"
+                                           name="box-detail[{{ box.id }}][volumetric_weight]"
+                                           value="{{ box.volumetric_weight }}"
+                                           readonly
+                                           class="peer block w-full appearance-none border border-gray-300 px-3 pt-1 pb-1 text-gray-800 bg-gray-300 rounded-md">
+                                </td>
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <input type="number"
+                                           name="box-detail[{{ box.id }}][charged_weight]"
+                                           value="{{ box.charged_weight }}"
+                                           readonly
+                                           class="peer block w-full appearance-none border border-gray-300 px-3 pt-1 pb-1 text-gray-800 bg-gray-300 rounded-md">
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% if box_items %}
+            <!-- Box Items -->
+            <div class="p-4 mt-3 bg-gray-50 rounded-md shadow-md" id="box_item">
+                <h1 class="text-xl font-semibold mb-4 text-black">Box Items</h1>
+                <div>
+                    <table class="table-auto border-collapse border border-gray-300 w-full text-sm text-black">
+                        <thead class="bg-gray-200 text-left">
+                            <tr>
+                                <th class="border border-gray-300 px-2 py-1 w-[7%]">Box Number</th>
+                                <th class="border border-gray-300 px-2 py-1 w-[25%]">Description</th>
+                                <th class="border border-gray-300 px-2 py-1 w-[7%]">HS Code</th>
+                                <th class="border border-gray-300 px-2 py-1 w-[7%]">Quantity</th>
+                                <th class="border border-gray-300 px-2 py-1 w-[7%]">Unit Weight</th>
+                                <th class="border border-gray-300 px-2 py-1 w-[7%]">Unit Rate</th>
+                                <th class="border border-gray-300 px-2 py-1 w-[7%]">Unit Type</th>
+                                <th class="border border-gray-300 px-2 py-1 w-[7%]">Amount</th>
+                            </tr>
+                        </thead>
+                        <tfoot class="bg-gray-200 text-left">
+                            <tr>
+                                <th colspan="4"
+                                    class="border border-gray-300 px-2 py-1 text-right text-sm">
+                                    Total Quantity: {{ totals.total_quantity }}
+                                </th>
+                                <th class="border border-gray-300 px-2 py-1 text-right text-sm">Total U.WT: {{ totals.total_unit_weight }}</th>
+                                <th class="border border-gray-300 px-2 py-1 text-right text-sm"></th>
+                                <th class="border border-gray-300 px-2 py-1 text-right text-sm">Total Amount:</th>
+                                <th class="border border-gray-300 px-2 py-1 text-black">{{ awb.total_box_items_amount }}</th>
+                            </tr>
+                        </tfoot>
+                        <tbody id="box_item_list">
+                            {% for box in box_details %}
+                                {% for item in box.items.all %}
+                                    <tr class="border-t">
+                                        <td class="border border-gray-300 px-2 py-1">
+                                            <input type="text"
+                                                   name="box-item[{{ forloop.parentloop.counter }}][box_number]"
+                                                   value="Box-{{ forloop.parentloop.counter }}"
+                                                   readonly
+                                                   class="peer block w-full border border-gray-300 px-3 py-1 text-sm bg-gray-300 text-black rounded-md">
+                                        </td>
+                                        <td class="border border-gray-300 px-2 py-1">
+                                            <input type="text"
+                                                   name="box-item[{{ forloop.parentloop.counter }}][description]"
+                                                   value="{{ item.description }}"
+                                                   readonly
+                                                   class="peer block w-full border border-gray-300 px-3 py-1 text-sm bg-gray-300 text-black rounded-md">
+                                        </td>
+                                        <td class="border border-gray-300 px-2 py-1">
+                                            <input type="text"
+                                                   name="box-item[{{ forloop.parentloop.counter }}][hs_code]"
+                                                   value="{{ item.hs_code }}"
+                                                   readonly
+                                                   class="peer block w-full border border-gray-300 px-3 py-1 text-sm bg-gray-300 text-black rounded-md">
+                                        </td>
+                                        <td class="border border-gray-300 px-2 py-1">
+                                            <input type="number"
+                                                   name="box-item[{{ forloop.parentloop.counter }}][quantity]"
+                                                   value="{{ item.quantity }}"
+                                                   readonly
+                                                   class="peer block w-full border border-gray-300 px-3 py-1 text-sm bg-gray-300 text-black rounded-md">
+                                        </td>
+                                        <td class="border border-gray-300 px-2 py-1">
+                                            <input type="number"
+                                                   name="box-item[{{ forloop.parentloop.counter }}][unit_weight]"
+                                                   value="{{ item.unit_weight }}"
+                                                   readonly
+                                                   class="peer block w-full border border-gray-300 px-3 py-1 text-sm bg-gray-300 text-black rounded-md">
+                                        </td>
+                                        <td class="border border-gray-300 px-2 py-1">
+                                            <input type="number"
+                                                   name="box-item[{{ forloop.parentloop.counter }}][unit_rate]"
+                                                   value="{{ item.unit_rate }}"
+                                                   readonly
+                                                   class="peer block w-full border border-gray-300 px-3 py-1 text-sm bg-gray-300 text-black rounded-md">
+                                        </td>
+                                        <td class="border border-gray-300 px-2 py-1">
+                                            <input type="text"
+                                                   name="box-item[{{ forloop.parentloop.counter }}][unit_type]"
+                                                   value="{{ item.unit_type.name }}"
+                                                   readonly
+                                                   class="peer block w-full border border-gray-300 px-3 py-1 text-sm bg-gray-300 text-black rounded-md">
+                                        </td>
+                                        <td class="border border-gray-300 px-2 py-1">
+                                            <input type="number"
+                                                   name="box-item[{{ forloop.parentloop.counter }}][amount]"
+                                                   value="{{ item.amount }}"
+                                                   readonly
+                                                   class="peer block w-full border border-gray-300 px-3 py-1 text-sm bg-gray-300 text-black rounded-md">
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+        <!-- Submit Button -->
+        <div class="flex gap-4 mt-6">
+            <a href="{% url 'awb:pages:awb:list' %}"
+               class="flex-1 bg-white text-primary border-2 border-primary hover:bg-primary hover:text-white transition-colors duration-200 font-medium px-6 py-3 rounded-lg shadow-sm flex items-center justify-center gap-2">
+                <i class="fi fi-rr-arrow-left text-lg"></i>
+                <span>Back To List</span>
+            </a>
+            {% if not awb.is_verified and not awb.is_in_run %}
+                <a href="{% url 'awb:pages:awb:update' awb.awbno %}"
+                   class="flex-1 bg-white text-primary border-2 border-primary hover:bg-primary hover:text-white transition-colors duration-200 font-medium px-6 py-3 rounded-lg shadow-sm flex items-center justify-center gap-2">
+                    <i class="fi fi-rr-edit text-lg"></i>
+                    <span>Update AWB</span>
+                </a>
+            {% endif %}
+            {% if not awb.is_verified and not awb.is_in_run %}
+                <a href="{% url 'awb:pages:awb:verify' awb.awbno %}"
+                   class="flex-1 bg-primary text-white border-2 border-primary hover:bg-primary-dark transition-colors duration-200 font-medium px-6 py-3 rounded-lg shadow-sm flex items-center justify-center gap-2">
+                    <i class="fi fi-rr-check text-lg"></i>
+                    <span>Verify AWB</span>
+                </a>
+            {% elif not awb.is_in_run %}
+                <a href="{% url 'awb:pages:awb:unverify' awb.awbno %}"
+                   class="flex-1 bg-red-500 text-white border-2 border-red-500 hover:bg-red-600 transition-colors duration-200 font-medium px-6 py-3 rounded-lg shadow-sm flex items-center justify-center gap-2">
+                    <i class="fi fi-rr-cross text-lg"></i>
+                    <span>Unverify AWB</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script>
+    $(document).ready(function() {
+      $('.ui.dropdown').dropdown({
+        clearable: false,
+        forceSelection: false  // prevents auto-selection on blur
+      });
+    });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleForwarding = document.getElementById('update_forwarding_number');
+            const forwardingInput = document.getElementById('id_forwarding_number');
+            const boxAwbFields = document.querySelectorAll('.box-awb-field');
+            const updateButtonContainer = document.getElementById('update-button-container');
+            const updateAllBtn = document.getElementById('update-all-btn');
+            const importBoxAwbDiv = document.getElementById('import_box_awb_div');
+            const importBoxAwbCheckbox = document.getElementById('import_box_awb_numbers');
+
+            importBoxAwbCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    // Get all box AWB numbers
+                    const boxAwbFields = document.querySelectorAll('.box-awb-field');
+                    const boxAwbNumbers = Array.from(boxAwbFields)
+                        .map(field => field.value)
+                        .filter(value => value)
+                        .join(', ');
+                    
+                    // Store original value before updating
+                    if (!this.dataset.originalValue) {
+                        this.dataset.originalValue = forwardingInput.value;
+                    }
+                    
+                    // Update forwarding number input
+                    forwardingInput.value = boxAwbNumbers;
+                } 
+                {% comment %} else {
+                    // Restore original value if it exists
+                    if (this.dataset.originalValue) {
+                        forwardingInput.value = this.dataset.originalValue;
+                        delete this.dataset.originalValue;
+                    }
+} {% endcomment %}
+            });
+
+            toggleForwarding.addEventListener('change', function() {
+                if (this.checked) {
+                    // Enable forwarding number input
+                    forwardingInput.readOnly = false;
+                    forwardingInput.classList.remove('bg-gray-300');
+                    
+                    // Enable box AWB number inputs
+                    boxAwbFields.forEach(field => {
+                        field.readOnly = false;
+                        field.classList.remove('bg-gray-300');
+                    });
+                    
+                    // Show the update button
+                    updateButtonContainer.style.display = 'block';
+                    importBoxAwbDiv.style.display = 'block';
+                } else {
+                    // Disable forwarding number input
+                    forwardingInput.readOnly = true;
+                    forwardingInput.classList.add('bg-gray-300');
+                    
+                    // Disable box AWB number inputs
+                    boxAwbFields.forEach(field => {
+                        field.readOnly = true;
+                        field.classList.add('bg-gray-300');
+                    });
+                    
+                    // Hide the update button
+                    updateButtonContainer.style.display = 'none';
+                    importBoxAwbDiv.style.display = 'none';
+                }
+            });
+
+            updateAllBtn.addEventListener('click', function() {
+                // Collect all form data
+                const formData = new FormData();
+                const csrfToken = document.querySelector('#update-button-container [name=csrfmiddlewaretoken]').value;
+                formData.append('csrfmiddlewaretoken', csrfToken);
+                
+                // Add forwarding number form data
+                formData.append('awbno', document.querySelector('[name=awbno]').value);
+                formData.append('forwarding_number', forwardingInput.value);
+                
+                // Add box AWB numbers formset data
+                const boxAwbFields = document.querySelectorAll('.box-awb-field');
+                const boxIds = document.querySelectorAll('[name$="-box_id"]');
+                
+                // Add management form data for the formset
+                formData.append('form-TOTAL_FORMS', document.querySelectorAll('.box-awb-field').length.toString());
+                formData.append('form-INITIAL_FORMS', document.querySelectorAll('.box-awb-field').length.toString());
+                formData.append('form-MIN_NUM_FORMS', '0');
+                formData.append('form-MAX_NUM_FORMS', '1000');
+
+                // Add each box's data
+                boxAwbFields.forEach((field, index) => {
+                    formData.append(`form-${index}-box_awb_no`, field.value);
+                    formData.append(`form-${index}-box_id`, boxIds[index].value);
+                });
+
+                // Submit the data
+                fetch('{% url "awb:pages:awb:update_awb_numbers" %}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert(data.error || 'An error occurred while updating.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while updating.');
+                });
+            });
+        });
+    </script>
+{% endblock %}

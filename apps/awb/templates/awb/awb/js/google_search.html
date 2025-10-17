@@ -1,0 +1,435 @@
+<script>
+    {% comment %} $(document).ready(function() {
+      // Configuration for different address types
+      const addressConfig = {
+        consignor: {
+          fieldNames: [
+            'consignor-address1',
+            'consignor-city',
+            'consignor-state_county',
+            'consignor-post_zip_code',
+            'origin-name' // This represents the country
+          ],
+          searchFieldId: 'consignor_google_search',
+          originFieldId: 'awb_origin'
+        },
+        consignee: {
+          fieldNames: [
+            'consignee-address1',
+            'consignee-city',
+            'consignee-state_county',
+            'consignee-post_zip_code',
+            'destination-name' // This represents the country
+          ],
+          searchFieldId: 'consignee_google_search',
+          destinationFieldId: 'awb_destination'
+        }
+      };
+
+      // Function to get field value - handles select fields properly
+      function getFieldValue(field) {
+        if (field.is('select')) {
+          const selectedOption = field.find('option:selected');
+          return selectedOption.text().trim();
+        } else {
+          return field.val().trim();
+        }
+      }
+
+      // Function to get origin/destination value
+      function getLocationValue(fieldId) {
+        const field = $('#' + fieldId);
+        if (field.length) {
+          const selectedOption = field.find('option:selected');
+          return selectedOption.text().trim();
+        }
+        return '';
+      }
+
+      // Function to update a specific Google search field
+      function updateGoogleSearchField(searchType) {
+        const config = addressConfig[searchType];
+        if (!config) return;
+        
+        const searchField = $('#' + config.searchFieldId);
+        const form = searchField.closest('form');
+        let addressParts = [];
+        
+        $.each(config.fieldNames, function(index, fieldName) {
+          // Try with exact name first
+          let field = form.find('[name="' + fieldName + '"]');
+          
+          // If not found, try with ending with the name (for prefixed fields)
+          if (field.length === 0) {
+            field = form.find('[name$="' + fieldName + '"]');
+          }
+          
+          if (field.length > 0) {
+            const fieldValue = getFieldValue(field);
+            if (fieldValue) {
+              addressParts.push(fieldValue);
+            }
+          }
+        });
+        
+        // Add origin/destination at the end if available
+        if (searchType === 'consignor' && config.originFieldId) {
+          const originValue = getLocationValue(config.originFieldId);
+          if (originValue) {
+            addressParts.push(originValue);
+          }
+        } else if (searchType === 'consignee' && config.destinationFieldId) {
+          const destinationValue = getLocationValue(config.destinationFieldId);
+          if (destinationValue) {
+            addressParts.push(destinationValue);
+          }
+        }
+        
+        // Format the address string
+        const searchQuery = addressParts.filter(part => part.trim() !== '').join(', ');
+        searchField.val(searchQuery.toUpperCase());
+      }
+      
+      // Initialize address search functionality for each type
+      $('.address-search-field').each(function() {
+        const searchType = $(this).data('search-type');
+        const config = addressConfig[searchType];
+        
+        if (config) {
+          // Add event listeners to address fields
+          const form = $(this).closest('form');
+          
+          // Add event listener for origin/destination fields
+          if (searchType === 'consignor' && config.originFieldId) {
+            $('#' + config.originFieldId).on('change', function() {
+              updateGoogleSearchField(searchType);
+            });
+          } else if (searchType === 'consignee' && config.destinationFieldId) {
+            $('#' + config.destinationFieldId).on('change', function() {
+              updateGoogleSearchField(searchType);
+            });
+          }
+          
+          $.each(config.fieldNames, function(index, fieldName) {
+            // Try with exact name first
+            let fields = form.find('[name="' + fieldName + '"]');
+            
+            // If not found, try with ending with the name (for prefixed fields)
+            if (fields.length === 0) {
+              fields = form.find('[name$="' + fieldName + '"]');
+            }
+            
+            fields.on('input change', function() {
+              updateGoogleSearchField(searchType);
+            });
+          });
+          
+          // Initial update
+          updateGoogleSearchField(searchType);
+        }
+      });
+      
+      // Add click event for search buttons
+      $('.google-search-button').on('click', function() {
+        const searchFieldId = $(this).data('search-id');
+        const searchQuery = $('#' + searchFieldId).val().trim();
+        
+        if (searchQuery) {
+          window.open('https://www.google.com/search?q=' + encodeURIComponent(searchQuery), '_blank');
+        }
+      });
+    }); {% endcomment %}
+
+
+    $(document).ready(function() {
+      // Configuration for different address types
+      const addressConfig = {
+        consignor: {
+          fieldNames: [
+            'consignor-address1',
+            'consignor-city',
+            'consignor-state_county',
+            'consignor-post_zip_code',
+            'origin-name' // This represents the country
+          ],
+          searchFieldId: 'consignor_google_search',
+          originFieldId: 'awb_origin'
+        },
+        consignee: {
+          fieldNames: [
+            'consignee-address1',
+            'consignee-city',
+            'consignee-state_county',
+            'consignee-post_zip_code',
+            'destination-name' // This represents the country
+          ],
+          searchFieldId: 'consignee_google_search',
+          destinationFieldId: 'awb_destination'
+        }
+      };
+
+      // Function to get field value - handles select fields properly
+      function getFieldValue(field) {
+        if (field.is('select')) {
+          const selectedOption = field.find('option:selected');
+          return selectedOption.text().trim();
+        } else {
+          return field.val().trim();
+        }
+      }
+
+      // Function to get origin/destination value
+      function getLocationValue(fieldId) {
+        const field = $('#' + fieldId);
+        if (field.length) {
+          const selectedOption = field.find('option:selected');
+          return selectedOption.text().trim();
+        }
+        return '';
+      }
+
+      // Function to update a specific Google search field
+      function updateGoogleSearchField(searchType) {
+        const config = addressConfig[searchType];
+        if (!config) return;
+        
+        const searchField = $('#' + config.searchFieldId);
+        const form = searchField.closest('form');
+        let addressParts = [];
+        
+        $.each(config.fieldNames, function(index, fieldName) {
+          // Try with exact name first
+          let field = form.find('[name="' + fieldName + '"]');
+          
+          // If not found, try with ending with the name (for prefixed fields)
+          if (field.length === 0) {
+            field = form.find('[name$="' + fieldName + '"]');
+          }
+          
+          if (field.length > 0) {
+            const fieldValue = getFieldValue(field);
+            if (fieldValue) {
+              addressParts.push(fieldValue);
+            }
+          }
+        });
+        
+        // Add origin/destination at the end if available
+        if (searchType === 'consignor' && config.originFieldId) {
+          const originValue = getLocationValue(config.originFieldId);
+          if (originValue) {
+            addressParts.push(originValue);
+          }
+        } else if (searchType === 'consignee' && config.destinationFieldId) {
+          const destinationValue = getLocationValue(config.destinationFieldId);
+          if (destinationValue) {
+            addressParts.push(destinationValue);
+          }
+        }
+        
+        // Format the address string
+        const searchQuery = addressParts.filter(part => part.trim() !== '').join(', ');
+        searchField.val(searchQuery.toUpperCase());
+      }
+      
+      // Initialize address search functionality for each type
+      $('.address-search-field').each(function() {
+        const searchType = $(this).data('search-type');
+        const config = addressConfig[searchType];
+        
+        if (config) {
+          // Add event listeners to address fields
+          const form = $(this).closest('form');
+          
+          // Add event listener for origin/destination fields
+          if (searchType === 'consignor' && config.originFieldId) {
+            $('#' + config.originFieldId).on('change', function() {
+              updateGoogleSearchField(searchType);
+            });
+          } else if (searchType === 'consignee' && config.destinationFieldId) {
+            $('#' + config.destinationFieldId).on('change', function() {
+              updateGoogleSearchField(searchType);
+            });
+          }
+          
+          $.each(config.fieldNames, function(index, fieldName) {
+            // Try with exact name first
+            let fields = form.find('[name="' + fieldName + '"]');
+            
+            // If not found, try with ending with the name (for prefixed fields)
+            if (fields.length === 0) {
+              fields = form.find('[name$="' + fieldName + '"]');
+            }
+            
+            fields.on('input change', function() {
+              updateGoogleSearchField(searchType);
+            });
+          });
+          
+          // Initial update
+          updateGoogleSearchField(searchType);
+        }
+      });
+      
+      // Add click event for search buttons
+      $('.google-search-button').on('click', function() {
+        const searchFieldId = $(this).data('search-id');
+        const searchQuery = $('#' + searchFieldId).val().trim();
+        
+        if (searchQuery) {
+          window.open('https://www.google.com/search?q=' + encodeURIComponent(searchQuery), '_blank');
+        }
+      });
+
+      // SOLUTION 1: Expose a global function that can be called after API data is loaded
+      window.updateAddressSearchFields = function() {
+        // Update both consignor and consignee search fields
+        updateGoogleSearchField('consignor');
+        updateGoogleSearchField('consignee');
+      };
+
+      // SOLUTION 2: Set up MutationObserver to watch for value changes
+      const addressForms = $('.address-search-field').closest('form');
+      
+      if (addressForms.length && window.MutationObserver) {
+        const observer = new MutationObserver(function(mutations) {
+          // Check if mutations affect our fields of interest
+          let updateConsignor = false;
+          let updateConsignee = false;
+          
+          mutations.forEach(function(mutation) {
+            const $target = $(mutation.target);
+            
+            // Check if the mutation is related to our fields
+            if ($target.is('input, select') || $target.find('input, select').length) {
+              // Determine which search field needs updating
+              const formElement = $target.closest('form')[0];
+
+              addressForms.each(function(index) {
+                if (this === formElement) {
+                  const searchField = $(this).find('.address-search-field');
+                  const searchType = searchField.data('search-type');
+                  
+                  if (searchType === 'consignor') updateConsignor = true;
+                  if (searchType === 'consignee') updateConsignee = true;
+                }
+              });
+            }
+          });
+          
+          // Update the affected search fields
+          if (updateConsignor) updateGoogleSearchField('consignor');
+          if (updateConsignee) updateGoogleSearchField('consignee');
+        });
+        
+        // Configure and start the observer
+        const observerConfig = { 
+          attributes: true, 
+          childList: true, 
+          characterData: true, 
+          subtree: true,
+          attributeFilter: ['value', 'selected']
+        };
+        
+        addressForms.each(function() {
+          observer.observe(this, observerConfig);
+        });
+      }
+
+      // SOLUTION 3: Periodically check for changes
+      const previousValues = {
+        consignor: {},
+        consignee: {}
+      };
+
+      // Function to store current field values
+      function storeCurrentValues() {
+        ['consignor', 'consignee'].forEach(function(searchType) {
+          const config = addressConfig[searchType];
+          if (!config) return;
+          
+          const searchField = $('#' + config.searchFieldId);
+          const form = searchField.closest('form');
+          
+          previousValues[searchType] = {};
+          
+          // Store values of all monitored fields
+          $.each(config.fieldNames, function(index, fieldName) {
+            let field = form.find('[name="' + fieldName + '"]');
+            if (field.length === 0) {
+              field = form.find('[name$="' + fieldName + '"]');
+            }
+            
+            if (field.length > 0) {
+              previousValues[searchType][fieldName] = getFieldValue(field);
+            }
+          });
+          
+          // Store origin/destination value
+          if (searchType === 'consignor' && config.originFieldId) {
+            previousValues[searchType]['origin'] = getLocationValue(config.originFieldId);
+          } else if (searchType === 'consignee' && config.destinationFieldId) {
+            previousValues[searchType]['destination'] = getLocationValue(config.destinationFieldId);
+          }
+        });
+      }
+
+      // Function to check for changes
+      function checkForChanges() {
+        ['consignor', 'consignee'].forEach(function(searchType) {
+          const config = addressConfig[searchType];
+          if (!config) return;
+          
+          const searchField = $('#' + config.searchFieldId);
+          const form = searchField.closest('form');
+          let hasChanges = false;
+          
+          // Check for changes in monitored fields
+          $.each(config.fieldNames, function(index, fieldName) {
+            let field = form.find('[name="' + fieldName + '"]');
+            if (field.length === 0) {
+              field = form.find('[name$="' + fieldName + '"]');
+            }
+            
+            if (field.length > 0) {
+              const currentValue = getFieldValue(field);
+              const previousValue = previousValues[searchType][fieldName];
+              
+              if (currentValue !== previousValue) {
+                hasChanges = true;
+              }
+            }
+          });
+          
+          // Check for changes in origin/destination
+          if (searchType === 'consignor' && config.originFieldId) {
+            const currentValue = getLocationValue(config.originFieldId);
+            const previousValue = previousValues[searchType]['origin'];
+            
+            if (currentValue !== previousValue) {
+              hasChanges = true;
+            }
+          } else if (searchType === 'consignee' && config.destinationFieldId) {
+            const currentValue = getLocationValue(config.destinationFieldId);
+            const previousValue = previousValues[searchType]['destination'];
+            
+            if (currentValue !== previousValue) {
+              hasChanges = true;
+            }
+          }
+          
+          // Update if changes detected
+          if (hasChanges) {
+            updateGoogleSearchField(searchType);
+            storeCurrentValues(); // Update stored values
+          }
+        });
+      }
+
+      // Store initial values
+      storeCurrentValues();
+      
+      // Set interval to check for changes (every 500ms)
+      setInterval(checkForChanges, 500);
+    });
+</script>

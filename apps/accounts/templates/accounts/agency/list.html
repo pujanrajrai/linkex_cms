@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %} {{ title }} {% endblock title %}
+
+{% block pagetitle %}Agencies{% endblock %}
+{% block button %}
+    <a href="{% url 'accounts:pages:agency:create' %}">
+        <button class="bg-white text-primary border-2 border-primary hover:bg-secondary hover:text-white hover:border-secondary transition-colors duration-300 font-medium px-4 py-2 rounded flex items-center gap-2">
+            <i class="fi fi-rr-plus text-sm mt-[3px]"></i>
+            <span>Add Agency</span>
+        </button>
+    </a>
+{% endblock %}
+{% block content %}
+    <style>
+    /* Ensure search row is not clickable */
+    #search-row td {
+        pointer-events: auto !important;
+    }
+    </style>
+    <!-- Data Table -->
+    <div class="bg-white p-5">
+        <div class="overflow-x-auto">
+            <table id="dataTable"
+                   class="display min-w-full border-collapse border border-gray-300 w-full">
+                <thead class="bg-gray-200">
+                    <tr id="search-row"></tr>
+                    <tr class="bg-primary text-white">
+                        <th class="p-3 border">SN</th>
+                        <th class="p-3 border" data-search="false">Company Name</th>
+                        <th class="p-3 border" data-search="false">Owner</th>
+                        <th class="p-3 border" data-search="false">Blocked</th>
+                        <th class="p-3 border" data-search="false">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script>
+    $(document).ready(function () {
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').DataTable().destroy();
+        }
+       
+
+        $('#dataTable').DataTable({
+            processing: true,
+            serverSide: true,
+            searching: true,
+            paging: true,
+            ordering: true,
+            info: true,
+            ajax: {
+                url: "{% url 'accounts:pages:agency:list' %}",
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            },
+            columns: [
+                { 
+                    data: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    },
+                    name: "sn", 
+                    searchable: false 
+                },
+                { data: "company_name", name: "company_name" },
+                { data: "owner_name", name: "owner_name" },
+                {
+                    data: "is_blocked", render: function(data, type, row){
+                        return data ? 'Yes': 'No';
+                    },
+                    name: 'is_blocked',
+                    searchable: false
+                },
+                { 
+                    data: null,
+                    render: function(data, type, full, meta) {
+                        let updateUrl = "{% url 'accounts:pages:agency:update' 0 %}".replace('0', data.id);
+                        let detailUrl = "{% url 'accounts:pages:agency:detail' 0 %}".replace('0', data.id);
+                        let blockUrl = data.is_blocked ? "{% url 'accounts:pages:agency:unblock' 0 %}".replace('0', data.id) : "{% url 'accounts:pages:agency:block' 0 %}".replace('0', data.id);
+                        let blockActionIcon = data.is_blocked ? 'fi fi-rr-unlock' : 'fi fi-rr-lock';
+
+                        return `
+                            <div class="flex items-center gap-x-3">
+                                <a href="${detailUrl}" title="Detail">
+                                    <button class="bg-primary text-white px-4 py-2 rounded-md shadow-md hover:bg-primary-dark transition-all duration-300">
+                                        <i class="fi fi-rr-eye"></i>
+                                    </button>
+                                </a>
+                                <a href="${updateUrl}" title="Update">
+                                    <button class="bg-secondary text-white px-4 py-2 rounded-md shadow-md hover:bg-secondary-dark transition-all duration-300">
+                                        <i class="fi fi-rr-edit"></i>
+                                    </button>
+                                </a>
+                                <a href="${blockUrl}" title="${data.is_blocked ? 'Unblock' : 'Block'}">
+                                    <button class="${data.is_blocked ? 'bg-green-500' : 'bg-red-500'} text-white px-4 py-2 rounded-md shadow-md hover:${data.is_blocked ? 'bg-green-700' : 'bg-red-700'} transition-all duration-300">
+                                        <i class="${blockActionIcon}"></i>
+                                    </button>
+                                </a>
+                            </div>
+                        `;
+                    },
+                    searchable: false
+                }
+            ]
+        });
+    });
+    
+
+    </script>
+{% endblock %}
