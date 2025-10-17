@@ -33,10 +33,10 @@ body {
 // Navbar styles
 .navbar {
     margin-left: $sidebar-width;
-    @include flex(row, space-between, center);
+    @include flex(column, flex-start, stretch);
     background: $primary-color;
     color: white;
-    padding-right: 15px;
+    padding: 10px 15px;
     transition: all $transition-speed ease-in-out;
 }
 

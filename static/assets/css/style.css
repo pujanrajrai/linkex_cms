@@ -14,12 +14,12 @@ body {
 .navbar {
   margin-left: 85px;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
   background: #10345a;
   color: white;
-  padding-right: 15px;
+  padding: 10px 15px;
   transition: all 0.3s ease-in-out;
 }
 
