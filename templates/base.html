@@ -33,82 +33,6 @@
                 text-transform: uppercase;
             }
             
-            /* Navbar Layout Styles */
-            .navbar-row-1 {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                width: 100%;
-                gap: 10px;
-            }
-            
-            .navbar-row-2 {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 100%;
-                padding: 10px 0;
-            }
-            
-            .navbar-search-form {
-                display: flex;
-                align-items: center;
-                width: 100%;
-                max-width: 600px;
-            }
-            
-            .navbar-search-input {
-                flex: 1;
-                padding: 8px 12px;
-                font-size: 14px;
-                border: 2px solid #10345A;
-                border-radius: 4px 0 0 4px;
-                outline: none;
-                background: white;
-                color: black;
-            }
-            
-            .navbar-search-input:focus {
-                border-color: #10345A;
-            }
-            
-            .navbar-search-button {
-                padding: 8px 16px;
-                background: white;
-                color: #10345A;
-                border: 2px solid #10345A;
-                border-left: none;
-                border-radius: 0 4px 4px 0;
-                cursor: pointer;
-                transition: all 0.3s;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
-            .navbar-search-button:hover {
-                background: #10345A;
-                color: white;
-            }
-            
-            .nav-title {
-                flex: 1;
-                font-size: 18px;
-                font-weight: bold;
-                margin-left: 10px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            
-            .navbar-button {
-                display: flex;
-                align-items: center;
-            }
-            
-            .menu-toggle.ham-menu {
-                flex-shrink: 0;
-            }
             
             /* Desktop: Layout adjustment */
             @media (min-width: 769px) {
@@ -118,82 +42,14 @@
                     -moz-transform: scale(0.9);
                     -moz-transform-origin: 0 0;
                 }
-                
-                .navbar {
-                    display: flex !important;
-                    flex-direction: row !important;
-                    align-items: center !important;
-                    gap: 15px !important;
-                    flex-wrap: nowrap !important;
-                    padding: 10px 15px !important;
-                }
-                
-                .navbar-row-1 {
-                    display: flex !important;
-                    flex: 0 0 auto !important;
-                    align-items: center !important;
-                    gap: 10px !important;
-                    width: auto !important;
-                }
-                
-                .navbar-row-2 {
-                    display: flex !important;
-                    flex: 1 !important;
-                    padding: 0 !important;
-                    margin: 0 15px !important;
-                    visibility: visible !important;
-                    opacity: 1 !important;
-                    width: auto !important;
-                }
-                
-                .navbar-search-form {
-                    max-width: 500px !important;
-                    width: 100% !important;
-                    display: flex !important;
-                }
-                
-                .nav-title {
-                    max-width: 200px;
-                }
             }
             
             /* Mobile Responsive Styles */
             @media (max-width: 768px) {
                 .navbar {
-                    flex-direction: column;
-                }
-                
-                .navbar-row-1 {
-                    padding: 5px;
-                }
-                
-                .navbar-row-2 {
-                    width: 100%;
-                    padding: 5px 10px 10px 10px;
-                }
-                
-                .navbar-search-form {
-                    width: 100%;
-                    max-width: 100%;
-                }
-                
-                .nav-title {
-                    font-size: 14px;
-                    margin-left: 5px;
-                }
-                
-                .navbar-search-input {
-                    font-size: 13px;
-                    padding: 6px 10px;
-                }
-                
-                .navbar-search-button {
-                    padding: 6px 12px;
-                }
-                
-                .navbar-button a button {
-                    font-size: 12px;
-                    padding: 6px 10px;
+                    flex-direction: row !important;
+                    justify-content: flex-start !important;
+                    align-items: center !important;
                 }
             }
             
@@ -311,29 +167,6 @@
                     font-size: 12px !important;
                 }
                 
-                /* Hide button text, show only icons */
-                .navbar-button button span {
-                    display: none;
-                }
-                
-                .navbar-button button i {
-                    margin: 0 !important;
-                }
-                
-                .navbar-button button {
-                    padding: 8px 12px !important;
-                    min-width: auto !important;
-                }
-                
-                .navbar-search-input {
-                    font-size: 12px;
-                    padding: 6px 8px;
-                }
-                
-                .navbar-search-button {
-                    padding: 6px 10px;
-                }
-                
                 table.dataTable thead th,
                 table.dataTable tbody td {
                     font-size: 10px !important;
@@ -422,35 +255,35 @@
     <body>
         <!-- Navbar -->
         <header class="navbar">
-            <div class="navbar-row-1">
-                <div class="menu-toggle ham-menu">
-                    <i class="fas fa-bars"></i>
-                </div>
-                <div class="nav-title">
+            <div class="menu-toggle ham-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+            <div class="flex justify-between items-center w-full">
+                <div class="nav-title ml-4 mt-2">
                     {% block pagetitle %}
                     {% endblock pagetitle %}
                 </div>
-                <div class="navbar-button">
+                <div class="flex items-center justify-center flex-1 mx-8 mr-[100px]">
+                    <form method="get"
+                          autocomplete="off"
+                          action="{% url 'awb:pages:awb:redirect_awb' %}"
+                          class="flex items-center w-80">
+                        <input type="text"
+                               name="awb_no"
+                               placeholder="Search AWB..."
+                               autocomplete="off"
+                               class="w-full text-black px-3 py-2 bg-white border-2 border-primary rounded-l focus:outline-none focus:border-primary text-sm"
+                               required>
+                        <button type="submit"
+                                class="bg-white text-primary border-2 border-primary hover:bg-primary hover:text-white transition-colors duration-300 px-4 py-2 rounded-r flex items-center">
+                            <i class="fas fa-search text-sm"></i>
+                        </button>
+                    </form>
+                </div>
+                <div class="flex items-center">
                     {% block button %}
                     {% endblock button %}
                 </div>
-            </div>
-            <div class="navbar-row-2">
-                <form method="get"
-                      autocomplete="off"
-                      action="{% url 'awb:pages:awb:redirect_awb' %}"
-                      class="navbar-search-form">
-                    <input type="text"
-                           name="awb_no"
-                           placeholder="Search AWB..."
-                           autocomplete="off"
-                           class="navbar-search-input"
-                           required>
-                    <button type="submit"
-                            class="navbar-search-button">
-                        <i class="fas fa-search text-sm"></i>
-                    </button>
-                </form>
             </div>
         </header>
         {% include 'sidebar.html' %}
