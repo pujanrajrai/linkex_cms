@@ -146,7 +146,7 @@
             </li>
             <li>
                 <a
-                  href="/#about"
+                  href="{% url 'about' %}"
                   class="hover:text-primary hover:underline underline-offset-4 transition-colors duration-200"
                   >About Us</a
                 >
@@ -186,7 +186,7 @@
         <!-- Mobile Menu Button -->
         <button 
           id="mobile-menu-btn"
-          class="lg:hidden text-white focus:outline-none p-2"
+          class="lg:hidden text-black focus:outline-none p-2"
           aria-label="Toggle mobile menu"
         >
           <i class="fas fa-bars text-xl"></i>
@@ -221,7 +221,7 @@
               <a href="/#" class="block text-white hover:text-secondary py-3 border-b border-white/10 transition-colors duration-200">Home</a>
             </li>
             <li>
-              <a href="/#about" class="block text-white hover:text-secondary py-3 border-b border-white/10 transition-colors duration-200">About Us</a>
+              <a href="{% url 'about' %}" class="block text-white hover:text-secondary py-3 border-b border-white/10 transition-colors duration-200">About Us</a>
             </li>
             <li>
               <a href="/#services" class="block text-white hover:text-secondary py-3 border-b border-white/10 transition-colors duration-200">Services</a>
