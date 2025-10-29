@@ -1,0 +1,142 @@
+{% extends 'homebase.html' %}
+{% load static %}
+{% block content %}
+    <!-- Hero Section -->
+    <section
+    class="relative min-h-[40vh] sm:min-h-[45vh] lg:min-h-[50vh] text-white bg-cover bg-center sm:bg-top flex flex-col justify-end"
+    style="
+      background-image: linear-gradient(
+          rgba(16, 52, 90, 0.7),
+          rgba(16, 52, 90, 0.8)
+        ),
+        url('{% static 'newimage/home1.png' %}');
+    "
+    id="home"
+  >
+    <div class="container mx-auto text-center px-4 sm:px-6 lg:px-14 max-w-7xl pb-8 lg:pb-16">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 lg:mb-10 leading-tight">
+        About Us
+      </h1>
+    </div>
+  </section>
+
+  <!-- Welcome Section -->
+  <section class="bg-white py-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-14 max-w-7xl">
+      <div class="text-center mb-16">
+        <h4 class="text-2xl sm:text-4xl md:text-5xl font-bold text-secondary mb-8">
+          WELCOME TO LINKEX EXPORT & LOGISTICS
+        </h4>
+        <div class="max-w-4xl mx-auto">
+          <p class="text-gray-700 text-lg leading-relaxed mb-6">
+            Linkex Export & Logistics Pvt. Ltd. is an international cargo and courier company
+            based in Kathmandu that provides complete logistics solutions with a customer
+            first approach. Our mission is to make global shipping simple, safe and
+            affordable for everyone. We specialize in exporting goods from Nepal while
+            maintaining high quality service standards and promoting Nepali products in
+            international markets.
+          </p>
+          <p class="text-gray-700 text-lg leading-relaxed">
+            With strong global partnerships, a growing network and
+            years of expertise, Linkex export and logistic Pvt. Ltd is continuously expanding
+            its reach to connect Nepal to the world through reliable and efficient logistics
+            solutions.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission, Vision and Goal Section -->
+  <section class="bg-gray-50 py-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-14 max-w-7xl">
+      <div class="text-center mb-16">
+        <h4 class="text-2xl sm:text-4xl md:text-5xl font-bold text-secondary mb-8">
+          Our Mission, Vision and Goal
+        </h4>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <!-- Mission Card -->
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-300">
+          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-bullseye text-red-600 text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-bold text-primary mb-4">Mission</h3>
+          <p class="text-gray-700 leading-relaxed">
+            To provide seamless, reliable, and efficient logistics solutions that connect Nepal to the world, ensuring customer satisfaction through innovative services and global partnerships.
+          </p>
+        </div>
+        
+        <!-- Vision Card -->
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-300">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-eye text-blue-600 text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-bold text-primary mb-4">Vision</h3>
+          <p class="text-gray-700 leading-relaxed">
+            To be Nepal's most trusted global logistics partner, recognized for excellence in international trade facilitation and innovative logistics solutions.
+          </p>
+        </div>
+        
+        <!-- Goal Card -->
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-300">
+          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-flag text-green-600 text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-bold text-primary mb-4">Our Goal</h3>
+          <p class="text-gray-700 leading-relaxed">
+            To deliver exceptional customer service, ensure on-time delivery, expand our network coverage globally, and continuously improve our logistics solutions.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us Section -->
+  <section class="bg-white py-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-14 max-w-7xl">
+      <div class="text-center mb-16">
+        <h4 class="text-2xl sm:text-4xl md:text-5xl font-bold text-black mb-8">
+          WHY CHOOSE LINKEX EXPORT & LOGISTICS?
+        </h4>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <!-- Reliable Shipping Card -->
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-300 border border-gray-200">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-truck text-blue-600 text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-bold text-primary mb-4">Reliable Shipping</h3>
+          <p class="text-gray-700 leading-relaxed">
+            We ensure your cargo is handled with utmost care and delivered safely and on time, maintaining the highest standards of service quality.
+          </p>
+        </div>
+        
+        <!-- Global Network Card -->
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-300 border border-gray-200">
+          <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-globe text-yellow-600 text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-bold text-primary mb-4">Global Network</h3>
+          <p class="text-gray-700 leading-relaxed">
+            Our extensive global network enables international freight forwarding via air, sea, and combined routes, connecting Nepal to destinations worldwide.
+          </p>
+        </div>
+        
+        <!-- Personalized Service Card -->
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-300 border border-gray-200">
+          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-user-check text-green-600 text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-bold text-primary mb-4">Personalized Service</h3>
+          <p class="text-gray-700 leading-relaxed">
+            We provide personalized attention and tailored logistics solutions to meet your specific business needs and requirements.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

@@ -2,7 +2,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib import admin
 from hub.pages.run.views import run_history
-
+from django.views.generic import TemplateView
 from django.urls import path, include
 from decouple import config
 from . import views
@@ -16,6 +16,7 @@ urlpatterns = [
     path('captcha/', include('captcha.urls')),
     path('captcha/', include('captcha.urls')),
     path('', views.home, name='home'),
+    path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
     path('agency_request/', views.agency_request, name='agency_request'),
 
     path('tracking/', views.tracking, name='tracking'),

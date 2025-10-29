@@ -14,12 +14,12 @@ body {
 .navbar {
   margin-left: 85px;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
   background: #10345a;
   color: white;
-  padding-right: 15px;
+  padding: 10px 15px;
   transition: all 0.3s ease-in-out;
 }
 
@@ -33,7 +33,7 @@ body {
   position: relative;
   z-index: 2;
   padding: 15px 20px;
-  background: #f97c29;
+  background: #ED1C24;
 }
 
 .nav-title {
@@ -43,7 +43,7 @@ body {
 
 .add-user-btn {
   font-family: "Poppins", sans-serif;
-  background: #F09119;
+  background: #ED1C24;
   color: white;
   border: none;
   padding: 8px 15px;
@@ -59,7 +59,7 @@ body {
 }
 
 .add-user-btn:hover {
-  background: #c9760d;
+  background: #c83826;
 }
 
 .sidebar {
@@ -168,7 +168,7 @@ body {
 }
 
 .menu-link:hover {
-  color: #F09119;
+  color: #ED1C24;
   background: #e9ecef;
 }
 
@@ -227,7 +227,7 @@ body {
 
 .dropdown-content a:hover {
   background: #dadfe4;
-  color: #F09119;
+  color: #ED1C24;
 }
 
 /* Accordion style in expanded sidebar */
@@ -338,6 +338,50 @@ body {
   .add-user-btn {
     font-size: 12px;
     padding: 6px 12px;
+  }
+  
+  .content {
+    padding: 5px;
+  }
+}
+
+/* Additional Mobile Responsive Utilities */
+@media (max-width: 768px) {
+  /* Ensure body doesn't overflow */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Content area mobile adjustments */
+  .content {
+    padding: 10px;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+  
+  /* Navbar mobile layout */
+  .navbar {
+    flex-wrap: wrap;
+    padding: 10px 5px;
+  }
+  
+  /* Table containers */
+  .overflow-x-auto {
+    max-width: calc(100vw - 20px);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Very small screens */
+  .content {
+    padding: 5px;
+  }
+  
+  .overflow-x-auto {
+    max-width: calc(100vw - 10px);
   }
 }
 

@@ -21,10 +21,10 @@
         theme: {
           extend: {
             colors: {
-              primary: "#FF6804",
-              "primary-dark": "#E55E03",
-              "primary-light": "#FF8030",
-              "primary-lighter": "#FF9955",
+              primary: "#ED1C24",
+              "primary-dark": "#c83826",
+              "primary-light": "#ed6452",
+              "primary-lighter": "#f18473",
               secondary: "#000101",
               "secondary-dark": "#000000",
               "secondary-light": "#333333",
@@ -33,9 +33,9 @@
               "tertiary-dark": "#144668",
               "tertiary-light": "#2D6BAD",
               "tertiary-lighter": "#407DC0",
-              accent: "#FF6804",
-              "accent-dark": "#E55E03",
-              "accent-light": "#FF8030",
+              accent: "#ED1C24",
+              "accent-dark": "#c83826",
+              "accent-light": "#ed6452",
             },
           },
         },
@@ -245,7 +245,7 @@
     {% endblock %}
 
     <!-- Footer -->
-    <footer class="bg-tertiary text-white py-8 lg:py-10">
+    <footer class="bg-black text-white py-8 lg:py-10">
       <div class="container mx-auto px-4 sm:px-6 lg:px-14 max-w-7xl">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           <!-- Company Info Column -->
@@ -263,40 +263,24 @@
             <div class="space-y-3 lg:space-y-4 text-center sm:text-left">
               <div class="space-y-2 text-white/80 text-sm lg:text-base">
                 <p class="flex items-center justify-center sm:justify-start gap-2">
-                  <span class="text-primary">📞</span> +977-985-1168433
+                  <span class="text-primary">📞</span> 014562255 / +977 980-3833892
                 </p>    
                 <p class="flex items-center justify-center sm:justify-start gap-2">
-                  <span class="text-primary">✉️</span> shipglobalnpl@gmail.com
+                  <span class="text-primary">✉️</span> linkexexport@gmail.com
                 </p>
                 <p class="flex items-center justify-center sm:justify-start gap-2">
-                  <span class="text-primary">📍</span> Battisputali Road Gaushala, Kathmandu
-                 (Along with NIC Asia Bank & Nearby Hotel Dwarika)
-
+                  <span class="text-primary">📍</span> Bhaktapur-02, Nagdesh
                 </p>
               </div>
-              {% comment %} <div class="flex justify-center sm:justify-start space-x-4 pt-2">
+              <div class="flex justify-center sm:justify-start space-x-4 pt-2">
                 <a
-                  href="https://facebook.com"
+                  href="https://www.facebook.com/share/17hxrMgc2J/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-white/80 hover:text-primary transition-colors text-sm lg:text-base"
-                  >Facebook</a
+                  class="text-white/80 hover:text-primary transition-colors text-sm lg:text-base flex items-center gap-2"
+                  ><i class="fab fa-facebook"></i> Facebook</a
                 >
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-white/80 hover:text-primary transition-colors text-sm lg:text-base"
-                  >LinkedIn</a
-                >
-                <a
-                  href="https://twitter.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-white/80 hover:text-primary transition-colors text-sm lg:text-base"
-                  >Twitter</a
-                >
-              </div> {% endcomment %}
+              </div>
             </div>
           </div>
 
@@ -354,19 +338,25 @@
             </div>
           </div>
 
-          <!-- Map Column -->
+          <!-- Contact Info Column -->
           <div class="sm:col-span-2 lg:col-span-1">
-            <div class="rounded-lg overflow-hidden">
-                <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.3701078228555!2d85.34015117560911!3d27.705856825556914!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb195184ae81c9%3A0x2e2253e702031d57!2sShip%20Global%20Nepal!5e0!3m2!1sen!2snp!4v1750570305258!5m2!1sen!2snp"
-                  width="100%" 
-                  height="200" 
-                  style="border:0;" 
-                  allowfullscreen="" 
-                  loading="lazy" 
-                  referrerpolicy="no-referrer-when-downgrade"
-                  title="Linkex Export Location"
-                ></iframe>
+            <h4 class="font-bold text-lg lg:text-xl mb-4 lg:mb-6 text-primary text-center sm:text-left">Connect With Us</h4>
+            <div class="space-y-3 text-white/80 text-sm lg:text-base text-center sm:text-left">
+              <p class="leading-relaxed">
+                Follow us on social media for updates and news about our services.
+              </p>
+              <div class="pt-2">
+                <a
+                  href="https://www.facebook.com/share/17hxrMgc2J/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark transition-colors px-4 py-2 rounded-lg"
+                >
+                  <i class="fab fa-facebook-f text-xl"></i>
+                  <span>Visit Our Facebook Page</span>
+                </a>
+              </div>
+              {% comment %} Google map not set yet {% endcomment %}
             </div>
           </div>
         </div>
