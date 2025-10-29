@@ -12,6 +12,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('awb/', include('awb.urls')),
     path('hub/', include('hub.urls')),
+    path('company/', include('home.urls')),
     path('finance/', include('finance.urls')),
     path('captcha/', include('captcha.urls')),
     path('captcha/', include('captcha.urls')),

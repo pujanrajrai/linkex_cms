@@ -201,7 +201,7 @@
         <div class="flex justify-between items-center p-4 border-b border-white/20">
           <a href="/">  
           <img
-            src="{% static 'images/company/logo.png' %}"
+            src="{{ company.logo.url }}"
             alt="Linkex Export Logo"
             class="h-8"
             id="navbar-logo2"
@@ -254,7 +254,7 @@
               class="flex justify-center sm:justify-start items-center bg-white rounded-lg p-2 max-w-[180px] mx-auto sm:mx-0"
             >
               <img
-                src="{% static 'images/company/logo.png' %}"
+                src="{{ company.logo.url }}"
                 alt="Linkex Export Logo"
                 class="h-10 lg:h-14 w-auto transition-transform duration-300 hover:scale-105"
                 loading="lazy"
@@ -263,18 +263,18 @@
             <div class="space-y-3 lg:space-y-4 text-center sm:text-left">
               <div class="space-y-2 text-white/80 text-sm lg:text-base">
                 <p class="flex items-center justify-center sm:justify-start gap-2">
-                  <span class="text-primary">📞</span> 014562255 / +977 980-3833892
+                  <span class="text-primary">📞</span> {{ company.phone }} {% if company.mobile %} / {{ company.mobile }} {% endif %}
                 </p>    
                 <p class="flex items-center justify-center sm:justify-start gap-2">
-                  <span class="text-primary">✉️</span> linkexexport@gmail.com
+                  <span class="text-primary">✉️</span> {{ company.email }}
                 </p>
                 <p class="flex items-center justify-center sm:justify-start gap-2">
-                  <span class="text-primary">📍</span> Bhaktapur-02, Nagdesh
+                  <span class="text-primary">📍</span> {{ company.address }}
                 </p>
               </div>
               <div class="flex justify-center sm:justify-start space-x-4 pt-2">
                 <a
-                  href="https://www.facebook.com/share/17hxrMgc2J/"
+                  href="{{ company.facebook }}"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="text-white/80 hover:text-primary transition-colors text-sm lg:text-base flex items-center gap-2"
@@ -289,7 +289,7 @@
             <h4 class="font-bold text-lg lg:text-xl mb-4 lg:mb-6 text-primary">Quick Links</h4>
             <div class="space-y-2 lg:space-y-3">
               <a
-                href="#about"
+                href="{% url 'about' %}"
                 class="block text-white/80 hover:text-primary transition-colors text-sm lg:text-base"
                 >About Us</a
               >
@@ -320,21 +320,12 @@
           <div class="text-center sm:text-left">
             <h4 class="font-bold text-lg lg:text-xl mb-4 lg:mb-6 text-primary">Services</h4>
             <div class="space-y-2 lg:space-y-3 text-white/80 text-sm lg:text-base">
-              <p class="hover:text-primary transition-colors cursor-pointer">
-                International Courier
-              </p>
-              <p class="hover:text-primary transition-colors cursor-pointer">
-                Cargo & Freight
-              </p>
-              <p class="hover:text-primary transition-colors cursor-pointer">
-                E-commerce Fulfillment
-              </p>
-              <p class="hover:text-primary transition-colors cursor-pointer">
-                Document Delivery
-              </p>
-              <p class="hover:text-primary transition-colors cursor-pointer">
-                Warehousing
-              </p>
+              {% for service in services %}
+                <p class="hover:text-primary transition-colors cursor-pointer">
+                  {{ service.name }}
+                </p>
+                {% endfor %}
+              
             </div>
           </div>
 
@@ -347,7 +338,7 @@
               </p>
               <div class="pt-2">
                 <a
-                  href="https://www.facebook.com/share/17hxrMgc2J/"
+                  href="{{ company.facebook }}"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark transition-colors px-4 py-2 rounded-lg"
@@ -365,7 +356,7 @@
         <div
           class="border-t border-white/20 mt-6 lg:mt-8 pt-4 lg:pt-6 text-center text-white/60 text-sm lg:text-base"
         >
-          <p>&copy; 2024 Linkex Export. All rights reserved.</p>
+          <p>&copy; {% now "Y" %} {{ company.name }}. All rights reserved.</p>
         </div>
       </div>
     </footer>
