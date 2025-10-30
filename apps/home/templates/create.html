@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %} {{ title }} {% endblock title %}
 
-{% block pagetitle %}Create Company{% endblock %}
+{% block pagetitle %} {{ title }} {% endblock %}
 {% block content %}
     <form method="post" enctype="multipart/form-data" id="agencyForm">
         <div class="bg-white p-8 rounded-lg shadow-lg mx-auto">
@@ -57,7 +57,7 @@
         </div>
         <div class="bg-white p-8 mt-3 rounded-lg shadow-lg mx-auto">
             <!-- Submit Button -->
-            <button type="submit" class="bg-primary text-white p-3 w-full mt-5 text-xl">Create</button>
+            <button type="submit" class="bg-primary text-white p-3 w-full mt-5 text-xl">Save</button>
             <!-- Back Button -->
             <div class="mt-6 text-center">
                 <a href="{% url 'accounts:pages:agency:list' %}"
