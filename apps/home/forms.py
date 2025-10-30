@@ -1,5 +1,5 @@
 from django import forms
-from .models import Company, Service
+from .models import Company, Service, FAQ
 
 
 BASE_INPUT_CLASS = 'peer block w-full max-w-full appearance-none border border-gray-300 bg-white px-3 md:px-4 pt-3 pb-2 text-sm md:text-base text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent'
@@ -55,5 +55,15 @@ class ServiceForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': BASE_INPUT_CLASS, 'style': BASE_INPUT_STYLE}),
             'description': forms.Textarea(attrs={'class': BASE_INPUT_CLASS, 'style': 'height: 100px; resize: vertical;'}),
             'image': forms.FileInput(attrs={'class': BASE_INPUT_CLASS, 'style': BASE_INPUT_STYLE}),
+        }
+
+
+class FaqForm(forms.ModelForm):
+    class Meta:
+        model = FAQ
+        fields = ['question', 'answer']
+        widgets = {
+            'question': forms.Textarea(attrs={'class': BASE_INPUT_CLASS, 'style': 'height: 80px; resize: vertical;'}),
+            'answer': forms.Textarea(attrs={'class': BASE_INPUT_CLASS, 'style': 'height: 120px; resize: vertical;'}),
         }
 

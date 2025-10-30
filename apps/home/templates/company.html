@@ -2,7 +2,7 @@
 {% block title %} {{ title }} {% endblock title %}
 
 {% block pagetitle %}
-    {{ company }}
+    {{ company.name }}
 {% endblock pagetitle %}
 {% block button %}
 {% if company_detail %}
@@ -121,6 +121,20 @@
                 {% endif %}
             </div>
         </div>
+    </div>
+    <div class="mt-4 flex flex-wrap gap-2">
+        <a href="{% url 'home:services' %}">
+            <button class="bg-white text-primary border-2 border-primary hover:bg-secondary hover:text-white hover:border-secondary transition-colors duration-300 font-medium px-4 py-2 rounded flex items-center gap-2">
+                <i class="fi fi-rr-plus text-sm mt-[3px]"></i>
+                <span>Service</span>
+            </button>
+        </a>
+        <a href="{% url 'home:faqs' %}">
+            <button class="bg-white text-primary border-2 border-primary hover:bg-secondary hover:text-white hover:border-secondary transition-colors duration-300 font-medium px-4 py-2 rounded flex items-center gap-2">
+                <i class="fi fi-rr-plus text-sm mt-[3px]"></i>
+                <span>FAQ</span>
+            </button>
+        </a>
     </div>
     {% else %}
     <div class="bg-white p-6 rounded shadow text-gray-600">No company detail available.</div>

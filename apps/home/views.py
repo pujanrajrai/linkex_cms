@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from .models import Company, Service
+from .models import Company, Service, FAQ
 from django.views.generic import CreateView, UpdateView
-from .forms import CompanyForm, ServiceForm
+from .forms import CompanyForm, ServiceForm, FaqForm
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -47,3 +47,19 @@ def services_page(request):
             messages.error(request, "Service creation failed!")
             return render(request, "service.html", context)
     return render(request, "service.html", context)
+
+
+def faqs_page(request):
+    faqs = FAQ.objects.all()
+    faq_form = FaqForm()
+    if request.method == 'POST':
+        faq_form = FaqForm(request.POST)
+        if faq_form.is_valid():
+            faq_form.save()
+            return redirect('home:faqs')
+    context = {
+        "title": "FAQs",
+        "faq_form": faq_form,
+        "faqs": faqs,
+    }
+    return render(request, "faq.html", context)
