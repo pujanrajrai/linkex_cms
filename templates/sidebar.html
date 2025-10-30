@@ -181,6 +181,20 @@
                 </a>
             </div> {% endcomment %}
             <div class="menu-item">
+                <a href="{% url 'home:company' %}"
+                   title="Payment"
+                   class="menu-link {% if current ==  "home" %}active{% endif %}">
+                    <img src="{% static 'images/icons/payment-method.png' %}"
+                         width="30"
+                         height="30"
+                         alt="Payment"
+                         class="text-3xl">
+                    <span class="menu-text">Company</span>
+                </a>
+            </div>
+
+            
+            <div class="menu-item">
                 <a href="{% url 'get_deleted_models' %}"
                    title="Deleted Models"
                    class="menu-link {% if current == "delete_history" %}active{% endif %}">
@@ -245,6 +259,15 @@
                    class="menu-link {% if current == "pickup_request" %}active{% endif %}">
                     <span class="material-icons">request_page</span>
                     <span class="menu-text">Pickup Request</span>
+                </a>
+            </div>
+
+            <div class="menu-item">
+                <a href="{% url 'home:company' %}"
+                   title="Pickup Request"
+                   class="menu-link {% if current == "home" %}active{% endif %}">
+                    <span class="material-icons">company</span>
+                    <span class="menu-text">Company</span>
                 </a>
             </div>
             

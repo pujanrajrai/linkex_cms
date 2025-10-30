@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %} {{ title }} {% endblock title %}
+
+{% block pagetitle %}
+    {{ company }}
+{% endblock pagetitle %}
+{% block button %}
+{% if company_detail %}
+        <a href="{% url 'home:company_update' company_detail.id %}">
+            <button class="bg-white text-primary border-2 border-primary hover:bg-secondary hover:text-white hover:border-secondary transition-colors duration-300 font-medium px-4 py-2 rounded flex items-center gap-2">
+                <i class="fi fi-rr-edit text-sm mt-[3px]"></i>
+                <span>Edit Company</span>
+            </button>
+        </a>
+        {% else %}
+        <a href="{% url 'home:company_create' %}">
+            <button class="bg-white text-primary border-2 border-primary hover:bg-secondary hover:text-white hover:border-secondary transition-colors duration-300 font-medium px-4 py-2 rounded flex items-center gap-2">
+                <i class="fi fi-rr-plus text-sm mt-[3px]"></i>
+                <span>Add Company</span>
+            </button>
+        </a>
+{% endif %}
+{% endblock button %}
+{% block content %}
+    {% if company_detail %}
+    <div class="bg-white p-4 mb-4 rounded shadow">
+        <div class="flex flex-col sm:flex-row gap-4 items-start">
+            <div class="w-full sm:w-40">
+                {% if company_detail.logo %}
+                <img src="{{ company_detail.logo.url }}" alt="{{ company_detail.name }}" class="w-32 h-32 object-contain rounded border" />
+                {% else %}
+                <div class="w-32 h-32 flex items-center justify-center bg-gray-100 text-gray-400 rounded border">No Logo</div>
+                {% endif %}
+            </div>
+            <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <div class="text-xs text-gray-500">Name</div>
+                    <div class="text-sm md:text-base font-medium text-gray-900">{{ company_detail.name }}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-500">Email</div>
+                    <div class="text-sm md:text-base text-gray-900 break-all">{{ company_detail.email }}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-500">Phone</div>
+                    <div class="text-sm md:text-base text-gray-900">{{ company_detail.phone }}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-500">Mobile</div>
+                    <div class="text-sm md:text-base text-gray-900">{{ company_detail.mobile|default:'-' }}</div>
+                </div>
+                <div class="sm:col-span-2">
+                    <div class="text-xs text-gray-500">Address</div>
+                    <div class="text-sm md:text-base text-gray-900">{{ company_detail.address }}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-500">Facebook</div>
+                    {% if company_detail.facebook %}
+                    <a href="{{ company_detail.facebook }}" target="_blank" rel="noopener" class="text-blue-600 hover:underline break-all">{{ company_detail.facebook }}</a>
+                    {% else %}
+                    <div class="text-sm text-gray-400">-</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <div class="text-xs text-gray-500">Slogan</div>
+                    <div class="text-sm md:text-base text-gray-900">{{ company_detail.slogan }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+            <div class="bg-gray-50 rounded p-3">
+                <div class="text-xs text-gray-500 mb-1">Mission</div>
+                <div class="text-sm text-gray-800">{{ company_detail.mission }}</div>
+            </div>
+            <div class="bg-gray-50 rounded p-3">
+                <div class="text-xs text-gray-500 mb-1">Vision</div>
+                <div class="text-sm text-gray-800">{{ company_detail.vision }}</div>
+            </div>
+            <div class="bg-gray-50 rounded p-3">
+                <div class="text-xs text-gray-500 mb-1">Goal</div>
+                <div class="text-sm text-gray-800">{{ company_detail.goal }}</div>
+            </div>
+        </div>
+        <div class="mt-6">
+            <div class="text-sm text-gray-500 mb-1">About Us (Short)</div>
+            <div class="text-gray-800">{{ company_detail.about_us_short_description }}</div>
+        </div>
+        <div class="mt-6">
+            <div class="text-sm text-gray-500 mb-1">About Us (Detailed)</div>
+            <div class="prose max-w-none text-gray-800">{{ company_detail.about_us_long_description|linebreaks }}</div>
+        </div>
+        <div class="mt-6">
+            <div class="text-sm text-gray-500 mb-2">Why Choose Us</div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {% if company_detail.why_choose_us_card1_title %}
+                <div class="border rounded p-3">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="inline-block w-2 h-2 rounded-full" style="background: {{ company_detail.why_choose_us_card1_icon_color }}"></span>
+                        <div class="font-medium">{{ company_detail.why_choose_us_card1_title }}</div>
+                    </div>
+                    <div class="text-sm text-gray-700">{{ company_detail.why_choose_us_card1_description }}</div>
+                </div>
+                {% endif %}
+                {% if company_detail.why_choose_us_card2_title %}
+                <div class="border rounded p-3">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="inline-block w-2 h-2 rounded-full" style="background: {{ company_detail.why_choose_us_card2_icon_color }}"></span>
+                        <div class="font-medium">{{ company_detail.why_choose_us_card2_title }}</div>
+                    </div>
+                    <div class="text-sm text-gray-700">{{ company_detail.why_choose_us_card2_description }}</div>
+                </div>
+                {% endif %}
+                {% if company_detail.why_choose_us_card3_title %}
+                <div class="border rounded p-3">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="inline-block w-2 h-2 rounded-full" style="background: {{ company_detail.why_choose_us_card3_icon_color }}"></span>
+                        <div class="font-medium">{{ company_detail.why_choose_us_card3_title }}</div>
+                    </div>
+                    <div class="text-sm text-gray-700">{{ company_detail.why_choose_us_card3_description }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white p-6 rounded shadow text-gray-600">No company detail available.</div>
+    {% endif %}
+{% endblock content %}
