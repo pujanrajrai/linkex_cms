@@ -182,12 +182,12 @@
             </div> {% endcomment %}
             <div class="menu-item">
                 <a href="{% url 'home:company' %}"
-                   title="Payment"
+                   title="Company"
                    class="menu-link {% if current ==  "home" %}active{% endif %}">
-                    <img src="{% static 'images/icons/payment-method.png' %}"
+                    <img src="{% static 'images/icons/building.png' %}"
                          width="30"
                          height="30"
-                         alt="Payment"
+                         alt="Company"
                          class="text-3xl">
                     <span class="menu-text">Company</span>
                 </a>
@@ -262,14 +262,7 @@
                 </a>
             </div>
 
-            <div class="menu-item">
-                <a href="{% url 'home:company' %}"
-                   title="Pickup Request"
-                   class="menu-link {% if current == "home" %}active{% endif %}">
-                    <span class="material-icons">company</span>
-                    <span class="menu-text">Company</span>
-                </a>
-            </div>
+            
             
             <div class="menu-item">
                 <a href="{% url 'accounts:pages:auth:logout' %}"
