@@ -1,30 +1,30 @@
 from django.shortcuts import render
-from .models import Company, Service, FAQ
+from .models import MyCompany, Service, FAQ
 from django.views.generic import CreateView, UpdateView
-from .forms import CompanyForm, ServiceForm, FaqForm
-from django.shortcuts import get_object_or_404, render, redirect
+from .forms import MyCompanyForm, ServiceForm, FaqForm
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-class CompanyCreateView(LoginRequiredMixin, CreateView):
-    model = Company
-    form_class = CompanyForm
+class MyCompanyCreateView(LoginRequiredMixin, CreateView):
+    model = MyCompany
+    form_class = MyCompanyForm
     template_name = "create.html"
     success_url = reverse_lazy('home:company')  
-    title = "Create Company"
+    title = "Create MyCompany"
 
-class CompanyUpdateView(LoginRequiredMixin, UpdateView):
-    model = Company
-    form_class = CompanyForm
+class MyCompanyUpdateView(LoginRequiredMixin, UpdateView):
+    model = MyCompany
+    form_class = MyCompanyForm
     template_name = "create.html"
     success_url = reverse_lazy('home:company')
-    title = "Update Company"
+    title = "Update MyCompany"
 
 @login_required
 def get_company(request):
-    company = Company.objects.first()
-    return render(request, "company.html", {"company_detail": company, "title": "Company"})
+    company = MyCompany.objects.first()
+    return render(request, "company.html", {"company_detail": company, "title": "MyCompany"})
 
 
 @login_required
@@ -49,7 +49,7 @@ def services_page(request):
     return render(request, "service.html", context)
 
 
-def faqs_page(request):
+def faqs_page(request): 
     faqs = FAQ.objects.all()
     faq_form = FaqForm()
     if request.method == 'POST':

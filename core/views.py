@@ -14,7 +14,7 @@ from decorators import has_roles
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from home.models import Service, FAQ, Company
+from home.models import Service, FAQ, MyCompany
 User = get_user_model()
 
 
@@ -345,7 +345,7 @@ def home(request):
     context['request_form'] = AgencyRequestForm
     context['services'] = Service.objects.all()
     context['faqs'] = FAQ.objects.all()
-    context['company'] = Company.objects.first()
+    context['company'] = MyCompany.objects.first()
 
     return render(request, 'home.html', context)
 

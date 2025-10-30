@@ -12,19 +12,19 @@ body {
 }
 
 .navbar {
-  margin-left: 85px;
+  margin-left: 62px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: flex-start;
-  align-items: stretch;
+  align-items: center;
   background: #10345a;
   color: white;
-  padding: 10px 15px;
+  padding: 0px 15px;
   transition: all 0.3s ease-in-out;
 }
 
 .navbar.active {
-  margin-left: 250px;
+  margin-left: 225px;
 }
 
 .menu-toggle {
@@ -63,8 +63,8 @@ body {
 }
 
 .sidebar {
-  width: 85px;
-  height: 100vh;
+  width: 75px;
+  /* height: 100vh; */
   background: #F8F9FA;
   position: fixed;
   top: 0;
@@ -75,7 +75,7 @@ body {
 }
 
 .sidebar.active {
-  width: 250px;
+  width: 225px;
 }
 
 .sidebar.active .sidebar-menu {
@@ -244,23 +244,23 @@ body {
 
 /* Main content area */
 .content {
-  margin-left: 85px;
-  padding: 20px;
+  margin-left: 75px;
+  padding: 18px;
   transition: all 0.3s;
 }
 
 .content.active {
-  margin-left: 250px;
+  margin-left: 225px;
 }
 
 /* Responsive design */
 @media (max-width: 1200px) {
   .sidebar {
-    width: 100px;
+    width: 90px;
   }
 
   .sidebar.active {
-    width: 250px;
+    width: 225px;
   }
 
   .navbar {
@@ -274,19 +274,19 @@ body {
 
 @media (max-width: 992px) {
   .sidebar {
-    width: 60px;
+    width: 54px;
   }
 
   .sidebar.active {
-    width: 250px;
+    width: 225px;
   }
 
   .navbar {
-    margin-left: 60px;
+    margin-left: 54px;
   }
 
   .content {
-    margin-left: 60px;
+    margin-left: 54px;
   }
 
   .sidebar-logo img {
@@ -363,7 +363,9 @@ body {
   /* Navbar mobile layout */
   .navbar {
     flex-wrap: wrap;
-    padding: 10px 5px;
+    padding: 0px 5px;
+    justify-content: flex-start;
+    align-items: center;
   }
   
   /* Table containers */

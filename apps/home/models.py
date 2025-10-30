@@ -2,7 +2,7 @@ from django.db import models
 from base.models import BaseModel
 
 # Create your models here.
-class Company(BaseModel):
+class MyCompany(BaseModel):
     name = models.CharField(max_length=255)
     address = models.TextField()
     phone = models.CharField(max_length=255)
