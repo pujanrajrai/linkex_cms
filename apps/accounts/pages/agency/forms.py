@@ -27,7 +27,7 @@ class AgencyRequestForm(forms.ModelForm):
                 'class': 'peer block w-full appearance-none border border-gray-300 bg-white px-3 pt-3 pb-2 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent'
             }),
             'country': forms.Select(attrs={
-                'class': 'ui selection dropdown search w-full p-3'
+                'class': 'select2-country w-full px-3 py-2 border border-gray-300 rounded-md focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500'
             }),
             'email': forms.EmailInput(attrs={
                 'class': 'peer block w-full appearance-none border border-gray-300 bg-white px-3 pt-3 pb-2 text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent'
