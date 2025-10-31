@@ -3,81 +3,193 @@
 
 {% block pagetitle %} {{ title }} {% endblock %}
 {% block content %}
-    <form method="post" enctype="multipart/form-data" id="agencyForm">
-        <div class="bg-white p-8 rounded-lg shadow-lg mx-auto">
-            <!-- Agency Creation Form -->
-            {% csrf_token %}
-            {% comment %} <div class="grid grid-cols-4 gap-6 mb-6">
-                {% for field in form %}
-                    <div class="flex flex-col space-y-2">
-                        <label class="text-sm font-medium text-gray-700">{{ field.label_tag }}</label>
-                        {{ field }}
-                        {{ field.errors }}
-                        {% if field.help_text %}<p class="text-xs text-gray-500">{{ field.help_text|safe }}</p>{% endif %}
-                    </div>
-                {% endfor %}
-            </div> {% endcomment %}
-
-            <div class="grid grid-cols-4 gap-6 mb-6 md:grid-cols-2 lg:grid-cols-4 sm:grid-cols-1">
-                {% for field in form %}
-                    <div class="flex flex-col space-y-2">
-                        <label class="text-sm font-medium text-gray-700">
-                            {{ field.label_tag }}
-                        </label>
-                        
-                        {{ field }}
-                        {{ field.errors }}
-    
-                        {% if field.help_text %}
-                            <p class="text-xs text-gray-500">{{ field.help_text|safe }}</p>
-                        {% endif %}
-    
-                        {# Handle file previews #}
-                        {% if field.field.widget.input_type == "file" %}
-                            {% if field.value and field.value.url %}
-                                <div class="mt-2 space-y-2">
-                                    <p class="text-sm text-gray-600">Current {{ field.label }}:</p>
-
-                                    <img src="{{ field.value.url }}" alt="{{ field.name }}"
-                                        class="h-20 rounded border"
-                                        onerror="this.style.display='none'" />
-
-                                    <a href="{{ field.value.url }}" target="_blank" class="text-blue-600 underline text-sm">
-                                        View file
-                                    </a>
-                                </div>
-                            {% endif %}
-                        {% endif %}
-
-
-                    </div>
-                {% endfor %}
+    <form method="post" enctype="multipart/form-data" id="companyForm">
+        {% csrf_token %}
+        
+        <!-- Basic Information Section -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="flex flex-col space-y-2">
+                    <label class="text font-medium text-gray-700">{{ form.name.label }}</label>
+                    {{ form.name }}
+                    {{ form.name.errors }}
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label class="text font-medium text-gray-700">{{ form.slogan.label }}</label>
+                    {{ form.slogan }}
+                    {{ form.slogan.errors }}
+                </div>
+                
+                <div class="flex flex-col space-y-2">
+                    <label class="text font-medium text-gray-700">{{ form.phone.label }}</label>
+                    {{ form.phone }}
+                    {{ form.phone.errors }}
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label class="text font-medium text-gray-700">{{ form.mobile.label }}</label>
+                    {{ form.mobile }}
+                    {{ form.mobile.errors }}
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label class="text font-medium text-gray-700">{{ form.email.label }}</label>
+                    {{ form.email }}
+                    {{ form.email.errors }}
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label class="text font-medium text-gray-700">{{ form.facebook.label }}</label>
+                    {{ form.facebook }}
+                    {{ form.facebook.errors }}
+                </div>
+                <div class="flex flex-col space-y-2 md:col-span-2 lg:col-span-3">
+                    <label class="text font-medium text-gray-700">{{ form.address.label }}</label>
+                    {{ form.address }}
+                    {{ form.address.errors }}
+                </div>
+                <div class="flex flex-col space-y-2 lg:col-span-1">
+                    <label class="text font-medium text-gray-700">{{ form.logo.label }}</label>
+                    {{ form.logo }}
+                    {{ form.logo.errors }}
+                    {% if form.instance.logo %}
+                        <div class="mt-2">
+                            <p class="text text-gray-600 mb-2">Current logo:</p>
+                            <img src="{{ form.instance.logo.url }}" alt="Logo" class="h-20 rounded border" onerror="this.style.display='none'" />
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-            
         </div>
-        <div class="bg-white p-8 mt-3 rounded-lg shadow-lg mx-auto">
-            <!-- Submit Button -->
-            <button type="submit" class="bg-primary text-white p-3 w-full mt-5 text-xl">Save</button>
-            <!-- Back Button -->
-            <div class="mt-6 text-center">
-                <a href="{% url 'accounts:pages:agency:list' %}"
-                   class="text-gray-600 hover:underline font-semibold text-lg">← Back</a>
+
+        <!-- About Us Section -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">About Us</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex flex-col space-y-2 md:col-span-1">
+                    <label class="text font-medium text-gray-700">{{ form.about_us_short_description.label }}</label>
+                    {{ form.about_us_short_description }}
+                    {{ form.about_us_short_description.errors }}
+                </div>
+                <div class="flex flex-col space-y-2 md:col-span-1">
+                    <label class="text font-medium text-gray-700">{{ form.about_us_long_description.label }}</label>
+                    {{ form.about_us_long_description }}
+                    {{ form.about_us_long_description.errors }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission, Vision, Goal Section -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Mission, Vision & Goal</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="flex flex-col space-y-2">
+                    <label class="text font-medium text-gray-700">{{ form.mission.label }}</label>
+                    {{ form.mission }}
+                    {{ form.mission.errors }}
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label class="text font-medium text-gray-700">{{ form.vision.label }}</label>
+                    {{ form.vision }}
+                    {{ form.vision.errors }}
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label class="text font-medium text-gray-700">{{ form.goal.label }}</label>
+                    {{ form.goal }}
+                    {{ form.goal.errors }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Why Choose Us -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">Why Choose Us</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="border rounded-lg p-4">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="flex flex-col space-y-2 lg:col-span-2">
+                            <label class="text font-medium text-gray-700">{{ form.why_choose_us_card1_title.label }}</label>
+                            {{ form.why_choose_us_card1_title }}
+                            {{ form.why_choose_us_card1_title.errors }}
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label class="text font-medium text-gray-700">{{ form.why_choose_us_card1_icon.label }}</label>
+                            {{ form.why_choose_us_card1_icon }}
+                            {{ form.why_choose_us_card1_icon.errors }}
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label class="text font-medium text-gray-700">{{ form.why_choose_us_card1_icon_color.label }}</label>
+                            {{ form.why_choose_us_card1_icon_color }}
+                            {{ form.why_choose_us_card1_icon_color.errors }}
+                        </div>
+                        <div class="flex flex-col space-y-2 lg:col-span-2">
+                            <label class="text font-medium text-gray-700">{{ form.why_choose_us_card1_description.label }}</label>
+                            {{ form.why_choose_us_card1_description }}
+                            {{ form.why_choose_us_card1_description.errors }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="border rounded-lg p-4">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="flex flex-col space-y-2 lg:col-span-2">
+                            <label class="text font-medium text-gray-700">{{ form.why_choose_us_card2_title.label }}</label>
+                            {{ form.why_choose_us_card2_title }}
+                            {{ form.why_choose_us_card2_title.errors }}
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label class="text font-medium text-gray-700">{{ form.why_choose_us_card2_icon.label }}</label>
+                            {{ form.why_choose_us_card2_icon }}
+                            {{ form.why_choose_us_card2_icon.errors }}
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label class="text font-medium text-gray-700">{{ form.why_choose_us_card2_icon_color.label }}</label>
+                            {{ form.why_choose_us_card2_icon_color }}
+                            {{ form.why_choose_us_card2_icon_color.errors }}
+                        </div>
+                        <div class="flex flex-col space-y-2 lg:col-span-2">
+                            <label class="text font-medium text-gray-700">{{ form.why_choose_us_card2_description.label }}</label>
+                            {{ form.why_choose_us_card2_description }}
+                            {{ form.why_choose_us_card2_description.errors }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="border rounded-lg p-4">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="flex flex-col space-y-2 lg:col-span-2">
+                            <label class="text font-medium text-gray-700">{{ form.why_choose_us_card3_title.label }}</label>
+                            {{ form.why_choose_us_card3_title }}
+                            {{ form.why_choose_us_card3_title.errors }}
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label class="text font-medium text-gray-700">{{ form.why_choose_us_card3_icon.label }}</label>
+                            {{ form.why_choose_us_card3_icon }}
+                            {{ form.why_choose_us_card3_icon.errors }}
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label class="text font-medium text-gray-700">{{ form.why_choose_us_card3_icon_color.label }}</label>
+                            {{ form.why_choose_us_card3_icon_color }}
+                            {{ form.why_choose_us_card3_icon_color.errors }}
+                        </div>
+                        <div class="flex flex-col space-y-2 lg:col-span-2">
+                            <label class="text font-medium text-gray-700">{{ form.why_choose_us_card3_description.label }}</label>
+                            {{ form.why_choose_us_card3_description }}
+                            {{ form.why_choose_us_card3_description.errors }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <button type="submit" class="bg-primary text-white p-3 w-full text-lg font-medium rounded-md hover:bg-primary-dark transition-colors">Save</button>
+            <div class="mt-4 text-center">
+                <a href="{% url 'home:company' %}" class="text-gray-600 hover:underline font-semibold">← Back to Company</a>
             </div>
         </div>
     </form>
-    <script>
-        function togglePasswordVisibility() {
-            var passwordField = document.getElementById("id_password");
-            var eyeIcon = document.querySelector(".eye-icon i");
-            if (passwordField.type === "password") {
-            passwordField.type = "text";
-            eyeIcon.classList.remove("fa-eye");
-            eyeIcon.classList.add("fa-eye-slash");
-            } else {
-            passwordField.type = "password";
-            eyeIcon.classList.remove("fa-eye-slash");
-            eyeIcon.classList.add("fa-eye");
-            }
-        }
-    </script>
+   
 {% endblock %}

@@ -3,8 +3,8 @@ from .models import MyCompany, ProhibitedItems, Service, FAQ
 
 
 BASE_INPUT_CLASS = 'peer block w-full max-w-full appearance-none border border-gray-300 bg-white px-3 md:px-4 pt-3 pb-2 text-sm md:text-base text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent'
-BASE_INPUT_STYLE = 'height: 50px;'
-BASE_TEXTAREA_STYLE = 'height: 50px;'
+BASE_INPUT_STYLE = None
+BASE_TEXTAREA_STYLE = None
 class MyCompanyForm(forms.ModelForm):
     
     class Meta:
