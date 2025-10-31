@@ -16,6 +16,7 @@ urlpatterns = [
     path('finance/', include('finance.urls')),
     path('captcha/', include('captcha.urls')),
     path('captcha/', include('captcha.urls')),
+    path('ckeditor5/', include('django_ckeditor_5.urls')),
     path('', views.home, name='home'),
     path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
     path('agency_request/', views.agency_request, name='agency_request'),

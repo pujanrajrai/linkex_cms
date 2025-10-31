@@ -49,9 +49,15 @@
 
         <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-3">
-                <div>
-                    <div class="text uppercase tracking-wider text-gray-500">Address</div>
-                    <div class="text-base text-gray-900">{{ company_detail.address }}</div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <div class="text uppercase tracking-wider text-gray-500">Address</div>
+                        <div class="text-base text-gray-900">{{ company_detail.address }}</div>
+                    </div>
+                    <div>
+                        <div class="text uppercase tracking-wider text-gray-500">Location</div>
+                        <div class="text-base text-gray-900">{{ company_detail.location }}</div>
+                    </div>
                 </div>
                 <div>
                     <div class="text uppercase tracking-wider text-gray-500">Facebook</div>

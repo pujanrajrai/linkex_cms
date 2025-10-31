@@ -77,3 +77,20 @@
     </div>
 {% endblock content %}
 
+{% block js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    if (typeof createEditors !== 'undefined') {
+        createEditors(document.body);
+    } else {
+        const fields = document.querySelectorAll('textarea[id*="question"], textarea[id*="answer"]');
+        fields.forEach(function(field) {
+            if (field.id && typeof ClassicEditor !== 'undefined') {
+                ClassicEditor.create(field).catch(error => console.error('CKEditor5 error:', error));
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
+

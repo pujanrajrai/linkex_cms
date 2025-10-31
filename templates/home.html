@@ -918,8 +918,9 @@
         <div class="bg-white rounded-2xl shadow-2xl p-4 lg:p-6">
           <h3 class="text-xl lg:text-2xl font-bold text-gray-800 mb-4 text-center">Find Us Here</h3>
           <div class="rounded-lg overflow-hidden">
-            <iframe src="{{ company.location }}" 
-            width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            {{ company.location }}
+            {% comment %} <iframe src="{{ company.location }}" 
+            width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> {% endcomment %}
           </div>
         </div>
       </div>

@@ -41,6 +41,11 @@
                     {{ form.facebook }}
                     {{ form.facebook.errors }}
                 </div>
+                <div class="flex flex-col space-y-2">
+                    <label class="text font-medium text-gray-700">{{ form.location.label }}</label>
+                    {{ form.location }}
+                    {{ form.location.errors }}
+                </div>
                 <div class="flex flex-col space-y-2 md:col-span-2 lg:col-span-3">
                     <label class="text font-medium text-gray-700">{{ form.address.label }}</label>
                     {{ form.address }}
@@ -192,4 +197,30 @@
         </div>
     </form>
    
+{% endblock %}
+
+{% block js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // CKEditor5 widgets create divs with class 'django_ckeditor_5'
+    const ckeditorContainers = document.querySelectorAll('.django_ckeditor_5');
+    
+    if (typeof createEditors !== 'undefined') {
+        createEditors(document.body);
+    } else {
+        // Fallback: find all textarea fields that should be CKEditor5
+        const fields = document.querySelectorAll('textarea[id*="description"], textarea[id*="mission"], textarea[id*="vision"], textarea[id*="goal"], textarea[id*="question"], textarea[id*="answer"]');
+        
+        fields.forEach(function(field) {
+            if (field.id && typeof ClassicEditor !== 'undefined') {
+                ClassicEditor
+                    .create(field)
+                    .catch(error => {
+                        console.error('CKEditor5 error:', error);
+                    });
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

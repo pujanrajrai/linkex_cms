@@ -1,10 +1,11 @@
 from django.db import models
+from django_ckeditor_5.fields import CKEditor5Field
 from base.models import BaseModel
 
 # Create your models here.
 class MyCompany(BaseModel):
     name = models.CharField(max_length=255)
-    address = models.TextField()
+    address = CKEditor5Field('Content', config_name='default')
     phone = models.CharField(max_length=255)
     mobile = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField(max_length=255)
@@ -14,34 +15,34 @@ class MyCompany(BaseModel):
     location = models.CharField(max_length=255, null=True, blank=True)
 
     # aboutus
-    about_us_short_description = models.TextField()
-    about_us_long_description = models.TextField()
-    mission = models.TextField()
-    vision = models.TextField()
-    goal = models.TextField()
+    about_us_short_description = CKEditor5Field('Content', config_name='default')
+    about_us_long_description = CKEditor5Field('Content', config_name='default')
+    mission = CKEditor5Field('Content', config_name='default')
+    vision = CKEditor5Field('Content', config_name='default')
+    goal = CKEditor5Field('Content', config_name='default')
 
     why_choose_us_card1_title = models.CharField(max_length=255, null=True, blank=True)
-    why_choose_us_card1_description = models.TextField(null=True, blank=True)
+    why_choose_us_card1_description = CKEditor5Field('Content', config_name='default', null=True, blank=True)
     why_choose_us_card1_icon = models.CharField(max_length=255, null=True, blank=True)
     why_choose_us_card1_icon_color = models.CharField(max_length=255, null=True, blank=True)
     why_choose_us_card2_title = models.CharField(max_length=255, null=True, blank=True)
-    why_choose_us_card2_description = models.TextField(null=True, blank=True)
+    why_choose_us_card2_description = CKEditor5Field('Content', config_name='default', null=True, blank=True)
     why_choose_us_card2_icon = models.CharField(max_length=255, null=True, blank=True)
     why_choose_us_card2_icon_color = models.CharField(max_length=255, null=True, blank=True)   
     why_choose_us_card3_title = models.CharField(max_length=255, null=True, blank=True)
-    why_choose_us_card3_description = models.TextField(null=True, blank=True)
+    why_choose_us_card3_description = CKEditor5Field('Content', config_name='default', null=True, blank=True)
     why_choose_us_card3_icon = models.CharField(max_length=255, null=True, blank=True)
     why_choose_us_card3_icon_color = models.CharField(max_length=255, null=True, blank=True)
 
 
 class Service(BaseModel):
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = CKEditor5Field('Content', config_name='default')
     image = models.ImageField(upload_to='company/services/')
 
 class FAQ(BaseModel):
-    question = models.TextField()
-    answer = models.TextField()
+    question = CKEditor5Field('Content', config_name='default')
+    answer = CKEditor5Field('Content', config_name='default')
 
 
 class ProhibitedItems(BaseModel):
