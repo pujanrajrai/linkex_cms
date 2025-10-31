@@ -1,5 +1,5 @@
 from django import forms
-from .models import MyCompany, Service, FAQ
+from .models import MyCompany, ProhibitedItems, Service, FAQ
 
 
 BASE_INPUT_CLASS = 'peer block w-full max-w-full appearance-none border border-gray-300 bg-white px-3 md:px-4 pt-3 pb-2 text-sm md:text-base text-gray-800 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 rounded-md placeholder-transparent'
@@ -67,3 +67,11 @@ class FaqForm(forms.ModelForm):
             'answer': forms.Textarea(attrs={'class': BASE_INPUT_CLASS, 'style': 'height: 120px; resize: vertical;'}),
         }
 
+
+class ProhibitedItemForm(forms.ModelForm):
+    class Meta:
+        model = ProhibitedItems
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': BASE_INPUT_CLASS, 'style': BASE_INPUT_STYLE}),
+        }

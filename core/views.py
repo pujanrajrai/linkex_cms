@@ -14,7 +14,7 @@ from decorators import has_roles
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from home.models import Service, FAQ, MyCompany
+from home.models import Service, FAQ, MyCompany, ProhibitedItems
 User = get_user_model()
 
 
@@ -346,11 +346,7 @@ def home(request):
     context['services'] = Service.objects.all()
     context['faqs'] = FAQ.objects.all()
     context['company'] = MyCompany.objects.first()
+    context['prohibited_items'] = ProhibitedItems.objects.all()
 
     return render(request, 'home.html', context)
 
-
-# def about(request):
-#     context = {}
-#     context['company'] = Company.objects.first()
-#     return render(request, 'about.html', context)

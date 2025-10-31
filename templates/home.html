@@ -381,89 +381,16 @@
           </h3>
           
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+            {% for prohibited_item in prohibited_items %}
             <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
               <div class="text-red-500 mr-3">
                 <i class="fas fa-ban text-lg"></i>
               </div>
-              <span class="text-gray-800 font-medium">Corrosives</span>
+              <span class="text-gray-800 font-medium">{{ prohibited_item.name }}</span>
             </div>
+            {% endfor %}
             
-            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
-              <div class="text-red-500 mr-3">
-                <i class="fas fa-ban text-lg"></i>
-              </div>
-              <span class="text-gray-800 font-medium">Gases</span>
-            </div>
             
-            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
-              <div class="text-red-500 mr-3">
-                <i class="fas fa-ban text-lg"></i>
-              </div>
-              <span class="text-gray-800 font-medium">Flammable Liquids</span>
-            </div>
-            
-            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
-              <div class="text-red-500 mr-3">
-                <i class="fas fa-ban text-lg"></i>
-              </div>
-              <span class="text-gray-800 font-medium">Oxidising Material</span>
-            </div>
-            
-            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
-              <div class="text-red-500 mr-3">
-                <i class="fas fa-ban text-lg"></i>
-              </div>
-              <span class="text-gray-800 font-medium">Organic Peroxides</span>
-            </div>
-            
-            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
-              <div class="text-red-500 mr-3">
-                <i class="fas fa-ban text-lg"></i>
-              </div>
-              <span class="text-gray-800 font-medium">Toxic Substances</span>
-            </div>
-            
-            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
-              <div class="text-red-500 mr-3">
-                <i class="fas fa-ban text-lg"></i>
-              </div>
-              <span class="text-gray-800 font-medium">Radioactive Materials</span>
-            </div>
-            
-            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
-              <div class="text-red-500 mr-3">
-                <i class="fas fa-ban text-lg"></i>
-              </div>
-              <span class="text-gray-800 font-medium">Infectious Substances</span>
-            </div>
-            
-            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
-              <div class="text-red-500 mr-3">
-                <i class="fas fa-ban text-lg"></i>
-              </div>
-              <span class="text-gray-800 font-medium">Explosives</span>
-            </div>
-            
-            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
-              <div class="text-red-500 mr-3">
-                <i class="fas fa-ban text-lg"></i>
-              </div>
-              <span class="text-gray-800 font-medium">Flammable Solids</span>
-            </div>
-            
-            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
-              <div class="text-red-500 mr-3">
-                <i class="fas fa-ban text-lg"></i>
-              </div>
-              <span class="text-gray-800 font-medium">Magnetised Material</span>
-            </div>
-            
-            <div class="flex items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
-              <div class="text-red-500 mr-3">
-                <i class="fas fa-ban text-lg"></i>
-              </div>
-              <span class="text-gray-800 font-medium text-sm">Miscellaneous (dry ice, petrol engines)</span>
-            </div>
           </div>
 
           <!-- Call to Action -->
@@ -893,38 +820,7 @@
           </p>
         </div>
         {% endfor %}
-        {% comment %} <div class="bg-white p-6 lg:p-8 rounded-lg shadow-sm border border-tertiary-lighter/20 hover:shadow-md transition-shadow duration-300">
-          <h3 class="text-lg lg:text-xl font-semibold mb-3 lg:mb-4 text-gray-800">
-            What type of goods do you accept for shipment?
-          </h3>
-          <p class="text-gray-600 text-sm lg:text-base">
-            We accept shipments such as general cargo, mail, perishable
-            products, pharmaceuticals, valuable cargo, automotive parts and
-            automobiles, odd size cargo among others which may require special
-            handling procedures.
-          </p>
-        </div>
-        <div class="bg-white p-6 lg:p-8 rounded-lg shadow-sm border border-tertiary-lighter/20 hover:shadow-md transition-shadow duration-300">
-          <h3 class="text-lg lg:text-xl font-semibold mb-3 lg:mb-4 text-gray-800">
-            What goods are considered dangerous while transporting?
-          </h3>
-          <p class="text-gray-600 text-sm lg:text-base">
-            Dangerous goods are articles or substances which are capable of
-            posing a hazard to health, safety, property or the environment and
-            which are shown in the list of dangerous goods in IATA dangerous
-            goods regulations or which are classified according to the IATA
-            dangerous goods regulations.
-          </p>
-        </div>
-        <div class="bg-white p-6 lg:p-8 rounded-lg shadow-sm border border-tertiary-lighter/20 hover:shadow-md transition-shadow duration-300">
-          <h3 class="text-lg lg:text-xl font-semibold mb-3 lg:mb-4 text-gray-800">
-            How can I track my shipment?
-          </h3>
-          <p class="text-gray-600 text-sm lg:text-base">
-            You can track your shipment, provided that you have a tracking
-            number issued by Linkex Export from here.
-          </p>
-        </div> {% endcomment %}
+        
       </div>
     </div>
   </section>
@@ -1022,7 +918,7 @@
         <div class="bg-white rounded-2xl shadow-2xl p-4 lg:p-6">
           <h3 class="text-xl lg:text-2xl font-bold text-gray-800 mb-4 text-center">Find Us Here</h3>
           <div class="rounded-lg overflow-hidden">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.3701078228555!2d85.34015117560911!3d27.705856825556914!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb195184ae81c9%3A0x2e2253e702031d57!2sShip%20Global%20Nepal!5e0!3m2!1sen!2snp!4v1750570305258!5m2!1sen!2snp" 
+            <iframe src="{{ company.location }}" 
             width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
           </div>
         </div>

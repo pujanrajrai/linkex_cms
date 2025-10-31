@@ -11,6 +11,7 @@ class MyCompany(BaseModel):
     facebook = models.URLField(max_length=255)
     slogan = models.CharField(max_length=255)
     logo = models.ImageField(upload_to='company/logo/')
+    location = models.CharField(max_length=255, null=True, blank=True)
 
     # aboutus
     about_us_short_description = models.TextField()
@@ -43,3 +44,5 @@ class FAQ(BaseModel):
     answer = models.TextField()
 
 
+class ProhibitedItems(BaseModel):
+    name = models.CharField(max_length=255)

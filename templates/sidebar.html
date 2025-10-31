@@ -4,7 +4,7 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <a href="/">
-                <img src="{% static 'images/company/logo.png' %}" alt="Logo">
+                <img src="{{ company.logo.url }}" alt="Logo">
                 <span class="menu-text text-sm" style="font-size:9px; margin-left: 15px; ">{{ request.user.full_name|slice:":10" }}</span>
             </a>
         </div>
@@ -180,19 +180,25 @@
                     <span class="menu-text">Payment</span>
                 </a>
             </div> {% endcomment %}
+
             <div class="menu-item">
-                <a href="{% url 'home:company' %}"
-                   title="Company"
-                   class="menu-link {% if current ==  "home" %}active{% endif %}">
-                    <img src="{% static 'images/icons/building.png' %}"
+                <a href="#"
+                   title="Company Settings"
+                   class="menu-link menu-arrow-link {% if current ==  "home" %}active{% endif %}">
+                    <img src="{% static 'images/icons/setting.png' %}"
                          width="30"
                          height="30"
-                         alt="Company"
+                         alt="Company Settings"
                          class="text-3xl">
-                    <span class="menu-text">Company</span>
+                    <span class="menu-text">Company Settings</span>
                 </a>
+                <div class="dropdown-content">
+                    <a href="{% url 'home:company' %}">Company</a>
+                    <a href="{% url 'home:services' %}">Services</a>
+                    <a href="{% url 'home:faqs' %}">FAQs</a>    
+                    <a href="{% url 'home:prohibited_items' %}">Prohibited Items</a>
+                </div>
             </div>
-
             
             <div class="menu-item">
                 <a href="{% url 'get_deleted_models' %}"
@@ -223,7 +229,7 @@
 {% elif request.user.role == 'agencyuser' %}
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <img src="{% static 'images/company/logo.png' %}" alt="Logo">
+            <img src="{{ company.logo.url }}" alt="Logo">
         </div>
         <nav class="sidebar-menu">
             <!-- Each menu item with potential submenu -->

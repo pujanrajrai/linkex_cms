@@ -1,7 +1,7 @@
-from home.models import Company
+from home.models import MyCompany
 
 def company_context(request):
-    company = Company.objects.first()
+    company = MyCompany.objects.first()
     
     return {
         'company': company
