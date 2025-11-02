@@ -54,6 +54,43 @@
                     justify-content: flex-start !important;
                     align-items: center !important;
                 }
+                
+                /* Mobile button styling - show only + icon */
+                .button-wrapper > * {
+                    position: relative;
+                }
+                
+                .button-wrapper button,
+                .button-wrapper a > button {
+                    width: 36px !important;
+                    height: 36px !important;
+                    padding: 0 !important;
+                    min-width: 36px !important;
+                    overflow: hidden;
+                }
+                
+                .button-wrapper button span,
+                .button-wrapper a > button span,
+                .button-wrapper button i:not(.mobile-plus-icon) {
+                    display: none !important;
+                }
+                
+                .button-wrapper button::before,
+                .button-wrapper a > button::before {
+                    content: '+' !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    width: 100% !important;
+                    height: 100% !important;
+                    font-size: 1.5rem !important;
+                    font-weight: 600 !important;
+                    line-height: 1 !important;
+                }
+                
+                .button-wrapper a {
+                    display: inline-block;
+                }
             }
             
             /* Continue mobile responsive styles */
@@ -283,7 +320,7 @@
                         </button>
                     </form>
                 </div>
-                <div class="flex items-center">
+                <div class="flex items-center button-wrapper">
                     {% block button %}
                     {% endblock button %}
                 </div>
